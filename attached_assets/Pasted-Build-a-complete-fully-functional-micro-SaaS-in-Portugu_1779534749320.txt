@@ -1,0 +1,160 @@
+Build a complete, fully functional micro SaaS in Portuguese for financial management and recipe costing (ficha técnica) for small food businesses such as marmitas, bolos, salgados, and artisan food producers.
+
+TECH STACK
+- Frontend: React + Vite + TailwindCSS
+- Backend: Supabase (auth + PostgreSQL database + Row Level Security)
+- Routing: React Router v6
+- State: React Context + hooks
+- Fonts: Inter (Google Fonts)
+- Icons: Lucide React
+- Charts: Recharts
+- Deploy: Replit native
+
+IMPORTANT SUPABASE SETUP
+- Email confirmation must be disabled for MVP testing.
+- Use supabase-js v2 client.
+- All tables must use Row Level Security (RLS) with auth.uid() = user_id policies.
+- Create profiles and subscriptions automatically via a trigger on auth.users insert.
+- Use these exact table names in Portuguese:
+  - perfis (id UUID references auth.users)
+  - produtos (id, user_id, nome, categoria, preco_venda, custo_mao_obra, frete, imposto_pct, taxa_cartao_pct, taxa_app_pct, comissao_pct)
+  - insumos (id, user_id, nome, unidade, preco_unitario, fator_correcao)
+  - ficha_tecnica_itens (id, user_id, produto_id, insumo_id, quantidade)
+  - despesas_fixas (id, user_id, descricao, valor, categoria)
+  - lancamentos (id, user_id, descricao, tipo [receita|despesa], valor, data)
+  - assinaturas (id, user_id, plano, status, valido_ate)
+
+DATABASE SCHEMA
+Generate and run the full SQL schema with:
+- All tables above
+- RLS enabled on all tables
+- Policies: each user can only SELECT, INSERT, UPDATE, DELETE their own rows
+- Trigger function handle_new_user() with SET search_path = public:
+  - auto-creates perfis row
+  - auto-creates assinaturas row with plano = 'gratis' and status = 'ativo'
+- REVOKE EXECUTE on handle_new_user() from PUBLIC, anon, authenticated
+
+PAGES AND ROUTES
+Create these routes with React Router:
+- / → Landing Page (public)
+- /login → Login (public)
+- /cadastro → Signup (public)
+- /dashboard → Dashboard (protected)
+- /produtos → Products list and CRUD (protected)
+- /insumos → Ingredients list and CRUD (protected)
+- /ficha-tecnica → Recipe sheet list and CRUD (protected)
+- /despesas → Fixed costs list and CRUD (protected)
+- /lancamentos → Cash flow entries (protected)
+- /relatorios → Reports (protected)
+- /planos → Pricing/Plans (public and logged-in)
+- /configuracoes → Settings (protected)
+
+AUTH FLOW
+- signUp must auto sign-in the user after successful registration (no email confirmation required).
+- After signup, redirect to /dashboard.
+- After login, redirect to /dashboard.
+- Protected routes must redirect to /login if there is no active session.
+- On logout, redirect to /.
+
+LANDING PAGE
+Recreate this style based on the reference image:
+- Clean, modern, bold editorial layout
+- Dark/charcoal header with logo on the left, navigation links centered, and CTA buttons on the right
+- Large hero section with a bold left-aligned headline in black/dark, a short subtitle, and two CTA buttons: "Começar grátis" and "Ver preços"
+- Hero uses a split layout: left side has copy and social proof, right side has the app dashboard screenshot or a visual mock
+- Social proof bar with logos or numbers (ex: "Mais de 500 empreendedores usam o Precifica")
+- Features section with 3 cards in a row: icon + title + short description
+- Pricing section with 3 plan cards
+- Footer with links and copyright
+
+DASHBOARD
+Recreate this style based on the reference image:
+- Left sidebar dark (bg-gray-900) with navigation icons and labels
+- Top header with welcome message, search bar, and notification bell
+- KPI cards at the top: Receita total, Custos totais, Margem média, Resultado do mês
+- A trend chart (line or bar) showing results over 7 days
+- Right panel with: Resultado do mês (donut chart), Ponto de equilíbrio, Despesas fixas
+- A dark panel with "Ações rápidas": Cadastrar produto, Importar Excel, Criar ficha técnica, Ver relatórios
+- Bottom section: Top 4 produtos mais rentáveis (with margin badge) and Alertas de margem baixa
+- Dashboard data must come from Supabase (not mocked)
+
+PLANS AND PRICING
+Show 3 plans clearly:
+1. Grátis — R$ 0/mês
+   - 1 receita cadastrada
+   - Ficha técnica básica
+   - Relatórios simples
+
+2. Pro — R$ 19,90/mês ou R$ 199,00/ano (salvar R$ 39,80)
+   - Receitas ilimitadas
+   - Ficha técnica completa
+   - Fluxo de caixa
+   - Relatórios básicos
+   - Suporte por e-mail
+
+3. Premium — R$ 39,90/mês ou R$ 399,00/ano (salvar R$ 79,80)
+   - Tudo do Pro
+   - Relatórios avançados
+   - Histórico completo
+   - Alertas de margem
+   - Exportação PDF
+   - Suporte prioritário
+
+Highlight the Pro plan as recommended.
+Show a toggle between monthly/annual pricing.
+
+FINANCIAL CALCULATIONS
+Auto-calculate on every product form change:
+- CMV = SUM(quantidade × preco_unitario × fator_correcao)
+- Custo variável total = CMV + custo_mao_obra + frete
+- Imposto = preco_venda × imposto_pct / 100
+- Taxa cartão = preco_venda × taxa_cartao_pct / 100
+- Taxa app = preco_venda × taxa_app_pct / 100
+- Comissão = preco_venda × comissao_pct / 100
+- Margem de contribuição = preco_venda − CMV − impostos − taxas − comissão
+- Margem de contribuição % = margem / preco_venda × 100
+- Ponto de equilíbrio contábil = despesas_fixas / margem_media
+- Ponto de equilíbrio econômico = (despesas_fixas + lucro_desejado) / margem_media
+
+Show all values with 2 decimal places.
+Show margin percentage with color: green if > 30%, yellow if 15–30%, red if < 15%.
+
+UX RULES
+- All text in Portuguese
+- All currency in BRL (R$)
+- Empty states must show a helpful message and a primary CTA
+- Loading states must use skeleton loaders
+- All forms must show inline validation
+- All CRUD operations must show toast notifications on success or error
+- Mobile responsive
+
+DESIGN SYSTEM
+- Font: Inter
+- Colors: sidebar dark gray (#111827), primary accent yellow-amber (#F59E0B), white cards, soft warm gray backgrounds (#F9FAFB)
+- Border radius: rounded-xl for cards, rounded-lg for inputs, rounded-full for badges
+- Shadows: shadow-sm for cards, shadow-md on hover
+- Spacing: 4px grid system
+
+CODE QUALITY
+- Use environment variables for Supabase URL and anon key (.env file)
+- Export a single supabaseClient from src/lib/supabase.js
+- Use custom hooks for data fetching (useProducts, useIngredients, etc.)
+- Use AuthContext for session management
+- All forms must be controlled components
+- Error boundaries on main routes
+
+DO NOT
+- Do not use mock data in production views
+- Do not skip RLS setup
+- Do not hardcode Supabase keys in components
+- Do not use any placeholder "coming soon" pages
+- Do not create the app without auth working end to end
+
+DELIVERABLE
+A complete, working MVP where:
+- Landing page is live at /
+- Signup and login work without email confirmation
+- Dashboard loads real data from Supabase
+- CRUD works for products, ingredients, recipe sheets, and fixed costs
+- Pricing page shows all plans
+- The app is ready for real user testing
