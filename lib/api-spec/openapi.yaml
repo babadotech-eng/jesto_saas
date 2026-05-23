@@ -1,22 +1,37 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Precifica API - Financial management and recipe costing for small food businesses
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication
+  - name: produtos
+    description: Products
+  - name: insumos
+    description: Ingredients
+  - name: fichas
+    description: Recipe sheets
+  - name: despesas
+    description: Fixed costs
+  - name: lancamentos
+    description: Cash flow entries
+  - name: relatorios
+    description: Reports and analytics
+  - name: assinaturas
+    description: Subscriptions
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +39,565 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user profile
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Perfil"
+        "401":
+          description: Unauthorized
+
+  /produtos:
+    get:
+      operationId: listProdutos
+      tags: [produtos]
+      summary: List products
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Produto"
+    post:
+      operationId: createProduto
+      tags: [produtos]
+      summary: Create a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProdutoInput"
+      responses:
+        "201":
+          description: Created product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Produto"
+
+  /produtos/{id}:
+    get:
+      operationId: getProduto
+      tags: [produtos]
+      summary: Get product by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Produto"
+        "404":
+          description: Not found
+    put:
+      operationId: updateProduto
+      tags: [produtos]
+      summary: Update a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProdutoInput"
+      responses:
+        "200":
+          description: Updated product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Produto"
+    delete:
+      operationId: deleteProduto
+      tags: [produtos]
+      summary: Delete a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
+  /insumos:
+    get:
+      operationId: listInsumos
+      tags: [insumos]
+      summary: List ingredients
+      responses:
+        "200":
+          description: List of ingredients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Insumo"
+    post:
+      operationId: createInsumo
+      tags: [insumos]
+      summary: Create an ingredient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InsumoInput"
+      responses:
+        "201":
+          description: Created ingredient
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Insumo"
+
+  /insumos/{id}:
+    put:
+      operationId: updateInsumo
+      tags: [insumos]
+      summary: Update an ingredient
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InsumoInput"
+      responses:
+        "200":
+          description: Updated ingredient
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Insumo"
+    delete:
+      operationId: deleteInsumo
+      tags: [insumos]
+      summary: Delete an ingredient
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
+  /fichas:
+    get:
+      operationId: listFichas
+      tags: [fichas]
+      summary: List recipe sheets
+      responses:
+        "200":
+          description: List of recipe sheets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FichaTecnica"
+    post:
+      operationId: createFicha
+      tags: [fichas]
+      summary: Create a recipe sheet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FichaInput"
+      responses:
+        "201":
+          description: Created recipe sheet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FichaTecnica"
+
+  /fichas/{id}:
+    get:
+      operationId: getFicha
+      tags: [fichas]
+      summary: Get recipe sheet with items
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Recipe sheet with items
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FichaTecnicaDetalhada"
+    put:
+      operationId: updateFicha
+      tags: [fichas]
+      summary: Update recipe sheet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FichaInput"
+      responses:
+        "200":
+          description: Updated recipe sheet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FichaTecnica"
+    delete:
+      operationId: deleteFicha
+      tags: [fichas]
+      summary: Delete a recipe sheet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
+  /fichas/{id}/itens:
+    post:
+      operationId: addFichaItem
+      tags: [fichas]
+      summary: Add item to recipe sheet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FichaItemInput"
+      responses:
+        "201":
+          description: Created item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FichaItem"
+
+  /fichas/{id}/itens/{itemId}:
+    put:
+      operationId: updateFichaItem
+      tags: [fichas]
+      summary: Update item in recipe sheet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FichaItemInput"
+      responses:
+        "200":
+          description: Updated item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FichaItem"
+    delete:
+      operationId: deleteFichaItem
+      tags: [fichas]
+      summary: Delete item from recipe sheet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
+  /despesas:
+    get:
+      operationId: listDespesas
+      tags: [despesas]
+      summary: List fixed costs
+      responses:
+        "200":
+          description: List of fixed costs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Despesa"
+    post:
+      operationId: createDespesa
+      tags: [despesas]
+      summary: Create a fixed cost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DespesaInput"
+      responses:
+        "201":
+          description: Created fixed cost
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Despesa"
+
+  /despesas/{id}:
+    put:
+      operationId: updateDespesa
+      tags: [despesas]
+      summary: Update a fixed cost
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DespesaInput"
+      responses:
+        "200":
+          description: Updated fixed cost
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Despesa"
+    delete:
+      operationId: deleteDespesa
+      tags: [despesas]
+      summary: Delete a fixed cost
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
+  /lancamentos:
+    get:
+      operationId: listLancamentos
+      tags: [lancamentos]
+      summary: List cash flow entries
+      responses:
+        "200":
+          description: List of cash flow entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Lancamento"
+    post:
+      operationId: createLancamento
+      tags: [lancamentos]
+      summary: Create a cash flow entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LancamentoInput"
+      responses:
+        "201":
+          description: Created entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lancamento"
+
+  /lancamentos/{id}:
+    put:
+      operationId: updateLancamento
+      tags: [lancamentos]
+      summary: Update a cash flow entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LancamentoInput"
+      responses:
+        "200":
+          description: Updated entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lancamento"
+    delete:
+      operationId: deleteLancamento
+      tags: [lancamentos]
+      summary: Delete a cash flow entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
+  /relatorios/dashboard:
+    get:
+      operationId: getDashboardSummary
+      tags: [relatorios]
+      summary: Get dashboard summary stats
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /relatorios/top-produtos:
+    get:
+      operationId: getTopProdutos
+      tags: [relatorios]
+      summary: Get top products by margin
+      responses:
+        "200":
+          description: Top products ranked by margin
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProdutoRanking"
+
+  /relatorios/alertas-margem:
+    get:
+      operationId: getAlertasMargem
+      tags: [relatorios]
+      summary: Get products with low margin alerts
+      responses:
+        "200":
+          description: Products with low margins
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AlertaMargem"
+
+  /relatorios/fluxo-semanal:
+    get:
+      operationId: getFluxoSemanal
+      tags: [relatorios]
+      summary: Get 7-day cash flow trend
+      responses:
+        "200":
+          description: Weekly cash flow data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FluxoDiario"
+
+  /relatorios/ponto-equilibrio:
+    get:
+      operationId: getPontoEquilibrio
+      tags: [relatorios]
+      summary: Get break-even analysis
+      responses:
+        "200":
+          description: Break-even data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PontoEquilibrio"
+
+  /assinaturas/current:
+    get:
+      operationId: getAssinatura
+      tags: [assinaturas]
+      summary: Get current subscription
+      responses:
+        "200":
+          description: Current subscription
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Assinatura"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +608,346 @@ components:
       required:
         - status
 
+    Perfil:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: ["string", "null"]
+        nome:
+          type: ["string", "null"]
+        created_at:
+          type: ["string", "null"]
+      required: [id]
+
+    Produto:
+      type: object
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+        categoria:
+          type: ["string", "null"]
+        preco_venda:
+          type: number
+        custo_mao_obra:
+          type: number
+        frete:
+          type: number
+        imposto_pct:
+          type: number
+        taxa_cartao_pct:
+          type: number
+        taxa_app_pct:
+          type: number
+        comissao_pct:
+          type: number
+        cmv:
+          type: ["number", "null"]
+        margem_contribuicao:
+          type: ["number", "null"]
+        margem_pct:
+          type: ["number", "null"]
+        created_at:
+          type: ["string", "null"]
+      required: [id, nome, preco_venda, custo_mao_obra, frete, imposto_pct, taxa_cartao_pct, taxa_app_pct, comissao_pct]
+
+    ProdutoInput:
+      type: object
+      properties:
+        nome:
+          type: string
+        categoria:
+          type: ["string", "null"]
+        preco_venda:
+          type: number
+        custo_mao_obra:
+          type: number
+        frete:
+          type: number
+        imposto_pct:
+          type: number
+        taxa_cartao_pct:
+          type: number
+        taxa_app_pct:
+          type: number
+        comissao_pct:
+          type: number
+      required: [nome, preco_venda, custo_mao_obra, frete, imposto_pct, taxa_cartao_pct, taxa_app_pct, comissao_pct]
+
+    Insumo:
+      type: object
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+        unidade:
+          type: string
+        preco_unitario:
+          type: number
+        fator_correcao:
+          type: number
+        created_at:
+          type: ["string", "null"]
+      required: [id, nome, unidade, preco_unitario, fator_correcao]
+
+    InsumoInput:
+      type: object
+      properties:
+        nome:
+          type: string
+        unidade:
+          type: string
+        preco_unitario:
+          type: number
+        fator_correcao:
+          type: number
+      required: [nome, unidade, preco_unitario, fator_correcao]
+
+    FichaTecnica:
+      type: object
+      properties:
+        id:
+          type: string
+        produto_id:
+          type: string
+        produto_nome:
+          type: ["string", "null"]
+        rendimento:
+          type: ["number", "null"]
+        unidade_rendimento:
+          type: ["string", "null"]
+        cmv_total:
+          type: ["number", "null"]
+        created_at:
+          type: ["string", "null"]
+      required: [id, produto_id]
+
+    FichaTecnicaDetalhada:
+      type: object
+      properties:
+        id:
+          type: string
+        produto_id:
+          type: string
+        produto_nome:
+          type: ["string", "null"]
+        rendimento:
+          type: ["number", "null"]
+        unidade_rendimento:
+          type: ["string", "null"]
+        cmv_total:
+          type: ["number", "null"]
+        itens:
+          type: array
+          items:
+            $ref: "#/components/schemas/FichaItemDetalhado"
+        created_at:
+          type: ["string", "null"]
+      required: [id, produto_id, itens]
+
+    FichaInput:
+      type: object
+      properties:
+        produto_id:
+          type: string
+        rendimento:
+          type: ["number", "null"]
+        unidade_rendimento:
+          type: ["string", "null"]
+      required: [produto_id]
+
+    FichaItem:
+      type: object
+      properties:
+        id:
+          type: string
+        ficha_id:
+          type: string
+        insumo_id:
+          type: string
+        quantidade:
+          type: number
+      required: [id, ficha_id, insumo_id, quantidade]
+
+    FichaItemDetalhado:
+      type: object
+      properties:
+        id:
+          type: string
+        insumo_id:
+          type: string
+        insumo_nome:
+          type: ["string", "null"]
+        unidade:
+          type: ["string", "null"]
+        preco_unitario:
+          type: ["number", "null"]
+        fator_correcao:
+          type: ["number", "null"]
+        quantidade:
+          type: number
+        custo_item:
+          type: ["number", "null"]
+      required: [id, insumo_id, quantidade]
+
+    FichaItemInput:
+      type: object
+      properties:
+        insumo_id:
+          type: string
+        quantidade:
+          type: number
+      required: [insumo_id, quantidade]
+
+    Despesa:
+      type: object
+      properties:
+        id:
+          type: string
+        descricao:
+          type: string
+        valor:
+          type: number
+        categoria:
+          type: ["string", "null"]
+        created_at:
+          type: ["string", "null"]
+      required: [id, descricao, valor]
+
+    DespesaInput:
+      type: object
+      properties:
+        descricao:
+          type: string
+        valor:
+          type: number
+        categoria:
+          type: ["string", "null"]
+      required: [descricao, valor]
+
+    Lancamento:
+      type: object
+      properties:
+        id:
+          type: string
+        descricao:
+          type: string
+        tipo:
+          type: string
+          enum: [receita, despesa]
+        valor:
+          type: number
+        data:
+          type: string
+        created_at:
+          type: ["string", "null"]
+      required: [id, descricao, tipo, valor, data]
+
+    LancamentoInput:
+      type: object
+      properties:
+        descricao:
+          type: string
+        tipo:
+          type: string
+          enum: [receita, despesa]
+        valor:
+          type: number
+        data:
+          type: string
+      required: [descricao, tipo, valor, data]
+
+    DashboardSummary:
+      type: object
+      properties:
+        receita_total:
+          type: number
+        custos_totais:
+          type: number
+        margem_media:
+          type: number
+        resultado_mes:
+          type: number
+        total_produtos:
+          type: integer
+        total_insumos:
+          type: integer
+        total_fichas:
+          type: integer
+      required: [receita_total, custos_totais, margem_media, resultado_mes, total_produtos, total_insumos, total_fichas]
+
+    ProdutoRanking:
+      type: object
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+        categoria:
+          type: ["string", "null"]
+        preco_venda:
+          type: number
+        margem_contribuicao:
+          type: number
+        margem_pct:
+          type: number
+      required: [id, nome, preco_venda, margem_contribuicao, margem_pct]
+
+    AlertaMargem:
+      type: object
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+        margem_pct:
+          type: number
+        nivel:
+          type: string
+          enum: [critico, atencao]
+      required: [id, nome, margem_pct, nivel]
+
+    FluxoDiario:
+      type: object
+      properties:
+        data:
+          type: string
+        receita:
+          type: number
+        despesa:
+          type: number
+        resultado:
+          type: number
+      required: [data, receita, despesa, resultado]
+
+    PontoEquilibrio:
+      type: object
+      properties:
+        despesas_fixas_total:
+          type: number
+        margem_media:
+          type: number
+        ponto_contabil:
+          type: number
+        ponto_economico:
+          type: number
+        unidades_necessarias:
+          type: number
+      required: [despesas_fixas_total, margem_media, ponto_contabil, ponto_economico, unidades_necessarias]
+
+    Assinatura:
+      type: object
+      properties:
+        id:
+          type: string
+        plano:
+          type: string
+        status:
+          type: string
+        valido_ate:
+          type: ["string", "null"]
+      required: [id, plano, status]
