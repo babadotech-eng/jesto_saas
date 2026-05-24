@@ -4,3 +4,4 @@ export * from "./fichas";
 export * from "./despesas";
 export * from "./lancamentos";
 export * from "./perfis";
+export * from "./assinaturas";

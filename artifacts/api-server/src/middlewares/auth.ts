@@ -13,6 +13,11 @@ const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY!;
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+interface AuthRequest extends Request {
+  userId: string;
+  userEmail: string | null;
+}
+
 export async function requireAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -28,10 +33,15 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     return;
   }
 
-  (req as Request & { userId: string }).userId = data.user.id;
+  (req as AuthRequest).userId = data.user.id;
+  (req as AuthRequest).userEmail = data.user.email ?? null;
   next();
 }
 
 export function getUserId(req: Request): string {
-  return (req as Request & { userId: string }).userId;
+  return (req as AuthRequest).userId;
+}
+
+export function getUserEmail(req: Request): string | null {
+  return (req as AuthRequest).userEmail ?? null;
 }
