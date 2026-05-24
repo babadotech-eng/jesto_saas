@@ -6,16 +6,31 @@ import { requireAuth, getUserId } from "../middlewares/auth";
 
 const router = Router();
 
+function serializePerfil(row: typeof perfisTable.$inferSelect) {
+  return {
+    id: row.id,
+    user_id: row.userId,
+    nome_completo: row.nomeCompleto ?? null,
+    nome_negocio: row.nomeNegocio ?? null,
+    tipo_negocio: row.tipoNegocio ?? null,
+    cidade_estado: row.cidadeEstado ?? null,
+    whatsapp: row.whatsapp ?? null,
+    origem: row.origem ?? null,
+    created_at: row.createdAt?.toISOString() ?? null,
+    updated_at: row.updatedAt?.toISOString() ?? null,
+  };
+}
+
 router.get("/perfis/me", requireAuth, async (req, res): Promise<void> => {
   const userId = getUserId(req);
   try {
     const rows = await db.select().from(perfisTable).where(eq(perfisTable.userId, userId)).limit(1);
     if (rows.length === 0) {
       const [created] = await db.insert(perfisTable).values({ userId }).returning();
-      res.json(created);
+      res.json(serializePerfil(created));
       return;
     }
-    res.json(rows[0]);
+    res.json(serializePerfil(rows[0]));
   } catch (err) {
     req.log.error({ err }, "Error fetching perfil");
     res.status(500).json({ error: "Internal server error" });
@@ -37,7 +52,7 @@ router.put("/perfis/me", requireAuth, async (req, res): Promise<void> => {
         whatsapp: whatsapp ?? null,
         origem: origem ?? null,
       }).returning();
-      res.json(created);
+      res.json(serializePerfil(created));
       return;
     }
     const [updated] = await db.update(perfisTable)
@@ -52,7 +67,7 @@ router.put("/perfis/me", requireAuth, async (req, res): Promise<void> => {
       })
       .where(eq(perfisTable.userId, userId))
       .returning();
-    res.json(updated);
+    res.json(serializePerfil(updated));
   } catch (err) {
     req.log.error({ err }, "Error updating perfil");
     res.status(500).json({ error: "Internal server error" });
