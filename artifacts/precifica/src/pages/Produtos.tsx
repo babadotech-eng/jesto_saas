@@ -117,7 +117,8 @@ export default function Produtos() {
   }
 
   const watchedValues = form.watch();
-  const cmv = 0;
+  const editingProduto = editingId ? data?.find(p => p.id === editingId) : null;
+  const cmv = Number(editingProduto?.cmv ?? 0);
   const preco = Number(watchedValues.preco_venda) || 0;
   const imposto = preco * (Number(watchedValues.imposto_pct) || 0) / 100;
   const taxaCartao = preco * (Number(watchedValues.taxa_cartao_pct) || 0) / 100;
@@ -265,6 +266,11 @@ export default function Produtos() {
                 <div className="flex justify-between text-muted-foreground">
                   <span>CMV (ingredientes)</span><span>{fmt(cmv)}</span>
                 </div>
+                {cmv === 0 && (
+                  <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md p-2 my-2">
+                    Sem ficha técnica vinculada — o CMV está em R$ 0,00. Cadastre uma ficha técnica em <strong>Fichas Técnicas</strong> para calcular o custo dos ingredientes automaticamente.
+                  </div>
+                )}
                 <div className="flex justify-between text-muted-foreground">
                   <span>Mão de obra</span><span>- {fmt(maoObra)}</span>
                 </div>

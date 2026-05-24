@@ -8,6 +8,7 @@ export const perfisTable = pgTable("perfis", {
   nomeCompleto: text("nome_completo"),
   nomeNegocio: text("nome_negocio"),
   tipoNegocio: text("tipo_negocio"),
+  volumeMensal: text("volume_mensal"),
   cidadeEstado: text("cidade_estado"),
   whatsapp: text("whatsapp"),
   origem: text("origem"),

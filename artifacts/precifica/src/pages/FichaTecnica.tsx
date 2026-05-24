@@ -54,23 +54,44 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
   }
 
   function exportExcel() {
-    if (!ficha?.itens?.length) { toast.error("Nenhum ingrediente para exportar."); return; }
-    const rows = ficha.itens.map(item => ({
-      ingrediente: item.insumo_nome ?? "",
-      quantidade: item.quantidade,
-      unidade: item.unidade ?? "",
-      custo_item: item.custo_item ?? 0,
-    }));
-    const ws = XLSX.utils.json_to_sheet(rows);
-    const headers = ["ingrediente", "quantidade", "unidade", "custo_item"];
-    const grayStyle = { fill: { fgColor: { rgb: "BFBFBF" } }, font: { bold: true } };
-    headers.forEach((_, i) => {
-      const ref = XLSX.utils.encode_cell({ r: 0, c: i });
-      if (ws[ref]) ws[ref].s = grayStyle;
-    });
-    ws["!cols"] = [{ wch: 25 }, { wch: 12 }, { wch: 10 }, { wch: 14 }];
+    if (!ficha) { toast.error("Ficha não carregada."); return; }
+    const headerStyle = {
+      fill: { patternType: "solid", fgColor: { rgb: "A1A1A1" } },
+      font: { bold: true, color: { rgb: "FFFFFF" } },
+      alignment: { horizontal: "center", vertical: "center" },
+      protection: { locked: true },
+    };
+    const applyHeader = (ws: XLSX.WorkSheet, headers: string[]) => {
+      headers.forEach((h, i) => {
+        const ref = XLSX.utils.encode_cell({ r: 0, c: i });
+        if (!ws[ref]) ws[ref] = { v: h, t: "s" };
+        ws[ref].s = headerStyle;
+      });
+      ws["!freeze"] = { xSplit: 0, ySplit: 1 };
+      ws["!sheetProtect"] = { selectLockedCells: true, selectUnlockedCells: true };
+    };
+
+    // Sheet 1: FichasTecnicas
+    const fichaHeaders = ["produto", "categoria", "rendimento", "unidade_rendimento", "cmv_total"];
+    const wsFicha = XLSX.utils.aoa_to_sheet([
+      fichaHeaders,
+      [ficha.produto_nome ?? "", "", ficha.rendimento ?? "", ficha.unidade_rendimento ?? "", ficha.cmv_total ?? 0],
+    ]);
+    wsFicha["!cols"] = [{ wch: 25 }, { wch: 18 }, { wch: 14 }, { wch: 20 }, { wch: 14 }];
+    applyHeader(wsFicha, fichaHeaders);
+
+    // Sheet 2: Ingredientes
+    const ingHeaders = ["ingrediente", "quantidade", "unidade", "custo_item"];
+    const ingData = (ficha.itens ?? []).map(item => [
+      item.insumo_nome ?? "", item.quantidade, item.unidade ?? "", item.custo_item ?? 0,
+    ]);
+    const wsIng = XLSX.utils.aoa_to_sheet([ingHeaders, ...ingData]);
+    wsIng["!cols"] = [{ wch: 25 }, { wch: 12 }, { wch: 10 }, { wch: 14 }];
+    applyHeader(wsIng, ingHeaders);
+
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Ingredientes");
+    XLSX.utils.book_append_sheet(wb, wsFicha, "FichasTecnicas");
+    XLSX.utils.book_append_sheet(wb, wsIng, "Ingredientes");
     XLSX.writeFile(wb, `ficha_${ficha.produto_nome ?? "tecnica"}.xlsx`);
     toast.success("Planilha exportada!");
   }
@@ -82,12 +103,15 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
     reader.onload = (ev) => {
       const raw = new Uint8Array(ev.target!.result as ArrayBuffer);
       const wb = XLSX.read(raw, { type: "array" });
-      const ws = wb.Sheets[wb.SheetNames[0]];
+      // Prefer "Ingredientes" sheet if present, else first sheet
+      const sheetName = wb.SheetNames.find(n => n.toLowerCase() === "ingredientes") ?? wb.SheetNames[0];
+      const ws = wb.Sheets[sheetName];
       const rows: Record<string, unknown>[] = XLSX.utils.sheet_to_json(ws);
       const parsed: ImportItemRow[] = rows.map(r => {
         const nome = String(r["ingrediente"] ?? r["nome"] ?? "").trim();
         const qtd = Number(r["quantidade"]);
-        const resolved = insumos?.find(i => i.nome.toLowerCase() === nome.toLowerCase());
+        const normalize = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        const resolved = insumos?.find(i => normalize(i.nome) === normalize(nome));
         if (!nome) return { nome, quantidade: qtd, valid: false, error: "Nome vazio" };
         if (isNaN(qtd) || qtd <= 0) return { nome, quantidade: qtd, valid: false, error: "Quantidade inválida" };
         if (!resolved) return { nome, quantidade: qtd, valid: false, error: "Insumo não encontrado", resolvedId: undefined };

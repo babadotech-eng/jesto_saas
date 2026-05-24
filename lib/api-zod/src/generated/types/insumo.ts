@@ -20,6 +20,7 @@ export interface Insumo {
   fornecedor?: string | null;
   /** @nullable */
   embalagem?: string | null;
+  quantidade_em_estoque: number;
   /** @nullable */
   created_at?: string | null;
 }

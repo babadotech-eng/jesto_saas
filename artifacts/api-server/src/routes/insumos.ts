@@ -17,6 +17,7 @@ function serializeInsumo(r: typeof insumosTable.$inferSelect) {
     peso_liquido: r.pesoLiquido !== null ? Number(r.pesoLiquido) : null,
     fornecedor: r.fornecedor ?? null,
     embalagem: r.embalagem ?? null,
+    quantidade_em_estoque: Number(r.quantidadeEmEstoque),
     created_at: r.createdAt?.toISOString() ?? null,
   };
 }
@@ -47,6 +48,7 @@ router.post("/insumos", requireAuth, async (req, res): Promise<void> => {
     pesoLiquido: b.peso_liquido !== undefined && b.peso_liquido !== null ? String(b.peso_liquido) : null,
     fornecedor: b.fornecedor ?? null,
     embalagem: b.embalagem ?? null,
+    quantidadeEmEstoque: b.quantidade_em_estoque !== undefined && b.quantidade_em_estoque !== null ? String(b.quantidade_em_estoque) : "0",
   }).returning();
 
   res.status(201).json(serializeInsumo(row));
@@ -69,6 +71,7 @@ router.put("/insumos/:id", requireAuth, async (req, res): Promise<void> => {
       pesoLiquido: b.peso_liquido !== undefined && b.peso_liquido !== null ? String(b.peso_liquido) : null,
       fornecedor: b.fornecedor ?? null,
       embalagem: b.embalagem ?? null,
+      quantidadeEmEstoque: b.quantidade_em_estoque !== undefined && b.quantidade_em_estoque !== null ? String(b.quantidade_em_estoque) : "0",
     })
     .where(and(eq(insumosTable.id, id), eq(insumosTable.userId, userId)))
     .returning();

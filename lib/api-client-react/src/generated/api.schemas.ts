@@ -70,6 +70,7 @@ export interface Insumo {
   fornecedor?: string | null;
   /** @nullable */
   embalagem?: string | null;
+  quantidade_em_estoque: number;
   /** @nullable */
   created_at?: string | null;
 }
@@ -87,6 +88,7 @@ export interface InsumoInput {
   fornecedor?: string | null;
   /** @nullable */
   embalagem?: string | null;
+  quantidade_em_estoque?: number;
 }
 
 export interface FichaTecnica {

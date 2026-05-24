@@ -1,0 +1,162 @@
+Implement the following approved changes in the existing app. Do not rebuild the app.
+
+CONTEXT
+- Existing app: React + Vite + Tailwind + Supabase
+- This is an existing MVP already working in parts
+- Make only the requested changes
+- Do not refactor unrelated code
+- Do not change working flows unless necessary for these features
+- Keep all UI text in Portuguese
+- Keep all currency in BRL
+- Respect RLS and authenticated user scope in every query
+
+GOAL
+Implement the feature updates below safely, with minimal regression risk, and keep the codebase stable.
+
+CHANGES TO IMPLEMENT
+
+1) FIRST-LOGIN ONBOARDING
+- After signup or first login, if perfis.nome_completo is empty, show a full-screen onboarding flow styled like Typeform
+- One question per screen, progress bar, next/back buttons, centered layout
+- Required:
+  - nome_completo
+  - nome_negocio
+  - tipo_negocio
+- Optional:
+  - volume_mensal
+  - cidade_estado
+  - whatsapp
+  - origem
+- Save all fields in perfis
+- Add columns to perfis if missing:
+  - nome_negocio TEXT
+  - tipo_negocio TEXT
+  - volume_mensal TEXT
+  - cidade_estado TEXT
+  - whatsapp TEXT
+  - origem TEXT
+- Add editable profile section in /configuracoes
+- After onboarding, redirect to /painel
+
+2) GLOBAL VISUAL STYLE
+- Replace main app background with a soft gray diagonal gradient overlay
+- Direction: from top-right to bottom-left
+- Colors:
+  - #A1A1A1 to #EFEFEF
+- Use low opacity so cards stay readable
+- Keep cards white
+- Keep sidebar dark
+- Change all primary buttons to #FF6C3A
+- Hover: #E8542A
+- Active: #D43D15
+- Primary button text: white
+- Secondary buttons: transparent with #FF6C3A border/text
+
+3) PRODUTOS
+- Add tooltip/help icon to:
+  - Custo de Mão de Obra (R$)
+  - Imposto (%)
+- Explanations must teach how to estimate these values in simple business language
+- Add new field:
+  - Taxa de Vale Refeição (%) → taxa_vale_refeicao_pct
+- Include this new field in all margin and cost calculations
+- Ensure CMV is visible on screen in the product form/detail
+- If no ficha técnica is linked, show an explanatory empty state message
+
+4) INSUMOS
+- Add fields:
+  - peso_bruto
+  - peso_liquido
+  - fornecedor
+  - embalagem
+  - quantidade_em_estoque
+- Rename label "Unidade" to "Unidade de Medida"
+- Add help popups for peso bruto and peso líquido
+- Automatically calculate fator_correcao = peso_bruto / peso_liquido when both are filled
+- If both weights exist, fator_correcao becomes read-only calculated
+- Show calculated "Preço Total" = preco_unitario × quantidade_em_estoque
+- Show price values in BRL
+
+5) EXCEL TEMPLATE FOR INSUMOS
+- Update the downloadable Excel template to include:
+  - nome
+  - unidade_de_medida
+  - preco_unitario
+  - fator_correcao
+  - peso_bruto
+  - peso_liquido
+  - fornecedor
+  - embalagem
+  - quantidade_em_estoque
+- Style all workbook headers with:
+  - background #A1A1A1
+  - white bold text
+  - frozen top row
+  - locked/protected header cells
+  - realistic example rows
+- Keep import compatibility with the new columns
+
+6) FICHA TÉCNICA
+- Remove manual category selection
+- Automatically inherit category from linked product
+- Show category as read-only
+- Remove labor cost field from ficha técnica UI
+- Add Excel import/export in ficha técnica, similar to insumos
+- Include workbook with:
+  - sheet FichasTecnicas
+  - sheet Ingredientes
+- Preview before import
+- Match insumos by normalized name
+
+7) PREMIUM REPORTS
+In /relatorios, for Premium users only, add lightweight modal-based reports:
+- Simulação de Cenários
+- Ponto de Equilíbrio
+- Análise Individual de Produto
+Use existing product, cost, CMV, and expense data where possible.
+Use Recharts for simple visuals.
+If user is not premium, show locked state with upgrade CTA.
+
+8) EXCEL REFERENCE FILE
+I may attach a spreadsheet with formulas/structure for these reports.
+If attached, use it as logic reference for:
+- input labels
+- formulas
+- outputs
+- table structure
+Do not replicate the spreadsheet visually.
+Translate its logic into app modals.
+
+DATABASE CHANGES
+Create SQL migrations with IF NOT EXISTS where possible for:
+- perfis new columns
+- produtos.taxa_vale_refeicao_pct
+- insumos.peso_bruto
+- insumos.peso_liquido
+- insumos.fornecedor
+- insumos.embalagem
+- insumos.quantidade_em_estoque
+
+IMPLEMENTATION RULES
+- Do not rebuild the app
+- Do not rename unrelated files
+- Do not change auth unless needed for onboarding check
+- Do not break existing CRUD
+- Do not add unnecessary dependencies
+- Limit changes to only necessary files
+- Keep logic simple and maintainable
+- Reuse existing components where possible
+- Use toast feedback for success/error states
+- Keep everything mobile responsive
+
+OUTPUT FORMAT
+When done, return exactly:
+1. Summary of what was implemented
+2. Files changed
+3. SQL migrations created/applied
+4. Manual tests I should run
+5. Any limitations or follow-up items
+
+STOP RULE
+Implement the changes directly now, but do not add extra features beyond what is listed above.
+If something is ambiguous, make the safest minimal choice and continue.

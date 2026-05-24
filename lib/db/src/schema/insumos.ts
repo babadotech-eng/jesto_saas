@@ -13,6 +13,7 @@ export const insumosTable = pgTable("insumos", {
   pesoLiquido: numeric("peso_liquido", { precision: 10, scale: 3 }),
   fornecedor: text("fornecedor"),
   embalagem: text("embalagem"),
+  quantidadeEmEstoque: numeric("quantidade_em_estoque", { precision: 10, scale: 3 }).notNull().default("0"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

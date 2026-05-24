@@ -7,6 +7,7 @@ export interface Perfil {
   nome_completo: string | null;
   nome_negocio: string | null;
   tipo_negocio: string | null;
+  volume_mensal: string | null;
   cidade_estado: string | null;
   whatsapp: string | null;
   origem: string | null;

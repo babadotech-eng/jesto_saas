@@ -13,6 +13,7 @@ function serializePerfil(row: typeof perfisTable.$inferSelect) {
     nome_completo: row.nomeCompleto ?? null,
     nome_negocio: row.nomeNegocio ?? null,
     tipo_negocio: row.tipoNegocio ?? null,
+    volume_mensal: row.volumeMensal ?? null,
     cidade_estado: row.cidadeEstado ?? null,
     whatsapp: row.whatsapp ?? null,
     origem: row.origem ?? null,
@@ -39,7 +40,7 @@ router.get("/perfis/me", requireAuth, async (req, res): Promise<void> => {
 
 router.put("/perfis/me", requireAuth, async (req, res): Promise<void> => {
   const userId = getUserId(req);
-  const { nome_completo, nome_negocio, tipo_negocio, cidade_estado, whatsapp, origem } = req.body;
+  const { nome_completo, nome_negocio, tipo_negocio, volume_mensal, cidade_estado, whatsapp, origem } = req.body;
   try {
     const rows = await db.select().from(perfisTable).where(eq(perfisTable.userId, userId)).limit(1);
     if (rows.length === 0) {
@@ -48,6 +49,7 @@ router.put("/perfis/me", requireAuth, async (req, res): Promise<void> => {
         nomeCompleto: nome_completo ?? null,
         nomeNegocio: nome_negocio ?? null,
         tipoNegocio: tipo_negocio ?? null,
+        volumeMensal: volume_mensal ?? null,
         cidadeEstado: cidade_estado ?? null,
         whatsapp: whatsapp ?? null,
         origem: origem ?? null,
@@ -60,6 +62,7 @@ router.put("/perfis/me", requireAuth, async (req, res): Promise<void> => {
         nomeCompleto: nome_completo ?? rows[0].nomeCompleto,
         nomeNegocio: nome_negocio ?? rows[0].nomeNegocio,
         tipoNegocio: tipo_negocio ?? rows[0].tipoNegocio,
+        volumeMensal: volume_mensal ?? rows[0].volumeMensal,
         cidadeEstado: cidade_estado ?? rows[0].cidadeEstado,
         whatsapp: whatsapp ?? rows[0].whatsapp,
         origem: origem ?? rows[0].origem,

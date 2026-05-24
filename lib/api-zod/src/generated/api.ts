@@ -153,6 +153,7 @@ export const ListInsumosResponseItem = zod.object({
   "peso_liquido": zod.number().nullish(),
   "fornecedor": zod.string().nullish(),
   "embalagem": zod.string().nullish(),
+  "quantidade_em_estoque": zod.number(),
   "created_at": zod.string().nullish()
 })
 export const ListInsumosResponse = zod.array(ListInsumosResponseItem)
@@ -169,7 +170,8 @@ export const CreateInsumoBody = zod.object({
   "peso_bruto": zod.number().nullish(),
   "peso_liquido": zod.number().nullish(),
   "fornecedor": zod.string().nullish(),
-  "embalagem": zod.string().nullish()
+  "embalagem": zod.string().nullish(),
+  "quantidade_em_estoque": zod.number().optional()
 })
 
 
@@ -188,7 +190,8 @@ export const UpdateInsumoBody = zod.object({
   "peso_bruto": zod.number().nullish(),
   "peso_liquido": zod.number().nullish(),
   "fornecedor": zod.string().nullish(),
-  "embalagem": zod.string().nullish()
+  "embalagem": zod.string().nullish(),
+  "quantidade_em_estoque": zod.number().optional()
 })
 
 export const UpdateInsumoResponse = zod.object({
@@ -201,6 +204,7 @@ export const UpdateInsumoResponse = zod.object({
   "peso_liquido": zod.number().nullish(),
   "fornecedor": zod.string().nullish(),
   "embalagem": zod.string().nullish(),
+  "quantidade_em_estoque": zod.number(),
   "created_at": zod.string().nullish()
 })
 

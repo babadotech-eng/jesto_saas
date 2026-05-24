@@ -19,4 +19,5 @@ export interface InsumoInput {
   fornecedor?: string | null;
   /** @nullable */
   embalagem?: string | null;
+  quantidade_em_estoque?: number;
 }

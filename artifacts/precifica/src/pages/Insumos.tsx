@@ -40,17 +40,32 @@ const schema = z.object({
   peso_liquido: z.coerce.number().min(0).optional().or(z.literal("")),
   fornecedor: z.string().optional(),
   embalagem: z.string().optional(),
+  quantidade_em_estoque: z.coerce.number().min(0).default(0),
 });
 type FormValues = z.infer<typeof schema>;
 const defaultValues: FormValues = {
   nome: "", unidade: "kg", preco_unitario: 0, fator_correcao: 1,
-  peso_bruto: "", peso_liquido: "", fornecedor: "", embalagem: "",
+  peso_bruto: "", peso_liquido: "", fornecedor: "", embalagem: "", quantidade_em_estoque: 0,
 };
 
 interface ImportRow {
   nome: string; unidade: string; preco_unitario: number; fator_correcao: number;
   peso_bruto: number | null; peso_liquido: number | null; fornecedor: string | null; embalagem: string | null;
+  quantidade_em_estoque: number;
   valid: boolean; error?: string;
+}
+
+function PrecoTotalPreview({ control }: { control: any }) {
+  const preco = useWatch({ control, name: "preco_unitario" });
+  const qtd = useWatch({ control, name: "quantidade_em_estoque" });
+  const total = (Number(preco) || 0) * (Number(qtd) || 0);
+  if (!total) return null;
+  return (
+    <div className="bg-muted/40 border border-border rounded-lg p-3 text-sm flex justify-between">
+      <span className="text-muted-foreground">Preço total em estoque</span>
+      <span className="font-semibold text-foreground">{fmt(total)}</span>
+    </div>
+  );
 }
 
 function AutoFatorWatcher({ control, setValue }: { control: any; setValue: any }) {
@@ -99,6 +114,7 @@ export default function Insumos() {
       peso_liquido: item.peso_liquido ?? "",
       fornecedor: item.fornecedor ?? "",
       embalagem: item.embalagem ?? "",
+      quantidade_em_estoque: item.quantidade_em_estoque ?? 0,
     });
     setOpen(true);
   }
@@ -113,6 +129,7 @@ export default function Insumos() {
       peso_liquido: values.peso_liquido !== "" && values.peso_liquido !== undefined ? Number(values.peso_liquido) : null,
       fornecedor: values.fornecedor || null,
       embalagem: values.embalagem || null,
+      quantidade_em_estoque: Number(values.quantidade_em_estoque) || 0,
     };
     try {
       if (editingId) {
@@ -139,22 +156,28 @@ export default function Insumos() {
 
   // ── Excel template download ──────────────────────────────────────────────
   function downloadTemplate() {
-    const headers = ["nome", "unidade", "preco_unitario", "fator_correcao", "peso_bruto", "peso_liquido", "fornecedor", "embalagem"];
+    const headers = ["nome", "unidade_de_medida", "preco_unitario", "fator_correcao", "peso_bruto", "peso_liquido", "fornecedor", "embalagem", "quantidade_em_estoque"];
     const ws = XLSX.utils.aoa_to_sheet([
       headers,
-      ["Farinha de trigo", "kg", 4.5, 1, 1, 1, "Distribuidora Silva", "Saco 1kg"],
-      ["Ovos", "dz", 12.0, 1, "", "", "Sítio Feliz", "Bandeja 12un"],
-      ["Frango", "kg", 18.9, 1.33, 1.33, 1, "Frigorifico ABC", "Pacote 1kg"],
+      ["Farinha de trigo", "kg", 4.5, 1, 1, 1, "Distribuidora Silva", "Saco 1kg", 10],
+      ["Ovos", "dz", 12.0, 1, "", "", "Sítio Feliz", "Bandeja 12un", 5],
+      ["Frango", "kg", 18.9, 1.33, 1.33, 1, "Frigorifico ABC", "Pacote 1kg", 8],
     ]);
-    // Gray header style
-    const grayFill = { fgColor: { rgb: "BFBFBF" } };
-    const headerStyle = { fill: grayFill, font: { bold: true }, alignment: { horizontal: "center" } };
+    // Header style: #A1A1A1 background, white bold text
+    const headerStyle = {
+      fill: { patternType: "solid", fgColor: { rgb: "A1A1A1" } },
+      font: { bold: true, color: { rgb: "FFFFFF" } },
+      alignment: { horizontal: "center", vertical: "center" },
+      protection: { locked: true },
+    };
     headers.forEach((_, i) => {
       const cellRef = XLSX.utils.encode_cell({ r: 0, c: i });
       if (!ws[cellRef]) ws[cellRef] = { v: headers[i], t: "s" };
       ws[cellRef].s = headerStyle;
     });
-    ws["!cols"] = [{ wch: 25 }, { wch: 10 }, { wch: 16 }, { wch: 16 }, { wch: 12 }, { wch: 13 }, { wch: 22 }, { wch: 18 }];
+    ws["!cols"] = [{ wch: 25 }, { wch: 16 }, { wch: 16 }, { wch: 16 }, { wch: 12 }, { wch: 13 }, { wch: 22 }, { wch: 18 }, { wch: 20 }];
+    ws["!freeze"] = { xSplit: 0, ySplit: 1 };
+    ws["!sheetProtect"] = { selectLockedCells: true, selectUnlockedCells: true };
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Insumos");
     XLSX.writeFile(wb, "insumos_modelo.xlsx");
@@ -173,16 +196,18 @@ export default function Insumos() {
       const rows: Record<string, unknown>[] = XLSX.utils.sheet_to_json(ws);
       const parsed: ImportRow[] = rows.map(r => {
         const nome = String(r["nome"] ?? "").trim();
-        const unidade = String(r["unidade"] ?? "kg").trim() || "kg";
+        const unidade = String(r["unidade_de_medida"] ?? r["unidade"] ?? "kg").trim() || "kg";
         const preco = Number(r["preco_unitario"]);
         const fator = Number(r["fator_correcao"] ?? 1) || 1;
         const pesoBruto = r["peso_bruto"] !== undefined && r["peso_bruto"] !== "" ? Number(r["peso_bruto"]) : null;
         const pesoLiquido = r["peso_liquido"] !== undefined && r["peso_liquido"] !== "" ? Number(r["peso_liquido"]) : null;
         const fornecedor = r["fornecedor"] ? String(r["fornecedor"]).trim() : null;
         const embalagem = r["embalagem"] ? String(r["embalagem"]).trim() : null;
-        if (!nome) return { nome, unidade, preco_unitario: preco, fator_correcao: fator, peso_bruto: pesoBruto, peso_liquido: pesoLiquido, fornecedor, embalagem, valid: false, error: "Nome obrigatório" };
-        if (isNaN(preco) || preco < 0) return { nome, unidade, preco_unitario: preco, fator_correcao: fator, peso_bruto: pesoBruto, peso_liquido: pesoLiquido, fornecedor, embalagem, valid: false, error: "Preço inválido" };
-        return { nome, unidade, preco_unitario: preco, fator_correcao: fator, peso_bruto: pesoBruto, peso_liquido: pesoLiquido, fornecedor, embalagem, valid: true };
+        const qtdEstoque = r["quantidade_em_estoque"] !== undefined && r["quantidade_em_estoque"] !== "" ? Number(r["quantidade_em_estoque"]) : 0;
+        const base = { nome, unidade, preco_unitario: preco, fator_correcao: fator, peso_bruto: pesoBruto, peso_liquido: pesoLiquido, fornecedor, embalagem, quantidade_em_estoque: qtdEstoque };
+        if (!nome) return { ...base, valid: false, error: "Nome obrigatório" };
+        if (isNaN(preco) || preco < 0) return { ...base, valid: false, error: "Preço inválido" };
+        return { ...base, valid: true };
       });
       setImportRows(parsed);
       setImportOpen(true);
@@ -204,6 +229,7 @@ export default function Insumos() {
             nome: row.nome, unidade: row.unidade, preco_unitario: row.preco_unitario,
             fator_correcao: row.fator_correcao, peso_bruto: row.peso_bruto, peso_liquido: row.peso_liquido,
             fornecedor: row.fornecedor, embalagem: row.embalagem,
+            quantidade_em_estoque: row.quantidade_em_estoque,
           }
         });
         successCount++;
@@ -267,7 +293,7 @@ export default function Insumos() {
             </thead>
             <tbody className="divide-y divide-border">
               {filtered.map(i => {
-                const precoTotal = i.peso_bruto ? i.preco_unitario * i.peso_bruto : null;
+                const precoTotal = i.quantidade_em_estoque > 0 ? i.preco_unitario * i.quantidade_em_estoque : null;
                 return (
                   <tr key={i.id} className="hover:bg-muted/30 transition-colors" data-testid={`row-insumo-${i.id}`}>
                     <td className="px-4 py-3 font-medium">
@@ -393,7 +419,18 @@ export default function Insumos() {
                 <FormField control={form.control} name="embalagem" render={({ field }) => (
                   <FormItem><FormLabel>Embalagem</FormLabel><FormControl><Input placeholder="Ex: Saco 5kg" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
+
+                <FormField control={form.control} name="quantidade_em_estoque" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Quantidade em estoque</FormLabel>
+                    <FormControl><Input type="number" step="0.001" placeholder="0" {...field} data-testid="input-insumo-quantidade-estoque" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
               </div>
+
+              {/* Preço total preview */}
+              <PrecoTotalPreview control={form.control} />
 
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
