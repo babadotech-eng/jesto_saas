@@ -4,50 +4,73 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { useToast } from "@/hooks/use-toast";
-import { BarChart3 } from "lucide-react";
-import { Link } from "wouter";
+import { toast } from "sonner";
+import { BarChart3, Mail } from "lucide-react";
+import { Link, useLocation } from "wouter";
 
 export default function Cadastro() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
+  const [confirmSent, setConfirmSent] = useState(false);
+  const [, setLocation] = useLocation();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (password !== confirmPassword) {
-      toast({
-        title: "As senhas não coincidem",
-        variant: "destructive",
-      });
+      toast.error("As senhas não coincidem");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("A senha deve ter pelo menos 6 caracteres");
       return;
     }
 
     setLoading(true);
-    
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+
+    const { data, error } = await supabase.auth.signUp({ email, password });
 
     setLoading(false);
 
     if (error) {
-      toast({
-        title: "Erro ao criar conta",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Conta criada!",
-        description: "Seja bem-vindo ao Precifica.",
-      });
+      toast.error("Erro ao criar conta", { description: error.message });
+      return;
     }
+
+    // If session is returned immediately, user is logged in (email confirmation disabled)
+    if (data.session) {
+      toast.success("Conta criada! Bem-vindo ao Precifica.");
+      setLocation("/dashboard");
+      return;
+    }
+
+    // Otherwise Supabase requires email confirmation
+    setConfirmSent(true);
   };
+
+  if (confirmSent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <div className="w-full max-w-md text-center">
+          <div className="flex justify-center mb-6">
+            <div className="bg-primary/10 text-primary p-4 rounded-full">
+              <Mail size={36} />
+            </div>
+          </div>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Confirme seu e-mail</h1>
+          <p className="text-muted-foreground mb-6">
+            Enviamos um link de confirmação para <strong>{email}</strong>. Clique no link para ativar sua conta e então faça login.
+          </p>
+          <Link href="/login">
+            <Button className="w-full">Ir para Login</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -69,40 +92,41 @@ export default function Cadastro() {
             <form onSubmit={handleSignup} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input 
-                  id="email" 
-                  type="email" 
-                  placeholder="seu@email.com" 
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="seu@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  required 
+                  required
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Senha</Label>
-                <Input 
-                  id="password" 
-                  type="password" 
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Mínimo 6 caracteres"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required 
+                  required
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirmar Senha</Label>
-                <Input 
-                  id="confirmPassword" 
-                  type="password" 
+                <Input
+                  id="confirmPassword"
+                  type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  required 
+                  required
                 />
               </div>
               <Button type="submit" className="w-full h-11 text-base mt-2" disabled={loading}>
                 {loading ? "Criando..." : "Criar Conta Grátis"}
               </Button>
             </form>
-            
+
             <div className="mt-6 text-center text-sm text-muted-foreground">
               Já tem uma conta?{" "}
               <Link href="/login" className="text-primary font-medium hover:underline">
