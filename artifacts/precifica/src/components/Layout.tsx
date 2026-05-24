@@ -29,7 +29,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const { signOut } = useAuth();
 
   return (
-    <div className="flex min-h-screen w-full bg-[#F3F4F6]">
+    <div className="flex min-h-screen w-full bg-gradient-to-br from-gray-100 via-slate-50 to-gray-200">
       {/* Sidebar */}
       <aside className="w-64 bg-[#111827] text-white border-r border-zinc-800 hidden md:flex flex-col">
         <div className="h-16 flex items-center px-6 border-b border-zinc-800">
@@ -77,7 +77,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <header className="h-16 bg-white border-b border-[#E5E7EB] flex items-center px-8 md:hidden shadow-sm">
            <div className="font-bold text-lg text-amber-500">Precifica</div>
         </header>
-        <div className="flex-1 p-8 overflow-y-auto bg-[#F3F4F6]">
+        <div className="flex-1 p-8 overflow-y-auto bg-gradient-to-br from-gray-100 via-slate-50 to-gray-200">
           {children}
         </div>
       </main>

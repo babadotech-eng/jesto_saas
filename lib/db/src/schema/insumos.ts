@@ -9,6 +9,10 @@ export const insumosTable = pgTable("insumos", {
   unidade: text("unidade").notNull(),
   precoUnitario: numeric("preco_unitario", { precision: 10, scale: 2 }).notNull().default("0"),
   fatorCorrecao: numeric("fator_correcao", { precision: 5, scale: 3 }).notNull().default("1"),
+  pesoBruto: numeric("peso_bruto", { precision: 10, scale: 3 }),
+  pesoLiquido: numeric("peso_liquido", { precision: 10, scale: 3 }),
+  fornecedor: text("fornecedor"),
+  embalagem: text("embalagem"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

@@ -14,6 +14,7 @@ export const produtosTable = pgTable("produtos", {
   taxaCartaoPct: numeric("taxa_cartao_pct", { precision: 5, scale: 2 }).notNull().default("0"),
   taxaAppPct: numeric("taxa_app_pct", { precision: 5, scale: 2 }).notNull().default("0"),
   comissaoPct: numeric("comissao_pct", { precision: 5, scale: 2 }).notNull().default("0"),
+  taxaVrPct: numeric("taxa_vr_pct", { precision: 5, scale: 2 }).notNull().default("0"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

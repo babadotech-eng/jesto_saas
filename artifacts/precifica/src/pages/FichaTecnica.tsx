@@ -1,23 +1,25 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useListFichas, useCreateFicha, useDeleteFicha, useGetFicha, useAddFichaItem, useDeleteFichaItem, useListProdutos, useListInsumos, getListFichasQueryKey, getGetFichaQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2, FileText, ChevronRight, ArrowLeft } from "lucide-react";
+import { Plus, Trash2, FileText, ChevronRight, ArrowLeft, Download, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import * as XLSX from "xlsx";
 
 function fmt(n: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(n);
 }
 
-const CATEGORIAS_FICHA = ["Salgado", "Doce", "Bebida", "Prato principal", "Lanche", "Sobremesa", "Outro"];
 const UNIDADES_RENDIMENTO = ["unidades", "porções", "kg", "L"];
-const UNIDADES = ["kg", "g", "L", "ml", "unid", "cx", "pct", "dz"];
+
+interface ImportItemRow { nome: string; quantidade: number; valid: boolean; error?: string; resolvedId?: string; }
 
 function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void }) {
   const qc = useQueryClient();
@@ -28,6 +30,10 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
 
   const [addInsumoId, setAddInsumoId] = useState("");
   const [addQtd, setAddQtd] = useState("");
+  const [importOpen, setImportOpen] = useState(false);
+  const [importRows, setImportRows] = useState<ImportItemRow[]>([]);
+  const [importing, setImporting] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   async function handleAddItem() {
     if (!addInsumoId || !addQtd) { toast.error("Selecione o ingrediente e a quantidade."); return; }
@@ -47,23 +53,96 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
     } catch { toast.error("Erro ao remover ingrediente."); }
   }
 
+  function exportExcel() {
+    if (!ficha?.itens?.length) { toast.error("Nenhum ingrediente para exportar."); return; }
+    const rows = ficha.itens.map(item => ({
+      ingrediente: item.insumo_nome ?? "",
+      quantidade: item.quantidade,
+      unidade: item.unidade ?? "",
+      custo_item: item.custo_item ?? 0,
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const headers = ["ingrediente", "quantidade", "unidade", "custo_item"];
+    const grayStyle = { fill: { fgColor: { rgb: "BFBFBF" } }, font: { bold: true } };
+    headers.forEach((_, i) => {
+      const ref = XLSX.utils.encode_cell({ r: 0, c: i });
+      if (ws[ref]) ws[ref].s = grayStyle;
+    });
+    ws["!cols"] = [{ wch: 25 }, { wch: 12 }, { wch: 10 }, { wch: 14 }];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Ingredientes");
+    XLSX.writeFile(wb, `ficha_${ficha.produto_nome ?? "tecnica"}.xlsx`);
+    toast.success("Planilha exportada!");
+  }
+
+  function handleImportFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const raw = new Uint8Array(ev.target!.result as ArrayBuffer);
+      const wb = XLSX.read(raw, { type: "array" });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows: Record<string, unknown>[] = XLSX.utils.sheet_to_json(ws);
+      const parsed: ImportItemRow[] = rows.map(r => {
+        const nome = String(r["ingrediente"] ?? r["nome"] ?? "").trim();
+        const qtd = Number(r["quantidade"]);
+        const resolved = insumos?.find(i => i.nome.toLowerCase() === nome.toLowerCase());
+        if (!nome) return { nome, quantidade: qtd, valid: false, error: "Nome vazio" };
+        if (isNaN(qtd) || qtd <= 0) return { nome, quantidade: qtd, valid: false, error: "Quantidade inválida" };
+        if (!resolved) return { nome, quantidade: qtd, valid: false, error: "Insumo não encontrado", resolvedId: undefined };
+        return { nome, quantidade: qtd, valid: true, resolvedId: resolved.id };
+      });
+      setImportRows(parsed);
+      setImportOpen(true);
+    };
+    reader.readAsArrayBuffer(file);
+    e.target.value = "";
+  }
+
+  async function confirmImport() {
+    const valid = importRows.filter(r => r.valid && r.resolvedId);
+    if (!valid.length) { toast.error("Nenhuma linha válida."); return; }
+    setImporting(true);
+    let count = 0;
+    for (const row of valid) {
+      try {
+        await addItemMutation.mutateAsync({ id: fichaId, data: { insumo_id: row.resolvedId!, quantidade: row.quantidade } });
+        count++;
+      } catch { /* skip */ }
+    }
+    setImporting(false);
+    qc.invalidateQueries({ queryKey: getGetFichaQueryKey(fichaId) });
+    setImportOpen(false);
+    setImportRows([]);
+    toast.success(`${count} ingredientes importados.`);
+  }
+
   if (isLoading) return <div className="space-y-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-12 rounded-xl" />)}</div>;
   if (!ficha) return <div className="text-center py-8 text-muted-foreground">Ficha não encontrada.</div>;
 
   return (
     <div className="space-y-6" data-testid="ficha-detail">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-wrap">
         <Button variant="ghost" size="icon" onClick={onBack} data-testid="button-back-ficha"><ArrowLeft size={18} /></Button>
-        <div>
+        <div className="flex-1">
           <h2 className="text-xl font-bold">{ficha.produto_nome ?? "Ficha Técnica"}</h2>
           <p className="text-sm text-muted-foreground">CMV total: <span className="font-semibold text-foreground">{fmt(ficha.cmv_total ?? 0)}</span></p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={exportExcel}>
+            <Download size={14} />Exportar Excel
+          </Button>
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => fileRef.current?.click()}>
+            <Upload size={14} />Importar Excel
+          </Button>
+          <input ref={fileRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleImportFile} />
         </div>
       </div>
 
       <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
         <h3 className="font-semibold mb-4">Ingredientes</h3>
 
-        {/* Inline add row */}
         <div className="flex gap-2 mb-4 flex-wrap">
           <div className="flex-1 min-w-[180px]">
             <Select value={addInsumoId} onValueChange={setAddInsumoId}>
@@ -115,11 +194,46 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
           </table>
         )}
       </div>
+
+      {/* Import dialog */}
+      <Dialog open={importOpen} onOpenChange={v => { if (!v) { setImportOpen(false); setImportRows([]); } }}>
+        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Importar Ingredientes</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">O nome do ingrediente deve corresponder exatamente a um insumo cadastrado.</p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm border border-border rounded-xl overflow-hidden">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left px-3 py-2 font-medium text-muted-foreground">Ingrediente</th>
+                  <th className="text-right px-3 py-2 font-medium text-muted-foreground">Qtd</th>
+                  <th className="px-3 py-2"></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {importRows.map((r, i) => (
+                  <tr key={i} className={r.valid ? "" : "bg-red-50"}>
+                    <td className="px-3 py-2">{r.nome || <span className="text-red-500 italic">vazio</span>}</td>
+                    <td className="px-3 py-2 text-right">{r.quantidade}</td>
+                    <td className="px-3 py-2 text-right">
+                      {r.valid ? <span className="text-green-600 text-xs">✓</span> : <span className="text-red-500 text-xs" title={r.error}><X size={12} /></span>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setImportOpen(false); setImportRows([]); }}>Cancelar</Button>
+            <Button onClick={confirmImport} disabled={importing || !importRows.some(r => r.valid)}>
+              {importing ? "Importando..." : `Importar ${importRows.filter(r => r.valid).length} ingredientes`}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
 
-// ── Single-card "Nova Ficha" form ────────────────────────────────────────────
 interface DraftIngredient { insumo_id: string; quantidade: string; }
 
 function NovaFichaForm({ onCancel, onCreated }: { onCancel: () => void; onCreated: (id: string) => void }) {
@@ -130,13 +244,14 @@ function NovaFichaForm({ onCancel, onCreated }: { onCancel: () => void; onCreate
   const addItemMutation = useAddFichaItem();
 
   const [produtoId, setProdutoId] = useState("");
-  const [categoria, setCategoria] = useState("");
   const [rendimento, setRendimento] = useState("");
   const [unidadeRendimento, setUnidadeRendimento] = useState("unidades");
-  const [custoMaoObra, setCustoMaoObra] = useState("");
   const [observacoes, setObservacoes] = useState("");
   const [ingredientes, setIngredientes] = useState<DraftIngredient[]>([{ insumo_id: "", quantidade: "" }]);
   const [saving, setSaving] = useState(false);
+
+  const produtoSelecionado = produtos?.find(p => p.id === produtoId);
+  const categoriaHerdada = produtoSelecionado?.categoria ?? null;
 
   function addIngrediente() { setIngredientes(prev => [...prev, { insumo_id: "", quantidade: "" }]); }
   function removeIngrediente(i: number) { setIngredientes(prev => prev.filter((_, idx) => idx !== i)); }
@@ -144,7 +259,6 @@ function NovaFichaForm({ onCancel, onCreated }: { onCancel: () => void; onCreate
     setIngredientes(prev => prev.map((item, idx) => idx === i ? { ...item, [field]: val } : item));
   }
 
-  // Live CMV preview
   const cmvPreview = ingredientes.reduce((sum, ing) => {
     const insumo = insumos?.find(ins => ins.id === ing.insumo_id);
     if (!insumo || !ing.quantidade) return sum;
@@ -152,9 +266,8 @@ function NovaFichaForm({ onCancel, onCreated }: { onCancel: () => void; onCreate
   }, 0);
   const rend = parseFloat(rendimento) || 0;
   const custoPorcao = rend > 0 ? cmvPreview / rend : 0;
-  const produtoSelecionado = produtos?.find(p => p.id === produtoId);
   const margemEstimada = produtoSelecionado && Number(produtoSelecionado.preco_venda) > 0
-    ? ((Number(produtoSelecionado.preco_venda) - cmvPreview - parseFloat(custoMaoObra || "0")) / Number(produtoSelecionado.preco_venda)) * 100
+    ? ((Number(produtoSelecionado.preco_venda) - cmvPreview) / Number(produtoSelecionado.preco_venda)) * 100
     : null;
 
   async function handleSave() {
@@ -183,7 +296,7 @@ function NovaFichaForm({ onCancel, onCreated }: { onCancel: () => void; onCreate
     <div className="bg-card border border-border rounded-2xl p-6 shadow-sm space-y-6 max-w-2xl" data-testid="nova-ficha-form">
       <div>
         <h2 className="text-xl font-bold mb-1">Nova Ficha Técnica</h2>
-        <p className="text-sm text-muted-foreground">Preencha todos os campos e adicione os ingredientes da receita.</p>
+        <p className="text-sm text-muted-foreground">Preencha os campos e adicione os ingredientes da receita.</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -196,14 +309,13 @@ function NovaFichaForm({ onCancel, onCreated }: { onCancel: () => void; onCreate
         </div>
         <div className="space-y-2">
           <Label>Categoria</Label>
-          <Select value={categoria} onValueChange={setCategoria}>
-            <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
-            <SelectContent>{CATEGORIAS_FICHA.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-          </Select>
+          <div className={`h-10 px-3 flex items-center rounded-md border border-border text-sm ${categoriaHerdada ? "text-foreground bg-muted/30" : "text-muted-foreground bg-muted/20"}`}>
+            {categoriaHerdada ?? (produtoId ? "Produto sem categoria" : "Herdada do produto")}
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Rendimento</Label>
           <Input type="number" step="0.001" placeholder="Ex: 12" value={rendimento} onChange={e => setRendimento(e.target.value)} data-testid="input-ficha-rendimento" />
@@ -215,13 +327,8 @@ function NovaFichaForm({ onCancel, onCreated }: { onCancel: () => void; onCreate
             <SelectContent>{UNIDADES_RENDIMENTO.map(u => <SelectItem key={u} value={u}>{u}</SelectItem>)}</SelectContent>
           </Select>
         </div>
-        <div className="space-y-2">
-          <Label>Mão de obra (R$)</Label>
-          <Input type="number" step="0.01" placeholder="0,00" value={custoMaoObra} onChange={e => setCustoMaoObra(e.target.value)} />
-        </div>
       </div>
 
-      {/* Ingredients section */}
       <div>
         <h3 className="font-semibold mb-3">Ingredientes</h3>
         <div className="space-y-2">
@@ -255,13 +362,11 @@ function NovaFichaForm({ onCancel, onCreated }: { onCancel: () => void; onCreate
         </Button>
       </div>
 
-      {/* Observações */}
       <div className="space-y-2">
         <Label>Observações</Label>
         <Textarea placeholder="Modo de preparo, dicas, notas..." value={observacoes} onChange={e => setObservacoes(e.target.value)} rows={3} />
       </div>
 
-      {/* Live CMV preview */}
       <div className="bg-muted/40 border border-border rounded-xl p-4 space-y-1.5 text-sm">
         <p className="font-semibold text-foreground mb-2">Prévia de Custos</p>
         <div className="flex justify-between">
@@ -274,7 +379,7 @@ function NovaFichaForm({ onCancel, onCreated }: { onCancel: () => void; onCreate
         </div>
         {margemEstimada !== null && (
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Margem estimada</span>
+            <span className="text-muted-foreground">Margem estimada (s/ MO)</span>
             <span className={`font-semibold ${margemEstimada >= 30 ? "text-green-600" : margemEstimada >= 15 ? "text-amber-600" : "text-red-600"}`}>
               {margemEstimada.toFixed(1)}%
             </span>

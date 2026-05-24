@@ -31,6 +31,7 @@ export interface Produto {
   taxa_cartao_pct: number;
   taxa_app_pct: number;
   comissao_pct: number;
+  taxa_vr_pct: number;
   /** @nullable */
   cmv?: number | null;
   /** @nullable */
@@ -52,6 +53,7 @@ export interface ProdutoInput {
   taxa_cartao_pct: number;
   taxa_app_pct: number;
   comissao_pct: number;
+  taxa_vr_pct: number;
 }
 
 export interface Insumo {
@@ -61,6 +63,14 @@ export interface Insumo {
   preco_unitario: number;
   fator_correcao: number;
   /** @nullable */
+  peso_bruto?: number | null;
+  /** @nullable */
+  peso_liquido?: number | null;
+  /** @nullable */
+  fornecedor?: string | null;
+  /** @nullable */
+  embalagem?: string | null;
+  /** @nullable */
   created_at?: string | null;
 }
 
@@ -69,6 +79,14 @@ export interface InsumoInput {
   unidade: string;
   preco_unitario: number;
   fator_correcao: number;
+  /** @nullable */
+  peso_bruto?: number | null;
+  /** @nullable */
+  peso_liquido?: number | null;
+  /** @nullable */
+  fornecedor?: string | null;
+  /** @nullable */
+  embalagem?: string | null;
 }
 
 export interface FichaTecnica {

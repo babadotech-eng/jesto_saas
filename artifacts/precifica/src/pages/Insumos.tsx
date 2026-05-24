@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useListInsumos, useCreateInsumo, useUpdateInsumo, useDeleteInsumo, getListInsumosQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus, Search, Pencil, Trash2, Carrot, HelpCircle, Download, Upload, X } from "lucide-react";
@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
@@ -35,12 +35,38 @@ const schema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
   unidade: z.string().min(1, "Unidade é obrigatória"),
   preco_unitario: z.coerce.number().min(0),
-  fator_correcao: z.coerce.number().min(0.01).default(1),
+  fator_correcao: z.coerce.number().min(0.001).default(1),
+  peso_bruto: z.coerce.number().min(0).optional().or(z.literal("")),
+  peso_liquido: z.coerce.number().min(0).optional().or(z.literal("")),
+  fornecedor: z.string().optional(),
+  embalagem: z.string().optional(),
 });
 type FormValues = z.infer<typeof schema>;
-const defaultValues: FormValues = { nome: "", unidade: "kg", preco_unitario: 0, fator_correcao: 1 };
+const defaultValues: FormValues = {
+  nome: "", unidade: "kg", preco_unitario: 0, fator_correcao: 1,
+  peso_bruto: "", peso_liquido: "", fornecedor: "", embalagem: "",
+};
 
-interface ImportRow { nome: string; unidade: string; preco_unitario: number; fator_correcao: number; valid: boolean; error?: string; }
+interface ImportRow {
+  nome: string; unidade: string; preco_unitario: number; fator_correcao: number;
+  peso_bruto: number | null; peso_liquido: number | null; fornecedor: string | null; embalagem: string | null;
+  valid: boolean; error?: string;
+}
+
+function AutoFatorWatcher({ control, setValue }: { control: any; setValue: any }) {
+  const pesoBruto = useWatch({ control, name: "peso_bruto" });
+  const pesoLiquido = useWatch({ control, name: "peso_liquido" });
+
+  useEffect(() => {
+    const pb = Number(pesoBruto);
+    const pl = Number(pesoLiquido);
+    if (pb > 0 && pl > 0 && pl <= pb) {
+      setValue("fator_correcao", parseFloat((pb / pl).toFixed(3)), { shouldValidate: false });
+    }
+  }, [pesoBruto, pesoLiquido, setValue]);
+
+  return null;
+}
 
 export default function Insumos() {
   const qc = useQueryClient();
@@ -64,17 +90,36 @@ export default function Insumos() {
   function openCreate() { setEditingId(null); form.reset(defaultValues); setOpen(true); }
   function openEdit(item: NonNullable<typeof data>[0]) {
     setEditingId(item.id);
-    form.reset({ nome: item.nome, unidade: item.unidade, preco_unitario: item.preco_unitario, fator_correcao: item.fator_correcao });
+    form.reset({
+      nome: item.nome,
+      unidade: item.unidade,
+      preco_unitario: item.preco_unitario,
+      fator_correcao: item.fator_correcao,
+      peso_bruto: item.peso_bruto ?? "",
+      peso_liquido: item.peso_liquido ?? "",
+      fornecedor: item.fornecedor ?? "",
+      embalagem: item.embalagem ?? "",
+    });
     setOpen(true);
   }
 
   async function onSubmit(values: FormValues) {
+    const payload = {
+      nome: values.nome,
+      unidade: values.unidade,
+      preco_unitario: values.preco_unitario,
+      fator_correcao: values.fator_correcao,
+      peso_bruto: values.peso_bruto !== "" && values.peso_bruto !== undefined ? Number(values.peso_bruto) : null,
+      peso_liquido: values.peso_liquido !== "" && values.peso_liquido !== undefined ? Number(values.peso_liquido) : null,
+      fornecedor: values.fornecedor || null,
+      embalagem: values.embalagem || null,
+    };
     try {
       if (editingId) {
-        await updateMutation.mutateAsync({ id: editingId, data: values });
+        await updateMutation.mutateAsync({ id: editingId, data: payload });
         toast.success("Insumo atualizado!");
       } else {
-        await createMutation.mutateAsync({ data: values });
+        await createMutation.mutateAsync({ data: payload });
         toast.success("Insumo cadastrado!");
       }
       qc.invalidateQueries({ queryKey: getListInsumosQueryKey() });
@@ -94,13 +139,22 @@ export default function Insumos() {
 
   // ── Excel template download ──────────────────────────────────────────────
   function downloadTemplate() {
+    const headers = ["nome", "unidade", "preco_unitario", "fator_correcao", "peso_bruto", "peso_liquido", "fornecedor", "embalagem"];
     const ws = XLSX.utils.aoa_to_sheet([
-      ["nome", "unidade", "preco_unitario", "fator_correcao"],
-      ["Farinha de trigo", "kg", 4.5, 1],
-      ["Ovos", "dz", 12.0, 1],
-      ["Frango", "kg", 18.9, 1.33],
+      headers,
+      ["Farinha de trigo", "kg", 4.5, 1, 1, 1, "Distribuidora Silva", "Saco 1kg"],
+      ["Ovos", "dz", 12.0, 1, "", "", "Sítio Feliz", "Bandeja 12un"],
+      ["Frango", "kg", 18.9, 1.33, 1.33, 1, "Frigorifico ABC", "Pacote 1kg"],
     ]);
-    ws["!cols"] = [{ wch: 25 }, { wch: 10 }, { wch: 16 }, { wch: 16 }];
+    // Gray header style
+    const grayFill = { fgColor: { rgb: "BFBFBF" } };
+    const headerStyle = { fill: grayFill, font: { bold: true }, alignment: { horizontal: "center" } };
+    headers.forEach((_, i) => {
+      const cellRef = XLSX.utils.encode_cell({ r: 0, c: i });
+      if (!ws[cellRef]) ws[cellRef] = { v: headers[i], t: "s" };
+      ws[cellRef].s = headerStyle;
+    });
+    ws["!cols"] = [{ wch: 25 }, { wch: 10 }, { wch: 16 }, { wch: 16 }, { wch: 12 }, { wch: 13 }, { wch: 22 }, { wch: 18 }];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Insumos");
     XLSX.writeFile(wb, "insumos_modelo.xlsx");
@@ -113,8 +167,8 @@ export default function Insumos() {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      const data = new Uint8Array(ev.target!.result as ArrayBuffer);
-      const wb = XLSX.read(data, { type: "array" });
+      const rawData = new Uint8Array(ev.target!.result as ArrayBuffer);
+      const wb = XLSX.read(rawData, { type: "array" });
       const ws = wb.Sheets[wb.SheetNames[0]];
       const rows: Record<string, unknown>[] = XLSX.utils.sheet_to_json(ws);
       const parsed: ImportRow[] = rows.map(r => {
@@ -122,9 +176,13 @@ export default function Insumos() {
         const unidade = String(r["unidade"] ?? "kg").trim() || "kg";
         const preco = Number(r["preco_unitario"]);
         const fator = Number(r["fator_correcao"] ?? 1) || 1;
-        if (!nome) return { nome, unidade, preco_unitario: preco, fator_correcao: fator, valid: false, error: "Nome obrigatório" };
-        if (isNaN(preco) || preco < 0) return { nome, unidade, preco_unitario: preco, fator_correcao: fator, valid: false, error: "Preço inválido" };
-        return { nome, unidade, preco_unitario: preco, fator_correcao: fator, valid: true };
+        const pesoBruto = r["peso_bruto"] !== undefined && r["peso_bruto"] !== "" ? Number(r["peso_bruto"]) : null;
+        const pesoLiquido = r["peso_liquido"] !== undefined && r["peso_liquido"] !== "" ? Number(r["peso_liquido"]) : null;
+        const fornecedor = r["fornecedor"] ? String(r["fornecedor"]).trim() : null;
+        const embalagem = r["embalagem"] ? String(r["embalagem"]).trim() : null;
+        if (!nome) return { nome, unidade, preco_unitario: preco, fator_correcao: fator, peso_bruto: pesoBruto, peso_liquido: pesoLiquido, fornecedor, embalagem, valid: false, error: "Nome obrigatório" };
+        if (isNaN(preco) || preco < 0) return { nome, unidade, preco_unitario: preco, fator_correcao: fator, peso_bruto: pesoBruto, peso_liquido: pesoLiquido, fornecedor, embalagem, valid: false, error: "Preço inválido" };
+        return { nome, unidade, preco_unitario: preco, fator_correcao: fator, peso_bruto: pesoBruto, peso_liquido: pesoLiquido, fornecedor, embalagem, valid: true };
       });
       setImportRows(parsed);
       setImportOpen(true);
@@ -141,15 +199,21 @@ export default function Insumos() {
     let successCount = 0;
     for (const row of valid) {
       try {
-        await createMutation.mutateAsync({ data: { nome: row.nome, unidade: row.unidade, preco_unitario: row.preco_unitario, fator_correcao: row.fator_correcao } });
+        await createMutation.mutateAsync({
+          data: {
+            nome: row.nome, unidade: row.unidade, preco_unitario: row.preco_unitario,
+            fator_correcao: row.fator_correcao, peso_bruto: row.peso_bruto, peso_liquido: row.peso_liquido,
+            fornecedor: row.fornecedor, embalagem: row.embalagem,
+          }
+        });
         successCount++;
-      } catch { /* count error */ }
+      } catch { /* skip errors */ }
     }
     setImporting(false);
     qc.invalidateQueries({ queryKey: getListInsumosQueryKey() });
     setImportOpen(false);
     setImportRows([]);
-    toast.success(`${successCount} insumos importados com sucesso.${errors > 0 ? ` ${errors} erros ignorados.` : ""}`);
+    toast.success(`${successCount} insumos importados.${errors > 0 ? ` ${errors} erros ignorados.` : ""}`);
   }
 
   return (
@@ -193,27 +257,39 @@ export default function Insumos() {
             <thead className="bg-muted/50 border-b border-border">
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">Nome</th>
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Unidade</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Unid. de medida</th>
                 <th className="text-right px-4 py-3 font-medium text-muted-foreground">Preço/unid.</th>
-                <th className="text-right px-4 py-3 font-medium text-muted-foreground hidden sm:table-cell">Fator Correção</th>
+                <th className="text-right px-4 py-3 font-medium text-muted-foreground hidden lg:table-cell">Preço total</th>
+                <th className="text-right px-4 py-3 font-medium text-muted-foreground hidden sm:table-cell">Fator</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground hidden xl:table-cell">Fornecedor</th>
                 <th className="px-4 py-3"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {filtered.map(i => (
-                <tr key={i.id} className="hover:bg-muted/30 transition-colors" data-testid={`row-insumo-${i.id}`}>
-                  <td className="px-4 py-3 font-medium">{i.nome}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{i.unidade}</td>
-                  <td className="px-4 py-3 text-right">{fmt(i.preco_unitario)}</td>
-                  <td className="px-4 py-3 text-right text-muted-foreground hidden sm:table-cell">{Number(i.fator_correcao).toFixed(3)}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => openEdit(i)} data-testid={`button-edit-insumo-${i.id}`}><Pencil size={14} /></Button>
-                      <Button variant="ghost" size="icon" onClick={() => setDeleteId(i.id)} data-testid={`button-delete-insumo-${i.id}`}><Trash2 size={14} className="text-destructive" /></Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {filtered.map(i => {
+                const precoTotal = i.peso_bruto ? i.preco_unitario * i.peso_bruto : null;
+                return (
+                  <tr key={i.id} className="hover:bg-muted/30 transition-colors" data-testid={`row-insumo-${i.id}`}>
+                    <td className="px-4 py-3 font-medium">
+                      {i.nome}
+                      {i.embalagem && <span className="ml-1.5 text-xs text-muted-foreground">({i.embalagem})</span>}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">{i.unidade}</td>
+                    <td className="px-4 py-3 text-right">{fmt(i.preco_unitario)}</td>
+                    <td className="px-4 py-3 text-right text-muted-foreground hidden lg:table-cell">
+                      {precoTotal !== null ? fmt(precoTotal) : <span className="text-muted-foreground/40">-</span>}
+                    </td>
+                    <td className="px-4 py-3 text-right text-muted-foreground hidden sm:table-cell">{Number(i.fator_correcao).toFixed(3)}</td>
+                    <td className="px-4 py-3 text-muted-foreground hidden xl:table-cell">{i.fornecedor ?? "-"}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button variant="ghost" size="icon" onClick={() => openEdit(i)} data-testid={`button-edit-insumo-${i.id}`}><Pencil size={14} /></Button>
+                        <Button variant="ghost" size="icon" onClick={() => setDeleteId(i.id)} data-testid={`button-delete-insumo-${i.id}`}><Trash2 size={14} className="text-destructive" /></Button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -221,18 +297,19 @@ export default function Insumos() {
 
       {/* Create/Edit Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>{editingId ? "Editar Insumo" : "Novo Insumo"}</DialogTitle></DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <AutoFatorWatcher control={form.control} setValue={form.setValue} />
+
               <FormField control={form.control} name="nome" render={({ field }) => (
                 <FormItem><FormLabel>Nome *</FormLabel><FormControl><Input {...field} data-testid="input-insumo-nome" /></FormControl><FormMessage /></FormItem>
               )} />
 
-              {/* Unidade — select */}
               <FormField control={form.control} name="unidade" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Unidade *</FormLabel>
+                  <FormLabel>Unidade de medida *</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger data-testid="input-insumo-unidade">
@@ -252,7 +329,6 @@ export default function Insumos() {
                   <FormItem><FormLabel>Preço/unid. (R$)</FormLabel><FormControl><Input type="number" step="0.01" {...field} data-testid="input-insumo-preco" /></FormControl><FormMessage /></FormItem>
                 )} />
 
-                {/* Fator de correção with tooltip */}
                 <FormField control={form.control} name="fator_correcao" render={({ field }) => (
                   <FormItem>
                     <FormLabel className="flex items-center gap-1">
@@ -260,20 +336,62 @@ export default function Insumos() {
                       <Popover>
                         <PopoverTrigger asChild>
                           <button type="button" className="text-muted-foreground hover:text-foreground transition-colors">
-                            <HelpCircle size={14} />
+                            <HelpCircle size={13} />
                           </button>
                         </PopoverTrigger>
                         <PopoverContent className="w-72 text-sm" side="top">
-                          <p className="font-semibold mb-1">O que é fator de correção?</p>
-                          <p className="text-muted-foreground">
-                            Representa a perda do insumo no preparo. Por exemplo: 1 kg de frango comprado pode render apenas 0,75 kg após limpar. Nesse caso, o fator seria <strong>1,33</strong> (1 ÷ 0,75). Se não houver perda, use <strong>1</strong>.
-                          </p>
+                          <p className="font-semibold mb-1">Fator de correção</p>
+                          <p className="text-muted-foreground">Representa a perda no preparo. Ex: 1kg de frango comprado rende 0,75kg limpo → fator = <strong>1,33</strong>. Preenchendo Peso Bruto e Líquido abaixo, o fator é calculado automaticamente.</p>
                         </PopoverContent>
                       </Popover>
                     </FormLabel>
                     <FormControl><Input type="number" step="0.001" {...field} data-testid="input-insumo-fator" /></FormControl>
                     <FormMessage />
                   </FormItem>
+                )} />
+
+                <FormField control={form.control} name="peso_bruto" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-1">
+                      Peso Bruto
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button type="button" className="text-muted-foreground hover:text-foreground transition-colors"><HelpCircle size={13} /></button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64 text-sm" side="top">
+                          <p className="text-muted-foreground">Peso/quantidade comprada (ex: 1 kg de frango com osso). Preencha com Peso Líquido para calcular o fator automaticamente.</p>
+                        </PopoverContent>
+                      </Popover>
+                    </FormLabel>
+                    <FormControl><Input type="number" step="0.001" placeholder="Ex: 1" {...field} data-testid="input-insumo-peso-bruto" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                <FormField control={form.control} name="peso_liquido" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-1">
+                      Peso Líquido
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button type="button" className="text-muted-foreground hover:text-foreground transition-colors"><HelpCircle size={13} /></button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64 text-sm" side="top">
+                          <p className="text-muted-foreground">Peso/quantidade utilizável após limpeza (ex: 0,75 kg de frango sem osso). O fator será calculado automaticamente.</p>
+                        </PopoverContent>
+                      </Popover>
+                    </FormLabel>
+                    <FormControl><Input type="number" step="0.001" placeholder="Ex: 0.75" {...field} data-testid="input-insumo-peso-liquido" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                <FormField control={form.control} name="fornecedor" render={({ field }) => (
+                  <FormItem><FormLabel>Fornecedor</FormLabel><FormControl><Input placeholder="Ex: Distribuidora Silva" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+
+                <FormField control={form.control} name="embalagem" render={({ field }) => (
+                  <FormItem><FormLabel>Embalagem</FormLabel><FormControl><Input placeholder="Ex: Saco 5kg" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
               </div>
 
@@ -290,10 +408,8 @@ export default function Insumos() {
 
       {/* Import Preview Dialog */}
       <Dialog open={importOpen} onOpenChange={v => { if (!v) { setImportOpen(false); setImportRows([]); } }}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Prévia da Importação</DialogTitle>
-          </DialogHeader>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Prévia da Importação</DialogTitle></DialogHeader>
           <div className="text-sm text-muted-foreground mb-3">
             {importRows.filter(r => r.valid).length} linhas válidas · {importRows.filter(r => !r.valid).length} com erros (serão ignoradas)
           </div>
@@ -305,6 +421,7 @@ export default function Insumos() {
                   <th className="text-left px-3 py-2 font-medium text-muted-foreground">Unid.</th>
                   <th className="text-right px-3 py-2 font-medium text-muted-foreground">Preço</th>
                   <th className="text-right px-3 py-2 font-medium text-muted-foreground">Fator</th>
+                  <th className="text-left px-3 py-2 font-medium text-muted-foreground">Fornecedor</th>
                   <th className="px-3 py-2"></th>
                 </tr>
               </thead>
@@ -315,6 +432,7 @@ export default function Insumos() {
                     <td className="px-3 py-2 text-muted-foreground">{r.unidade}</td>
                     <td className="px-3 py-2 text-right">{fmt(r.preco_unitario)}</td>
                     <td className="px-3 py-2 text-right">{r.fator_correcao}</td>
+                    <td className="px-3 py-2 text-muted-foreground">{r.fornecedor ?? "-"}</td>
                     <td className="px-3 py-2 text-right">
                       {r.valid ? <span className="text-green-600 text-xs">✓</span> : <span className="text-red-500 text-xs" title={r.error}><X size={12} /></span>}
                     </td>

@@ -98,9 +98,9 @@
   --popover-foreground: 217 33% 17%;
   --popover-border: 210 20% 90%;
 
-  /* Yellow-amber */
-  --primary: 38 92% 50%;
-  --primary-foreground: 217 33% 17%;
+  /* Orange primary #FF6C3A */
+  --primary: 15 100% 61%;
+  --primary-foreground: 0 0% 100%;
 
   --secondary: 210 20% 96%;
   --secondary-foreground: 217 33% 17%;
@@ -108,14 +108,14 @@
   --muted: 210 20% 92%;
   --muted-foreground: 217 33% 40%;
 
-  --accent: 38 92% 95%;
-  --accent-foreground: 38 92% 30%;
+  --accent: 15 100% 95%;
+  --accent-foreground: 15 100% 35%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
 
   --input: 210 20% 86%;
-  --ring: 38 92% 50%;
+  --ring: 15 100% 61%;
   
   --chart-1: 38 92% 50%;
   --chart-2: 217 33% 17%;
@@ -154,8 +154,8 @@
   --popover-foreground: 210 20% 98%;
   --popover-border: 217 33% 25%;
   
-  --primary: 38 92% 50%;
-  --primary-foreground: 217 33% 17%;
+  --primary: 15 100% 61%;
+  --primary-foreground: 0 0% 100%;
   
   --secondary: 217 33% 25%;
   --secondary-foreground: 210 20% 98%;
@@ -163,14 +163,14 @@
   --muted: 217 33% 22%;
   --muted-foreground: 210 20% 70%;
   
-  --accent: 38 92% 20%;
-  --accent-foreground: 38 92% 60%;
+  --accent: 15 100% 20%;
+  --accent-foreground: 15 100% 70%;
   
   --destructive: 0 62% 30%;
   --destructive-foreground: 0 0% 100%;
   
   --input: 217 33% 30%;
-  --ring: 38 92% 50%;
+  --ring: 15 100% 61%;
   
   --chart-1: 38 92% 50%;
   --chart-2: 210 20% 80%;

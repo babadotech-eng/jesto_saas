@@ -41,6 +41,7 @@ export const ListProdutosResponseItem = zod.object({
   "taxa_cartao_pct": zod.number(),
   "taxa_app_pct": zod.number(),
   "comissao_pct": zod.number(),
+  "taxa_vr_pct": zod.number(),
   "cmv": zod.number().nullish(),
   "margem_contribuicao": zod.number().nullish(),
   "margem_pct": zod.number().nullish(),
@@ -61,7 +62,8 @@ export const CreateProdutoBody = zod.object({
   "imposto_pct": zod.number(),
   "taxa_cartao_pct": zod.number(),
   "taxa_app_pct": zod.number(),
-  "comissao_pct": zod.number()
+  "comissao_pct": zod.number(),
+  "taxa_vr_pct": zod.number()
 })
 
 
@@ -83,6 +85,7 @@ export const GetProdutoResponse = zod.object({
   "taxa_cartao_pct": zod.number(),
   "taxa_app_pct": zod.number(),
   "comissao_pct": zod.number(),
+  "taxa_vr_pct": zod.number(),
   "cmv": zod.number().nullish(),
   "margem_contribuicao": zod.number().nullish(),
   "margem_pct": zod.number().nullish(),
@@ -106,7 +109,8 @@ export const UpdateProdutoBody = zod.object({
   "imposto_pct": zod.number(),
   "taxa_cartao_pct": zod.number(),
   "taxa_app_pct": zod.number(),
-  "comissao_pct": zod.number()
+  "comissao_pct": zod.number(),
+  "taxa_vr_pct": zod.number()
 })
 
 export const UpdateProdutoResponse = zod.object({
@@ -120,6 +124,7 @@ export const UpdateProdutoResponse = zod.object({
   "taxa_cartao_pct": zod.number(),
   "taxa_app_pct": zod.number(),
   "comissao_pct": zod.number(),
+  "taxa_vr_pct": zod.number(),
   "cmv": zod.number().nullish(),
   "margem_contribuicao": zod.number().nullish(),
   "margem_pct": zod.number().nullish(),
@@ -144,6 +149,10 @@ export const ListInsumosResponseItem = zod.object({
   "unidade": zod.string(),
   "preco_unitario": zod.number(),
   "fator_correcao": zod.number(),
+  "peso_bruto": zod.number().nullish(),
+  "peso_liquido": zod.number().nullish(),
+  "fornecedor": zod.string().nullish(),
+  "embalagem": zod.string().nullish(),
   "created_at": zod.string().nullish()
 })
 export const ListInsumosResponse = zod.array(ListInsumosResponseItem)
@@ -156,7 +165,11 @@ export const CreateInsumoBody = zod.object({
   "nome": zod.string(),
   "unidade": zod.string(),
   "preco_unitario": zod.number(),
-  "fator_correcao": zod.number()
+  "fator_correcao": zod.number(),
+  "peso_bruto": zod.number().nullish(),
+  "peso_liquido": zod.number().nullish(),
+  "fornecedor": zod.string().nullish(),
+  "embalagem": zod.string().nullish()
 })
 
 
@@ -171,7 +184,11 @@ export const UpdateInsumoBody = zod.object({
   "nome": zod.string(),
   "unidade": zod.string(),
   "preco_unitario": zod.number(),
-  "fator_correcao": zod.number()
+  "fator_correcao": zod.number(),
+  "peso_bruto": zod.number().nullish(),
+  "peso_liquido": zod.number().nullish(),
+  "fornecedor": zod.string().nullish(),
+  "embalagem": zod.string().nullish()
 })
 
 export const UpdateInsumoResponse = zod.object({
@@ -180,6 +197,10 @@ export const UpdateInsumoResponse = zod.object({
   "unidade": zod.string(),
   "preco_unitario": zod.number(),
   "fator_correcao": zod.number(),
+  "peso_bruto": zod.number().nullish(),
+  "peso_liquido": zod.number().nullish(),
+  "fornecedor": zod.string().nullish(),
+  "embalagem": zod.string().nullish(),
   "created_at": zod.string().nullish()
 })
 

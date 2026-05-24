@@ -644,6 +644,8 @@ components:
           type: number
         comissao_pct:
           type: number
+        taxa_vr_pct:
+          type: number
         cmv:
           type: ["number", "null"]
         margem_contribuicao:
@@ -652,7 +654,7 @@ components:
           type: ["number", "null"]
         created_at:
           type: ["string", "null"]
-      required: [id, nome, preco_venda, custo_mao_obra, frete, imposto_pct, taxa_cartao_pct, taxa_app_pct, comissao_pct]
+      required: [id, nome, preco_venda, custo_mao_obra, frete, imposto_pct, taxa_cartao_pct, taxa_app_pct, comissao_pct, taxa_vr_pct]
 
     ProdutoInput:
       type: object
@@ -675,7 +677,9 @@ components:
           type: number
         comissao_pct:
           type: number
-      required: [nome, preco_venda, custo_mao_obra, frete, imposto_pct, taxa_cartao_pct, taxa_app_pct, comissao_pct]
+        taxa_vr_pct:
+          type: number
+      required: [nome, preco_venda, custo_mao_obra, frete, imposto_pct, taxa_cartao_pct, taxa_app_pct, comissao_pct, taxa_vr_pct]
 
     Insumo:
       type: object
@@ -690,6 +694,14 @@ components:
           type: number
         fator_correcao:
           type: number
+        peso_bruto:
+          type: ["number", "null"]
+        peso_liquido:
+          type: ["number", "null"]
+        fornecedor:
+          type: ["string", "null"]
+        embalagem:
+          type: ["string", "null"]
         created_at:
           type: ["string", "null"]
       required: [id, nome, unidade, preco_unitario, fator_correcao]
@@ -705,6 +717,14 @@ components:
           type: number
         fator_correcao:
           type: number
+        peso_bruto:
+          type: ["number", "null"]
+        peso_liquido:
+          type: ["number", "null"]
+        fornecedor:
+          type: ["string", "null"]
+        embalagem:
+          type: ["string", "null"]
       required: [nome, unidade, preco_unitario, fator_correcao]
 
     FichaTecnica:

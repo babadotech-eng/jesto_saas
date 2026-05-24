@@ -1,8 +1,15 @@
-import { useGetTopProdutos, useGetAlertasMargem, useGetFluxoSemanal, useGetPontoEquilibrio } from "@workspace/api-client-react";
+import { useState } from "react";
+import { useGetTopProdutos, useGetAlertasMargem, useGetFluxoSemanal, useGetPontoEquilibrio, useListProdutos } from "@workspace/api-client-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, TrendingUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertTriangle, TrendingUp, Lock, Sliders, Target, BarChart2 } from "lucide-react";
+import { useAssinatura } from "@/hooks/useAssinatura";
+import { Label } from "@/components/ui/label";
 
 function fmt(n: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(n);
@@ -14,11 +21,264 @@ function MargemBadge({ pct }: { pct: number }) {
   return <Badge className="bg-red-100 text-red-700 border-red-200">{pct.toFixed(1)}%</Badge>;
 }
 
+function PremiumLock({ title, description, icon: Icon, onClick }: { title: string; description: string; icon: React.ElementType; onClick: () => void }) {
+  return (
+    <div className="bg-card border border-border rounded-xl p-5 shadow-sm relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-background/60 to-background/80 backdrop-blur-[1px] flex flex-col items-center justify-center gap-3 z-10">
+        <div className="bg-primary/10 p-3 rounded-full">
+          <Lock size={20} className="text-primary" />
+        </div>
+        <div className="text-center px-4">
+          <p className="font-semibold text-foreground">{title}</p>
+          <p className="text-xs text-muted-foreground mt-1">{description}</p>
+        </div>
+        <Button size="sm" onClick={onClick} className="mt-1">
+          Acessar Premium
+        </Button>
+      </div>
+      <h2 className="font-semibold mb-4 flex items-center gap-2 opacity-30">
+        <Icon size={18} className="text-primary" />{title}
+      </h2>
+      <div className="h-32 bg-muted/30 rounded-lg opacity-30" />
+    </div>
+  );
+}
+
+// Modal 1: Simulação de cenário
+function SimulacaoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { data: produtos } = useListProdutos();
+  const [produtoId, setProdutoId] = useState("");
+  const [novoPreco, setNovoPreco] = useState("");
+
+  const produto = produtos?.find(p => p.id === produtoId);
+  const preco = Number(novoPreco) || 0;
+
+  function simular() {
+    if (!produto || !preco) return null;
+    const cmv = produto.cmv ?? 0;
+    const maoObra = produto.custo_mao_obra;
+    const frete = produto.frete;
+    const descontos = preco * (
+      (produto.imposto_pct + produto.taxa_cartao_pct + produto.taxa_app_pct + produto.comissao_pct + (produto.taxa_vr_pct ?? 0)) / 100
+    );
+    const margem = preco - cmv - maoObra - frete - descontos;
+    const margemPct = preco > 0 ? (margem / preco) * 100 : 0;
+    return { margem, margemPct, descontos };
+  }
+
+  const sim = simular();
+  const margemAtual = produto ? produto.margem_pct ?? 0 : 0;
+  const delta = sim ? sim.margemPct - margemAtual : 0;
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2"><Sliders size={18} className="text-primary" />Simulação de Cenário</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Produto</Label>
+            <Select value={produtoId} onValueChange={v => { setProdutoId(v); setNovoPreco(""); }}>
+              <SelectTrigger><SelectValue placeholder="Selecione um produto..." /></SelectTrigger>
+              <SelectContent>{produtos?.map(p => <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+
+          {produto && (
+            <div className="bg-muted/40 rounded-lg p-3 text-sm space-y-1">
+              <div className="flex justify-between"><span className="text-muted-foreground">Preço atual</span><span className="font-medium">{fmt(produto.preco_venda)}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Margem atual</span><span className="font-medium">{margemAtual.toFixed(1)}%</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">CMV</span><span>{fmt(produto.cmv ?? 0)}</span></div>
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label>Novo preço de venda (R$)</Label>
+            <Input type="number" step="0.01" placeholder="Ex: 25,00" value={novoPreco} onChange={e => setNovoPreco(e.target.value)} />
+          </div>
+
+          {sim && produto && preco > 0 && (
+            <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 space-y-2 text-sm">
+              <p className="font-semibold text-foreground mb-1">Resultado simulado</p>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Margem de contribuição</span>
+                <span className={`font-bold ${sim.margem >= 0 ? "text-green-600" : "text-red-600"}`}>{fmt(sim.margem)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Margem %</span>
+                <span className={`font-bold ${sim.margemPct > 30 ? "text-green-600" : sim.margemPct >= 15 ? "text-yellow-600" : "text-red-600"}`}>{sim.margemPct.toFixed(1)}%</span>
+              </div>
+              <div className="flex justify-between border-t border-border/50 pt-2">
+                <span className="text-muted-foreground">Variação vs. preço atual</span>
+                <span className={`font-bold ${delta > 0 ? "text-green-600" : delta < 0 ? "text-red-600" : "text-muted-foreground"}`}>
+                  {delta > 0 ? "+" : ""}{delta.toFixed(1)} p.p.
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// Modal 2: Break-even detalhado
+function BreakevenModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { data: pe, isLoading } = useGetPontoEquilibrio();
+  const { data: produtos } = useListProdutos();
+
+  const produtosComMargem = (produtos ?? []).filter(p => (p.preco_venda ?? 0) > 0);
+  const totalProdutos = produtosComMargem.length;
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2"><Target size={18} className="text-primary" />Break-even Detalhado</DialogTitle>
+        </DialogHeader>
+        {isLoading ? <Skeleton className="h-40 w-full" /> : pe ? (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { label: "Despesas Fixas Totais", value: fmt(pe.despesas_fixas_total), highlight: false },
+                { label: "Margem Média dos Produtos", value: `${pe.margem_media.toFixed(1)}%`, highlight: false },
+                { label: "PE Contábil", value: fmt(pe.ponto_contabil), highlight: true },
+                { label: "PE Econômico (+20% lucro)", value: fmt(pe.ponto_economico), highlight: true },
+              ].map((row, i) => (
+                <div key={i} className={`rounded-xl p-4 ${row.highlight ? "bg-primary/10 border border-primary/20" : "bg-muted/40 border border-border"}`}>
+                  <p className="text-xs text-muted-foreground mb-1">{row.label}</p>
+                  <p className={`text-lg font-bold ${row.highlight ? "text-primary" : "text-foreground"}`}>{row.value}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-muted/40 rounded-xl p-4 space-y-2 text-sm">
+              <p className="font-semibold mb-2">Unidades mínimas necessárias</p>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Total de unidades (PE Contábil)</span>
+                <span className="font-medium">{pe.unidades_necessarias.toFixed(0)} unid.</span>
+              </div>
+              {totalProdutos > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Média por produto ({totalProdutos} cadastrados)</span>
+                  <span className="font-medium">{(pe.unidades_necessarias / totalProdutos).toFixed(0)} unid./produto</span>
+                </div>
+              )}
+            </div>
+
+            <div className="text-xs text-muted-foreground bg-muted/20 rounded-lg p-3">
+              <strong>Como interpretar:</strong> Para cobrir todas as despesas fixas, você precisa faturar pelo menos <strong>{fmt(pe.ponto_contabil)}</strong> por mês. Para ter 20% de lucro líquido, o faturamento mínimo é <strong>{fmt(pe.ponto_economico)}</strong>.
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-8 text-sm text-muted-foreground">Cadastre produtos e despesas fixas para ver a análise.</div>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// Modal 3: Análise individual de produto
+function AnaliseProdutoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { data: produtos } = useListProdutos();
+  const [produtoId, setProdutoId] = useState("");
+
+  const produto = produtos?.find(p => p.id === produtoId);
+
+  const custoTotal = produto
+    ? (produto.cmv ?? 0) + produto.custo_mao_obra + produto.frete
+    + produto.preco_venda * (produto.imposto_pct + produto.taxa_cartao_pct + produto.taxa_app_pct + produto.comissao_pct + (produto.taxa_vr_pct ?? 0)) / 100
+    : 0;
+
+  const items = produto ? [
+    { label: "CMV (ingredientes)", value: produto.cmv ?? 0, pct: produto.preco_venda > 0 ? ((produto.cmv ?? 0) / produto.preco_venda) * 100 : 0 },
+    { label: "Mão de obra", value: produto.custo_mao_obra, pct: produto.preco_venda > 0 ? (produto.custo_mao_obra / produto.preco_venda) * 100 : 0 },
+    { label: "Frete", value: produto.frete, pct: produto.preco_venda > 0 ? (produto.frete / produto.preco_venda) * 100 : 0 },
+    { label: "Imposto", value: produto.preco_venda * produto.imposto_pct / 100, pct: produto.imposto_pct },
+    { label: "Taxa Cartão", value: produto.preco_venda * produto.taxa_cartao_pct / 100, pct: produto.taxa_cartao_pct },
+    { label: "Taxa App", value: produto.preco_venda * produto.taxa_app_pct / 100, pct: produto.taxa_app_pct },
+    { label: "Comissão", value: produto.preco_venda * produto.comissao_pct / 100, pct: produto.comissao_pct },
+    { label: "Taxa Vale Refeição", value: produto.preco_venda * (produto.taxa_vr_pct ?? 0) / 100, pct: produto.taxa_vr_pct ?? 0 },
+  ].filter(i => i.value > 0) : [];
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2"><BarChart2 size={18} className="text-primary" />Análise Individual do Produto</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Produto</Label>
+            <Select value={produtoId} onValueChange={setProdutoId}>
+              <SelectTrigger><SelectValue placeholder="Selecione um produto..." /></SelectTrigger>
+              <SelectContent>{produtos?.map(p => <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+
+          {produto && (
+            <>
+              <div className="grid grid-cols-3 gap-3 text-center">
+                <div className="bg-muted/40 rounded-xl p-3 border border-border">
+                  <p className="text-xs text-muted-foreground">Preço de venda</p>
+                  <p className="text-base font-bold">{fmt(produto.preco_venda)}</p>
+                </div>
+                <div className="bg-muted/40 rounded-xl p-3 border border-border">
+                  <p className="text-xs text-muted-foreground">Custo total</p>
+                  <p className="text-base font-bold text-red-600">{fmt(custoTotal)}</p>
+                </div>
+                <div className={`rounded-xl p-3 border ${(produto.margem_pct ?? 0) > 30 ? "bg-green-50 border-green-200" : (produto.margem_pct ?? 0) >= 15 ? "bg-yellow-50 border-yellow-200" : "bg-red-50 border-red-200"}`}>
+                  <p className="text-xs text-muted-foreground">Margem</p>
+                  <p className={`text-base font-bold ${(produto.margem_pct ?? 0) > 30 ? "text-green-700" : (produto.margem_pct ?? 0) >= 15 ? "text-yellow-700" : "text-red-700"}`}>{(produto.margem_pct ?? 0).toFixed(1)}%</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm font-semibold">Composição do custo</p>
+                {items.map((item, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="flex-1">
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-muted-foreground">{item.label}</span>
+                        <span className="font-medium">{fmt(item.value)} <span className="text-muted-foreground text-xs">({item.pct.toFixed(1)}%)</span></span>
+                      </div>
+                      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-primary/60 rounded-full" style={{ width: `${Math.min(item.pct, 100)}%` }} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="bg-muted/40 rounded-xl p-4 text-sm border border-border">
+                <div className="flex justify-between font-bold text-base">
+                  <span>Margem de contribuição</span>
+                  <span className={produto.margem_contribuicao != null && produto.margem_contribuicao >= 0 ? "text-green-600" : "text-red-600"}>
+                    {fmt(produto.margem_contribuicao ?? 0)}
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function Relatorios() {
   const { data: topProdutos, isLoading: loadingTop } = useGetTopProdutos();
   const { data: alertas, isLoading: loadingAlertas } = useGetAlertasMargem();
   const { data: fluxo, isLoading: loadingFluxo } = useGetFluxoSemanal();
   const { data: pe, isLoading: loadingPe } = useGetPontoEquilibrio();
+  const { data: assinatura } = useAssinatura();
+
+  const isPremium = assinatura?.plano === "premium";
+
+  const [modalSimulacao, setModalSimulacao] = useState(false);
+  const [modalBreakeven, setModalBreakeven] = useState(false);
+  const [modalAnalise, setModalAnalise] = useState(false);
 
   return (
     <div className="space-y-6" data-testid="relatorios-page">
@@ -86,7 +346,7 @@ export default function Relatorios() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 text-sm text-muted-foreground">Nenhum alerta. Suas margens estao saudáveis!</div>
+            <div className="text-center py-8 text-sm text-muted-foreground">Nenhum alerta. Suas margens estão saudáveis!</div>
           )}
         </div>
       </div>
@@ -125,6 +385,55 @@ export default function Relatorios() {
           <div className="text-center py-8 text-sm text-muted-foreground">Nenhum produto cadastrado ainda.</div>
         )}
       </div>
+
+      {/* Premium Reports */}
+      <div>
+        <div className="flex items-center gap-2 mb-4">
+          <h2 className="text-lg font-bold">Relatórios Avançados</h2>
+          {isPremium ? (
+            <Badge className="bg-primary/10 text-primary border-primary/20 text-xs">Premium</Badge>
+          ) : (
+            <Badge variant="secondary" className="text-xs">Apenas Premium</Badge>
+          )}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {isPremium ? (
+            <>
+              <button onClick={() => setModalSimulacao(true)} className="bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-all text-left group">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-3 group-hover:bg-primary/20 transition-colors">
+                  <Sliders size={18} />
+                </div>
+                <p className="font-semibold text-foreground">Simulação de Cenário</p>
+                <p className="text-sm text-muted-foreground mt-1">Veja o impacto de novos preços na sua margem</p>
+              </button>
+              <button onClick={() => setModalBreakeven(true)} className="bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-all text-left group">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-3 group-hover:bg-primary/20 transition-colors">
+                  <Target size={18} />
+                </div>
+                <p className="font-semibold text-foreground">Break-even Detalhado</p>
+                <p className="text-sm text-muted-foreground mt-1">Análise completa do ponto de equilíbrio</p>
+              </button>
+              <button onClick={() => setModalAnalise(true)} className="bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-all text-left group">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-3 group-hover:bg-primary/20 transition-colors">
+                  <BarChart2 size={18} />
+                </div>
+                <p className="font-semibold text-foreground">Análise Individual</p>
+                <p className="text-sm text-muted-foreground mt-1">Detalhe completo de cada produto</p>
+              </button>
+            </>
+          ) : (
+            <>
+              <PremiumLock title="Simulação de Cenário" description="Teste novos preços e veja o impacto na margem" icon={Sliders} onClick={() => {}} />
+              <PremiumLock title="Break-even Detalhado" description="Análise completa do ponto de equilíbrio" icon={Target} onClick={() => {}} />
+              <PremiumLock title="Análise Individual" description="Detalhe completo de custos por produto" icon={BarChart2} onClick={() => {}} />
+            </>
+          )}
+        </div>
+      </div>
+
+      <SimulacaoModal open={modalSimulacao} onClose={() => setModalSimulacao(false)} />
+      <BreakevenModal open={modalBreakeven} onClose={() => setModalBreakeven(false)} />
+      <AnaliseProdutoModal open={modalAnalise} onClose={() => setModalAnalise(false)} />
     </div>
   );
 }

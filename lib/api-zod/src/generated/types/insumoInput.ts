@@ -11,4 +11,12 @@ export interface InsumoInput {
   unidade: string;
   preco_unitario: number;
   fator_correcao: number;
+  /** @nullable */
+  peso_bruto?: number | null;
+  /** @nullable */
+  peso_liquido?: number | null;
+  /** @nullable */
+  fornecedor?: string | null;
+  /** @nullable */
+  embalagem?: string | null;
 }

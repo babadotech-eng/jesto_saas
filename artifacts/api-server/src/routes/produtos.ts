@@ -18,7 +18,10 @@ function calcMargem(row: typeof produtosTable.$inferSelect, cmv: number) {
   const taxaCartao = preco * Number(row.taxaCartaoPct) / 100;
   const taxaApp = preco * Number(row.taxaAppPct) / 100;
   const comissao = preco * Number(row.comissaoPct) / 100;
-  const margem = preco - cmv - imposto - taxaCartao - taxaApp - comissao;
+  const taxaVr = preco * Number(row.taxaVrPct) / 100;
+  const maoObra = Number(row.custoMaoObra);
+  const frete = Number(row.frete);
+  const margem = preco - cmv - maoObra - frete - imposto - taxaCartao - taxaApp - comissao - taxaVr;
   const margemPct = preco > 0 ? (margem / preco) * 100 : 0;
   return { margem, margemPct };
 }
@@ -47,6 +50,27 @@ async function getCmvForProduto(userId: string, produtoId: string): Promise<numb
   }, 0);
 }
 
+function serializeProduto(row: typeof produtosTable.$inferSelect, cmv: number) {
+  const { margem, margemPct } = calcMargem(row, cmv);
+  return {
+    id: row.id,
+    nome: row.nome,
+    categoria: row.categoria,
+    preco_venda: Number(row.precoVenda),
+    custo_mao_obra: Number(row.custoMaoObra),
+    frete: Number(row.frete),
+    imposto_pct: Number(row.impostoPct),
+    taxa_cartao_pct: Number(row.taxaCartaoPct),
+    taxa_app_pct: Number(row.taxaAppPct),
+    comissao_pct: Number(row.comissaoPct),
+    taxa_vr_pct: Number(row.taxaVrPct),
+    cmv,
+    margem_contribuicao: margem,
+    margem_pct: margemPct,
+    created_at: row.createdAt?.toISOString() ?? null,
+  };
+}
+
 router.get("/produtos", requireAuth, async (req, res): Promise<void> => {
   const userId = getUserId(req);
   const rows = await db
@@ -57,23 +81,7 @@ router.get("/produtos", requireAuth, async (req, res): Promise<void> => {
 
   const result = await Promise.all(rows.map(async (row) => {
     const cmv = await getCmvForProduto(userId, row.id);
-    const { margem, margemPct } = calcMargem(row, cmv);
-    return {
-      id: row.id,
-      nome: row.nome,
-      categoria: row.categoria,
-      preco_venda: Number(row.precoVenda),
-      custo_mao_obra: Number(row.custoMaoObra),
-      frete: Number(row.frete),
-      imposto_pct: Number(row.impostoPct),
-      taxa_cartao_pct: Number(row.taxaCartaoPct),
-      taxa_app_pct: Number(row.taxaAppPct),
-      comissao_pct: Number(row.comissaoPct),
-      cmv,
-      margem_contribuicao: margem,
-      margem_pct: margemPct,
-      created_at: row.createdAt?.toISOString() ?? null,
-    };
+    return serializeProduto(row, cmv);
   }));
 
   res.json(result);
@@ -98,24 +106,10 @@ router.post("/produtos", requireAuth, async (req, res): Promise<void> => {
     taxaCartaoPct: String(b.taxa_cartao_pct),
     taxaAppPct: String(b.taxa_app_pct),
     comissaoPct: String(b.comissao_pct),
+    taxaVrPct: String(b.taxa_vr_pct),
   }).returning();
 
-  res.status(201).json({
-    id: row.id,
-    nome: row.nome,
-    categoria: row.categoria,
-    preco_venda: Number(row.precoVenda),
-    custo_mao_obra: Number(row.custoMaoObra),
-    frete: Number(row.frete),
-    imposto_pct: Number(row.impostoPct),
-    taxa_cartao_pct: Number(row.taxaCartaoPct),
-    taxa_app_pct: Number(row.taxaAppPct),
-    comissao_pct: Number(row.comissaoPct),
-    cmv: 0,
-    margem_contribuicao: 0,
-    margem_pct: 0,
-    created_at: row.createdAt?.toISOString() ?? null,
-  });
+  res.status(201).json(serializeProduto(row, 0));
 });
 
 router.get("/produtos/:id", requireAuth, async (req, res): Promise<void> => {
@@ -129,23 +123,7 @@ router.get("/produtos/:id", requireAuth, async (req, res): Promise<void> => {
   if (!row) { res.status(404).json({ error: "Not found" }); return; }
 
   const cmv = await getCmvForProduto(userId, row.id);
-  const { margem, margemPct } = calcMargem(row, cmv);
-  res.json({
-    id: row.id,
-    nome: row.nome,
-    categoria: row.categoria,
-    preco_venda: Number(row.precoVenda),
-    custo_mao_obra: Number(row.custoMaoObra),
-    frete: Number(row.frete),
-    imposto_pct: Number(row.impostoPct),
-    taxa_cartao_pct: Number(row.taxaCartaoPct),
-    taxa_app_pct: Number(row.taxaAppPct),
-    comissao_pct: Number(row.comissaoPct),
-    cmv,
-    margem_contribuicao: margem,
-    margem_pct: margemPct,
-    created_at: row.createdAt?.toISOString() ?? null,
-  });
+  res.json(serializeProduto(row, cmv));
 });
 
 router.put("/produtos/:id", requireAuth, async (req, res): Promise<void> => {
@@ -166,6 +144,7 @@ router.put("/produtos/:id", requireAuth, async (req, res): Promise<void> => {
       taxaCartaoPct: String(b.taxa_cartao_pct),
       taxaAppPct: String(b.taxa_app_pct),
       comissaoPct: String(b.comissao_pct),
+      taxaVrPct: String(b.taxa_vr_pct),
     })
     .where(and(eq(produtosTable.id, id), eq(produtosTable.userId, userId)))
     .returning();
@@ -173,23 +152,7 @@ router.put("/produtos/:id", requireAuth, async (req, res): Promise<void> => {
   if (!row) { res.status(404).json({ error: "Not found" }); return; }
 
   const cmv = await getCmvForProduto(userId, row.id);
-  const { margem, margemPct } = calcMargem(row, cmv);
-  res.json({
-    id: row.id,
-    nome: row.nome,
-    categoria: row.categoria,
-    preco_venda: Number(row.precoVenda),
-    custo_mao_obra: Number(row.custoMaoObra),
-    frete: Number(row.frete),
-    imposto_pct: Number(row.impostoPct),
-    taxa_cartao_pct: Number(row.taxaCartaoPct),
-    taxa_app_pct: Number(row.taxaAppPct),
-    comissao_pct: Number(row.comissaoPct),
-    cmv,
-    margem_contribuicao: margem,
-    margem_pct: margemPct,
-    created_at: row.createdAt?.toISOString() ?? null,
-  });
+  res.json(serializeProduto(row, cmv));
 });
 
 router.delete("/produtos/:id", requireAuth, async (req, res): Promise<void> => {

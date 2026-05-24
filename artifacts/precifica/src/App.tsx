@@ -21,6 +21,7 @@ import Lancamentos from "@/pages/Lancamentos";
 import Relatorios from "@/pages/Relatorios";
 import Configuracoes from "@/pages/Configuracoes";
 import Onboarding from "@/pages/Onboarding";
+import { usePerfil } from "@/hooks/usePerfil";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
@@ -44,8 +45,10 @@ function Loading() {
 
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
   const { session, loading } = useAuth();
-  if (loading) return <Loading />;
+  const { data: perfil, isLoading: perfilLoading } = usePerfil(!!session);
+  if (loading || (session && perfilLoading)) return <Loading />;
   if (!session) return <Redirect to="/login" />;
+  if (perfil && !perfil.nome_completo) return <Redirect to="/onboarding" />;
   return <Layout><Component /></Layout>;
 }
 

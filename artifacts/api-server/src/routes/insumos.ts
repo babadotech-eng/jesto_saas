@@ -6,6 +6,21 @@ import { CreateInsumoBody, UpdateInsumoBody, UpdateInsumoParams, DeleteInsumoPar
 
 const router = Router();
 
+function serializeInsumo(r: typeof insumosTable.$inferSelect) {
+  return {
+    id: r.id,
+    nome: r.nome,
+    unidade: r.unidade,
+    preco_unitario: Number(r.precoUnitario),
+    fator_correcao: Number(r.fatorCorrecao),
+    peso_bruto: r.pesoBruto !== null ? Number(r.pesoBruto) : null,
+    peso_liquido: r.pesoLiquido !== null ? Number(r.pesoLiquido) : null,
+    fornecedor: r.fornecedor ?? null,
+    embalagem: r.embalagem ?? null,
+    created_at: r.createdAt?.toISOString() ?? null,
+  };
+}
+
 router.get("/insumos", requireAuth, async (req, res): Promise<void> => {
   const userId = getUserId(req);
   const rows = await db
@@ -14,14 +29,7 @@ router.get("/insumos", requireAuth, async (req, res): Promise<void> => {
     .where(eq(insumosTable.userId, userId))
     .orderBy(desc(insumosTable.createdAt));
 
-  res.json(rows.map(r => ({
-    id: r.id,
-    nome: r.nome,
-    unidade: r.unidade,
-    preco_unitario: Number(r.precoUnitario),
-    fator_correcao: Number(r.fatorCorrecao),
-    created_at: r.createdAt?.toISOString() ?? null,
-  })));
+  res.json(rows.map(serializeInsumo));
 });
 
 router.post("/insumos", requireAuth, async (req, res): Promise<void> => {
@@ -35,16 +43,13 @@ router.post("/insumos", requireAuth, async (req, res): Promise<void> => {
     unidade: b.unidade,
     precoUnitario: String(b.preco_unitario),
     fatorCorrecao: String(b.fator_correcao),
+    pesoBruto: b.peso_bruto !== undefined && b.peso_bruto !== null ? String(b.peso_bruto) : null,
+    pesoLiquido: b.peso_liquido !== undefined && b.peso_liquido !== null ? String(b.peso_liquido) : null,
+    fornecedor: b.fornecedor ?? null,
+    embalagem: b.embalagem ?? null,
   }).returning();
 
-  res.status(201).json({
-    id: row.id,
-    nome: row.nome,
-    unidade: row.unidade,
-    preco_unitario: Number(row.precoUnitario),
-    fator_correcao: Number(row.fatorCorrecao),
-    created_at: row.createdAt?.toISOString() ?? null,
-  });
+  res.status(201).json(serializeInsumo(row));
 });
 
 router.put("/insumos/:id", requireAuth, async (req, res): Promise<void> => {
@@ -60,20 +65,17 @@ router.put("/insumos/:id", requireAuth, async (req, res): Promise<void> => {
       unidade: b.unidade,
       precoUnitario: String(b.preco_unitario),
       fatorCorrecao: String(b.fator_correcao),
+      pesoBruto: b.peso_bruto !== undefined && b.peso_bruto !== null ? String(b.peso_bruto) : null,
+      pesoLiquido: b.peso_liquido !== undefined && b.peso_liquido !== null ? String(b.peso_liquido) : null,
+      fornecedor: b.fornecedor ?? null,
+      embalagem: b.embalagem ?? null,
     })
     .where(and(eq(insumosTable.id, id), eq(insumosTable.userId, userId)))
     .returning();
 
   if (!row) { res.status(404).json({ error: "Not found" }); return; }
 
-  res.json({
-    id: row.id,
-    nome: row.nome,
-    unidade: row.unidade,
-    preco_unitario: Number(row.precoUnitario),
-    fator_correcao: Number(row.fatorCorrecao),
-    created_at: row.createdAt?.toISOString() ?? null,
-  });
+  res.json(serializeInsumo(row));
 });
 
 router.delete("/insumos/:id", requireAuth, async (req, res): Promise<void> => {

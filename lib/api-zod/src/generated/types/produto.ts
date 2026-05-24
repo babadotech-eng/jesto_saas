@@ -18,6 +18,7 @@ export interface Produto {
   taxa_cartao_pct: number;
   taxa_app_pct: number;
   comissao_pct: number;
+  taxa_vr_pct: number;
   /** @nullable */
   cmv?: number | null;
   /** @nullable */
