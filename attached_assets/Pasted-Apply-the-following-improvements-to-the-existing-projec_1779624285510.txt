@@ -1,0 +1,195 @@
+Apply the following improvements to the existing project. Do not rebuild the app.
+Do not change anything that is already working. Fix and add only what is described below.
+
+---
+
+1. ONBOARDING TYPEFORM-STYLE (first login only)
+After the user signs up or logs in for the first time (check if perfis.nome_completo is null or empty), show a full-screen step-by-step onboarding form before redirecting to the dashboard.
+
+Style it like Typeform: one question per screen, smooth transition between steps, large centered text, progress bar at the top, "Próximo" button at the bottom.
+
+Steps:
+- Step 1: "Qual é o seu nome?" → campo: nome_completo (obrigatório)
+- Step 2: "Qual é o nome do seu negócio?" → campo: nome_negocio (obrigatório)
+- Step 3: "Qual tipo de negócio você tem?" → campo: tipo_negocio (obrigatório)
+- Step 4: "Qual é a sua cidade e estado?" → campo: cidade_estado (opcional)
+- Step 5: "Qual é o seu WhatsApp?" → campo: whatsapp (opcional)
+- Step 6: "Como você ficou sabendo do Precifica?" → campo: origem, select: Instagram, Facebook, Tik Tok, Google, Indicação de amigo, YouTube, Outro (opcional)
+
+Save all answers to the perfis table.
+After the last step, redirect to /painel.
+If perfis.nome_completo already exists, skip onboarding entirely.
+
+---
+
+2. RENAME DASHBOARD TO PAINEL
+Replace every instance of the word "Dashboard" or "dashboard" in the entire codebase with "Painel" or "painel" respectively. This includes:
+- Route path: change /dashboard to /painel
+- Sidebar label
+- Page title
+- Browser tab title
+- Any heading or breadcrumb
+- Any reference in auth redirect logic
+
+---
+
+3. PASSWORD VALIDATION
+In both the signup and login forms, add inline password validation that shows requirements as the user types:
+- Minimum 8 characters
+- At least 1 uppercase letter
+- At least 1 number
+- At least 1 special character (!@#$%^&*...)
+
+Show a small checklist below the password field with green checkmarks as each requirement is met.
+On signup, block form submission if any requirement is not met.
+
+---
+
+4. GOOGLE LOGIN
+Add "Entrar com Google" button to both the signup and login pages.
+Use Supabase OAuth with Google provider: supabase.auth.signInWithOAuth({ provider: 'google' })
+Style the button with the Google logo (use a simple SVG inline), white background, border, and full width.
+Place it above the email/password form with a divider "ou" between them.
+After Google login, follow the same onboarding check logic as item 1.
+
+Note: Add a comment in the code that the developer must enable the Google provider in the Supabase dashboard under Authentication > Providers > Google, and add the OAuth credentials.
+
+---
+
+5. DASHBOARD/PAINEL BACKGROUND
+Update the main content area background to use a gray tone system matching the reference image:
+- Outer background (main wrapper): #F3F4F6 (gray-100)
+- Card backgrounds: #FFFFFF (white)
+- Sidebar: keep dark (#111827)
+- Header bar: #FFFFFF with a subtle bottom border #E5E7EB
+- Subtle shadows on cards: shadow-sm
+
+Do not change any text colors, chart colors, or layout structure.
+
+---
+
+6. FATOR DE CORREÇÃO — TOOLTIP AND UNIT MENU
+In the "Novo Insumo" form:
+
+a) Next to the "Fator de Correção" field label, add a help icon (ⓘ). On hover or click, show a tooltip/popover with this explanation:
+"O fator de correção representa a perda do insumo no preparo. Por exemplo: 1 kg de frango comprado pode render apenas 0,75 kg após limpar. Nesse caso, o fator seria 1,33 (1 ÷ 0,75). Se não houver perda, use 1."
+
+b) In the "Unidade" field, replace the free text input with a select menu with these options:
+- kg
+- g (grama)
+- L (litro)
+- ml
+- unid (unidade)
+- cx (caixa)
+- pct (pacote)
+- dz (dúzia)
+
+Apply the same unit select menu to the ficha_tecnica_itens ingredient quantity field as well.
+
+---
+
+7. NOVA FICHA TÉCNICA — SINGLE CARD FORM
+When the user clicks "Nova Ficha Técnica", open a single expanded form (not a multi-step) that contains all fields at once:
+
+Fields in the form:
+- Nome da receita (text, obrigatório)
+- Categoria (select: Salgado, Doce, Bebida, Prato principal, Lanche, Sobremesa, Outro)
+- Rendimento (number + unit select: unidades, porções, kg, L)
+- Custo de mão de obra (R$)
+- Ingredientes section:
+  - Dynamic list where user can add multiple ingredients
+  - Each row: select insumo (dropdown from user's ingredients), quantidade (number), unidade (auto-filled from insumo)
+  - Button: "+ Adicionar ingrediente"
+- Observações (textarea, opcional)
+- Buttons: "Salvar ficha" and "Cancelar"
+
+Show a live cost preview at the bottom of the form as the user fills in ingredients:
+- CMV calculado
+- Custo por porção
+- Margem estimada (if linked to a product price)
+
+---
+
+8. EXCEL IMPORT AND TEMPLATE FOR INSUMOS
+In the Insumos page, add two actions at the top:
+
+a) Download template button: "Baixar planilha modelo"
+Generate and download a .xlsx file with these columns:
+nome | unidade | preco_unitario | fator_correcao
+Include 3 example rows so the user understands the format.
+Use the SheetJS (xlsx) library for this.
+
+b) Import button: "Importar Excel"
+Open a file upload input that accepts .xlsx and .xls files.
+Parse the file using SheetJS.
+Map columns: nome → nome, unidade → unidade, preco_unitario → preco_unitario, fator_correcao → fator_correcao
+Show a preview table of parsed rows before importing.
+On confirm, insert all valid rows into the insumos table in Supabase for the current user.
+Show a summary after import: "X insumos importados com sucesso. Y erros encontrados."
+Validate each row: nome and preco_unitario are required. Skip rows with missing required fields and count them as errors.
+
+---
+
+9. EXPENSE CATEGORIES — FULL MENU
+In the "Nova Despesa" form, replace the free text category field with a grouped select menu containing all categories and subcategories for food businesses:
+
+Matérias-Primas e Insumos:
+  Ingredientes e alimentos, Embalagens e descartáveis, Temperos e condimentos, Bebidas e líquidos, Produtos de panificação e confeitaria
+
+Custos de Produção:
+  Mão de obra direta, Mão de obra terceirizada, Gás e combustível de cozinha, Utensílios e pequenos equipamentos, Manutenção de equipamentos, Uniformes e EPIs
+
+Infraestrutura e Utilidades:
+  Aluguel do espaço, Condomínio, Energia elétrica, Água e esgoto, Internet e telefone, IPTU
+
+Vendas e Delivery:
+  Taxa de aplicativo (iFood, Rappi etc.), Taxa de cartão de crédito/débito, Frete e entrega, Embalagem para delivery, Material de divulgação e panfletos
+
+Marketing e Digital:
+  Publicidade nas redes sociais, Criação de conteúdo, Fotografia de produtos, Site e domínio, E-mail marketing
+
+Administrativo e Financeiro:
+  Contador e escritório contábil, Taxas bancárias, IOF e tarifas financeiras, Software de gestão, Material de escritório
+
+Impostos e Obrigações Legais:
+  MEI e Simples Nacional, Alvará e licenças sanitárias, Vigilância sanitária, Certificações e registros
+
+Pessoal e RH:
+  Salários e pró-labore, Férias e 13º, INSS e encargos, Vale-transporte e alimentação, Cursos e capacitações
+
+Limpeza e Higiene:
+  Produtos de limpeza, Higienização de equipamentos, Controle de pragas, Descarte de resíduos
+
+Transporte e Logística:
+  Combustível próprio, Manutenção de veículo, Seguro do veículo, Estacionamento
+
+Outros:
+  Seguros em geral, Despesas eventuais, Perdas e desperdícios, Outros não categorizados
+
+Use HTML optgroup or a custom grouped select component to visually separate the groups.
+
+---
+
+10. GREETING BY TIME OF DAY
+Replace "Bem-vindo" or "Bem-vinda" in the dashboard/painel header with a dynamic greeting based on the current local time:
+
+- 00:00 to 11:59 → "Bom dia"
+- 12:00 to 17:59 → "Boa tarde"
+- 18:00 to 23:59 → "Boa noite"
+
+Format: "Bom dia, [nome_negocio ou nome_completo]!"
+Use the name from the perfis table.
+If no name is available yet, show just the greeting without a name.
+
+---
+
+GENERAL RULES FOR ALL CHANGES
+- Do not rebuild the app or change working features.
+- Do not change the visual design beyond what is specified.
+- Do not change Supabase table names or existing columns without explicitly adding new ones.
+- Add new columns to perfis if needed: nome_negocio, tipo_negocio, cidade_estado, whatsapp, origem.
+- Generate the SQL migration for any new columns and apply it.
+- Keep all text in Portuguese.
+- Keep all currency in BRL.
+- All new components must be mobile responsive.
+- All new forms must have inline validation and toast notifications on success or error.

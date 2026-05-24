@@ -8,7 +8,7 @@ import { setAuthTokenGetter } from "@workspace/api-client-react";
 import { supabase } from "@/lib/supabase";
 
 import Layout from "@/components/Layout";
-import Dashboard from "@/pages/Dashboard";
+import Painel from "@/pages/Painel";
 import Login from "@/pages/Login";
 import Landing from "@/pages/Landing";
 import Cadastro from "@/pages/Cadastro";
@@ -20,6 +20,7 @@ import Despesas from "@/pages/Despesas";
 import Lancamentos from "@/pages/Lancamentos";
 import Relatorios from "@/pages/Relatorios";
 import Configuracoes from "@/pages/Configuracoes";
+import Onboarding from "@/pages/Onboarding";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
@@ -48,10 +49,17 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
   return <Layout><Component /></Layout>;
 }
 
+function OnboardingRoute() {
+  const { session, loading } = useAuth();
+  if (loading) return <Loading />;
+  if (!session) return <Redirect to="/login" />;
+  return <Onboarding />;
+}
+
 function PublicRoute({ component: Component, restricted = false }: { component: React.ComponentType; restricted?: boolean }) {
   const { session, loading } = useAuth();
   if (loading) return <Loading />;
-  if (session && restricted) return <Redirect to="/dashboard" />;
+  if (session && restricted) return <Redirect to="/painel" />;
   return <Component />;
 }
 
@@ -62,7 +70,10 @@ function Router() {
       <Route path="/login"><PublicRoute component={Login} restricted /></Route>
       <Route path="/cadastro"><PublicRoute component={Cadastro} restricted /></Route>
       <Route path="/planos"><PublicRoute component={Planos} /></Route>
-      <Route path="/dashboard"><ProtectedRoute component={Dashboard} /></Route>
+      <Route path="/onboarding"><OnboardingRoute /></Route>
+      <Route path="/painel"><ProtectedRoute component={Painel} /></Route>
+      {/* Legacy redirect */}
+      <Route path="/dashboard"><Redirect to="/painel" /></Route>
       <Route path="/produtos"><ProtectedRoute component={Produtos} /></Route>
       <Route path="/insumos"><ProtectedRoute component={Insumos} /></Route>
       <Route path="/ficha-tecnica"><ProtectedRoute component={FichaTecnica} /></Route>

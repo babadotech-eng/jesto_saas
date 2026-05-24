@@ -14,7 +14,7 @@ import {
 import { ReactNode } from "react";
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Painel", href: "/painel", icon: LayoutDashboard },
   { name: "Produtos", href: "/produtos", icon: Package },
   { name: "Insumos", href: "/insumos", icon: Carrot },
   { name: "Fichas Técnicas", href: "/ficha-tecnica", icon: FileText },
@@ -29,12 +29,12 @@ export default function Layout({ children }: { children: ReactNode }) {
   const { signOut } = useAuth();
 
   return (
-    <div className="flex min-h-screen w-full bg-background">
+    <div className="flex min-h-screen w-full bg-[#F3F4F6]">
       {/* Sidebar */}
-      <aside className="w-64 bg-sidebar text-sidebar-foreground border-r border-sidebar-border hidden md:flex flex-col">
-        <div className="h-16 flex items-center px-6 border-b border-sidebar-border">
-          <div className="flex items-center gap-2 text-primary font-bold text-xl">
-            <span className="bg-primary text-primary-foreground p-1 rounded-md">
+      <aside className="w-64 bg-[#111827] text-white border-r border-zinc-800 hidden md:flex flex-col">
+        <div className="h-16 flex items-center px-6 border-b border-zinc-800">
+          <div className="flex items-center gap-2 text-amber-400 font-bold text-xl">
+            <span className="bg-amber-400 text-zinc-900 p-1 rounded-md">
               <BarChart3 size={20} />
             </span>
             Precifica
@@ -50,8 +50,8 @@ export default function Layout({ children }: { children: ReactNode }) {
                 href={item.href}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
                   isActive 
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" 
-                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                    ? "bg-zinc-700 text-white font-medium" 
+                    : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
                 }`}
               >
                 <item.icon size={18} />
@@ -61,10 +61,10 @@ export default function Layout({ children }: { children: ReactNode }) {
           })}
         </nav>
 
-        <div className="p-4 border-t border-sidebar-border">
+        <div className="p-4 border-t border-zinc-800">
           <button 
             onClick={signOut}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground w-full transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-zinc-400 hover:bg-zinc-800 hover:text-white w-full transition-colors"
           >
             <LogOut size={18} />
             Sair
@@ -74,10 +74,10 @@ export default function Layout({ children }: { children: ReactNode }) {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0">
-        <header className="h-16 bg-card border-b border-border flex items-center px-8 md:hidden">
-           <div className="font-bold text-lg text-primary">Precifica</div>
+        <header className="h-16 bg-white border-b border-[#E5E7EB] flex items-center px-8 md:hidden shadow-sm">
+           <div className="font-bold text-lg text-amber-500">Precifica</div>
         </header>
-        <div className="flex-1 p-8 overflow-y-auto">
+        <div className="flex-1 p-8 overflow-y-auto bg-[#F3F4F6]">
           {children}
         </div>
       </main>

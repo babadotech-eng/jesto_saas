@@ -3,25 +3,21 @@ import { useListFichas, useCreateFicha, useDeleteFicha, useGetFicha, useAddFicha
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2, FileText, ChevronRight, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
 function fmt(n: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(n);
 }
 
-const fichaSchema = z.object({ produto_id: z.string().min(1, "Selecione um produto"), rendimento: z.coerce.number().optional(), unidade_rendimento: z.string().optional() });
-const itemSchema = z.object({ insumo_id: z.string().min(1, "Selecione um insumo"), quantidade: z.coerce.number().min(0.001, "Informe a quantidade") });
-type FichaForm = z.infer<typeof fichaSchema>;
-type ItemForm = z.infer<typeof itemSchema>;
+const CATEGORIAS_FICHA = ["Salgado", "Doce", "Bebida", "Prato principal", "Lanche", "Sobremesa", "Outro"];
+const UNIDADES_RENDIMENTO = ["unidades", "porções", "kg", "L"];
+const UNIDADES = ["kg", "g", "L", "ml", "unid", "cx", "pct", "dz"];
 
 function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void }) {
   const qc = useQueryClient();
@@ -29,17 +25,17 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
   const { data: insumos } = useListInsumos();
   const addItemMutation = useAddFichaItem();
   const deleteItemMutation = useDeleteFichaItem();
-  const [addOpen, setAddOpen] = useState(false);
 
-  const form = useForm<ItemForm>({ resolver: zodResolver(itemSchema), defaultValues: { insumo_id: "", quantidade: 0 } });
+  const [addInsumoId, setAddInsumoId] = useState("");
+  const [addQtd, setAddQtd] = useState("");
 
-  async function onAddItem(values: ItemForm) {
+  async function handleAddItem() {
+    if (!addInsumoId || !addQtd) { toast.error("Selecione o ingrediente e a quantidade."); return; }
     try {
-      await addItemMutation.mutateAsync({ id: fichaId, data: values });
+      await addItemMutation.mutateAsync({ id: fichaId, data: { insumo_id: addInsumoId, quantidade: parseFloat(addQtd) } });
       toast.success("Ingrediente adicionado!");
       qc.invalidateQueries({ queryKey: getGetFichaQueryKey(fichaId) });
-      setAddOpen(false);
-      form.reset();
+      setAddInsumoId(""); setAddQtd("");
     } catch { toast.error("Erro ao adicionar ingrediente."); }
   }
 
@@ -60,18 +56,30 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
         <Button variant="ghost" size="icon" onClick={onBack} data-testid="button-back-ficha"><ArrowLeft size={18} /></Button>
         <div>
           <h2 className="text-xl font-bold">{ficha.produto_nome ?? "Ficha Técnica"}</h2>
-          <p className="text-sm text-muted-foreground">Custo total: <span className="font-semibold text-foreground">{fmt(ficha.cmv_total ?? 0)}</span></p>
+          <p className="text-sm text-muted-foreground">CMV total: <span className="font-semibold text-foreground">{fmt(ficha.cmv_total ?? 0)}</span></p>
         </div>
       </div>
 
       <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold">Ingredientes</h3>
-          <Button size="sm" onClick={() => setAddOpen(true)} data-testid="button-add-item"><Plus size={14} className="mr-1" />Adicionar</Button>
+        <h3 className="font-semibold mb-4">Ingredientes</h3>
+
+        {/* Inline add row */}
+        <div className="flex gap-2 mb-4 flex-wrap">
+          <div className="flex-1 min-w-[180px]">
+            <Select value={addInsumoId} onValueChange={setAddInsumoId}>
+              <SelectTrigger data-testid="select-item-insumo"><SelectValue placeholder="Selecione o ingrediente..." /></SelectTrigger>
+              <SelectContent>{insumos?.map(i => <SelectItem key={i.id} value={i.id}>{i.nome} ({i.unidade})</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <Input type="number" step="0.001" placeholder="Quantidade" value={addQtd} onChange={e => setAddQtd(e.target.value)} className="w-32" data-testid="input-item-quantidade" />
+          <Button onClick={handleAddItem} disabled={addItemMutation.isPending} size="sm" data-testid="button-add-item">
+            <Plus size={14} className="mr-1" />{addItemMutation.isPending ? "..." : "Adicionar"}
+          </Button>
         </div>
+
         {!ficha.itens?.length ? (
-          <div className="text-center py-8 text-sm text-muted-foreground">
-            Nenhum ingrediente adicionado ainda.<br />Clique em "Adicionar" para começar.
+          <div className="text-center py-8 text-sm text-muted-foreground border border-dashed border-border rounded-xl">
+            Nenhum ingrediente adicionado. Use o campo acima para começar.
           </div>
         ) : (
           <table className="w-full text-sm">
@@ -107,32 +115,179 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
           </table>
         )}
       </div>
+    </div>
+  );
+}
 
-      <Dialog open={addOpen} onOpenChange={setAddOpen}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader><DialogTitle>Adicionar Ingrediente</DialogTitle></DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onAddItem)} className="space-y-4">
-              <FormField control={form.control} name="insumo_id" render={({ field }) => (
-                <FormItem><FormLabel>Ingrediente *</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl><SelectTrigger data-testid="select-item-insumo"><SelectValue placeholder="Selecione..." /></SelectTrigger></FormControl>
-                    <SelectContent>{insumos?.map(i => <SelectItem key={i.id} value={i.id}>{i.nome} ({i.unidade})</SelectItem>)}</SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="quantidade" render={({ field }) => (
-                <FormItem><FormLabel>Quantidade *</FormLabel><FormControl><Input type="number" step="0.001" {...field} data-testid="input-item-quantidade" /></FormControl><FormMessage /></FormItem>
-              )} />
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setAddOpen(false)}>Cancelar</Button>
-                <Button type="submit" disabled={addItemMutation.isPending} data-testid="button-submit-item">Adicionar</Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+// ── Single-card "Nova Ficha" form ────────────────────────────────────────────
+interface DraftIngredient { insumo_id: string; quantidade: string; }
+
+function NovaFichaForm({ onCancel, onCreated }: { onCancel: () => void; onCreated: (id: string) => void }) {
+  const qc = useQueryClient();
+  const { data: produtos } = useListProdutos();
+  const { data: insumos } = useListInsumos();
+  const createMutation = useCreateFicha();
+  const addItemMutation = useAddFichaItem();
+
+  const [produtoId, setProdutoId] = useState("");
+  const [categoria, setCategoria] = useState("");
+  const [rendimento, setRendimento] = useState("");
+  const [unidadeRendimento, setUnidadeRendimento] = useState("unidades");
+  const [custoMaoObra, setCustoMaoObra] = useState("");
+  const [observacoes, setObservacoes] = useState("");
+  const [ingredientes, setIngredientes] = useState<DraftIngredient[]>([{ insumo_id: "", quantidade: "" }]);
+  const [saving, setSaving] = useState(false);
+
+  function addIngrediente() { setIngredientes(prev => [...prev, { insumo_id: "", quantidade: "" }]); }
+  function removeIngrediente(i: number) { setIngredientes(prev => prev.filter((_, idx) => idx !== i)); }
+  function updateIngrediente(i: number, field: keyof DraftIngredient, val: string) {
+    setIngredientes(prev => prev.map((item, idx) => idx === i ? { ...item, [field]: val } : item));
+  }
+
+  // Live CMV preview
+  const cmvPreview = ingredientes.reduce((sum, ing) => {
+    const insumo = insumos?.find(ins => ins.id === ing.insumo_id);
+    if (!insumo || !ing.quantidade) return sum;
+    return sum + Number(ing.quantidade) * Number(insumo.preco_unitario) * Number(insumo.fator_correcao);
+  }, 0);
+  const rend = parseFloat(rendimento) || 0;
+  const custoPorcao = rend > 0 ? cmvPreview / rend : 0;
+  const produtoSelecionado = produtos?.find(p => p.id === produtoId);
+  const margemEstimada = produtoSelecionado && Number(produtoSelecionado.preco_venda) > 0
+    ? ((Number(produtoSelecionado.preco_venda) - cmvPreview - parseFloat(custoMaoObra || "0")) / Number(produtoSelecionado.preco_venda)) * 100
+    : null;
+
+  async function handleSave() {
+    if (!produtoId) { toast.error("Selecione um produto."); return; }
+    setSaving(true);
+    try {
+      const ficha = await createMutation.mutateAsync({
+        data: {
+          produto_id: produtoId,
+          rendimento: rend || null,
+          unidade_rendimento: unidadeRendimento || null,
+        },
+      });
+      const validIngs = ingredientes.filter(i => i.insumo_id && i.quantidade);
+      for (const ing of validIngs) {
+        await addItemMutation.mutateAsync({ id: ficha.id, data: { insumo_id: ing.insumo_id, quantidade: parseFloat(ing.quantidade) } });
+      }
+      qc.invalidateQueries({ queryKey: getListFichasQueryKey() });
+      toast.success("Ficha técnica criada!");
+      onCreated(ficha.id);
+    } catch { toast.error("Erro ao criar ficha técnica."); }
+    finally { setSaving(false); }
+  }
+
+  return (
+    <div className="bg-card border border-border rounded-2xl p-6 shadow-sm space-y-6 max-w-2xl" data-testid="nova-ficha-form">
+      <div>
+        <h2 className="text-xl font-bold mb-1">Nova Ficha Técnica</h2>
+        <p className="text-sm text-muted-foreground">Preencha todos os campos e adicione os ingredientes da receita.</p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label>Produto *</Label>
+          <Select value={produtoId} onValueChange={setProdutoId}>
+            <SelectTrigger data-testid="select-ficha-produto"><SelectValue placeholder="Selecione o produto..." /></SelectTrigger>
+            <SelectContent>{produtos?.map(p => <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-2">
+          <Label>Categoria</Label>
+          <Select value={categoria} onValueChange={setCategoria}>
+            <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
+            <SelectContent>{CATEGORIAS_FICHA.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <div className="space-y-2">
+          <Label>Rendimento</Label>
+          <Input type="number" step="0.001" placeholder="Ex: 12" value={rendimento} onChange={e => setRendimento(e.target.value)} data-testid="input-ficha-rendimento" />
+        </div>
+        <div className="space-y-2">
+          <Label>Unidade do rendimento</Label>
+          <Select value={unidadeRendimento} onValueChange={setUnidadeRendimento}>
+            <SelectTrigger data-testid="input-ficha-unidade"><SelectValue /></SelectTrigger>
+            <SelectContent>{UNIDADES_RENDIMENTO.map(u => <SelectItem key={u} value={u}>{u}</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-2">
+          <Label>Mão de obra (R$)</Label>
+          <Input type="number" step="0.01" placeholder="0,00" value={custoMaoObra} onChange={e => setCustoMaoObra(e.target.value)} />
+        </div>
+      </div>
+
+      {/* Ingredients section */}
+      <div>
+        <h3 className="font-semibold mb-3">Ingredientes</h3>
+        <div className="space-y-2">
+          {ingredientes.map((ing, i) => (
+            <div key={i} className="flex gap-2 items-start">
+              <div className="flex-1">
+                <Select value={ing.insumo_id} onValueChange={v => updateIngrediente(i, "insumo_id", v)}>
+                  <SelectTrigger><SelectValue placeholder="Selecione o ingrediente..." /></SelectTrigger>
+                  <SelectContent>{insumos?.map(ins => <SelectItem key={ins.id} value={ins.id}>{ins.nome} ({ins.unidade})</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <Input
+                type="number" step="0.001" placeholder="Qtd"
+                className="w-24"
+                value={ing.quantidade}
+                onChange={e => updateIngrediente(i, "quantidade", e.target.value)}
+              />
+              <span className="text-xs text-muted-foreground self-center w-8">
+                {insumos?.find(ins => ins.id === ing.insumo_id)?.unidade ?? ""}
+              </span>
+              {ingredientes.length > 1 && (
+                <Button variant="ghost" size="icon" type="button" className="h-9 w-9 shrink-0 text-destructive" onClick={() => removeIngrediente(i)}>
+                  <Trash2 size={14} />
+                </Button>
+              )}
+            </div>
+          ))}
+        </div>
+        <Button variant="outline" size="sm" className="mt-3 gap-1" type="button" onClick={addIngrediente}>
+          <Plus size={14} />Adicionar ingrediente
+        </Button>
+      </div>
+
+      {/* Observações */}
+      <div className="space-y-2">
+        <Label>Observações</Label>
+        <Textarea placeholder="Modo de preparo, dicas, notas..." value={observacoes} onChange={e => setObservacoes(e.target.value)} rows={3} />
+      </div>
+
+      {/* Live CMV preview */}
+      <div className="bg-muted/40 border border-border rounded-xl p-4 space-y-1.5 text-sm">
+        <p className="font-semibold text-foreground mb-2">Prévia de Custos</p>
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">CMV calculado</span>
+          <span className="font-semibold text-foreground">{fmt(cmvPreview)}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">Custo por {unidadeRendimento.replace("unidades", "unidade").replace("porções", "porção")}</span>
+          <span className="font-semibold text-foreground">{rend > 0 ? fmt(custoPorcao) : "-"}</span>
+        </div>
+        {margemEstimada !== null && (
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Margem estimada</span>
+            <span className={`font-semibold ${margemEstimada >= 30 ? "text-green-600" : margemEstimada >= 15 ? "text-amber-600" : "text-red-600"}`}>
+              {margemEstimada.toFixed(1)}%
+            </span>
+          </div>
+        )}
+      </div>
+
+      <div className="flex gap-3">
+        <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
+        <Button onClick={handleSave} disabled={saving || !produtoId}>
+          {saving ? "Salvando..." : "Salvar ficha"}
+        </Button>
+      </div>
     </div>
   );
 }
@@ -140,24 +295,11 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
 export default function FichaTecnica() {
   const qc = useQueryClient();
   const { data, isLoading } = useListFichas();
-  const { data: produtos } = useListProdutos();
-  const createMutation = useCreateFicha();
   const deleteMutation = useDeleteFicha();
 
-  const [open, setOpen] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
-
-  const form = useForm<FichaForm>({ resolver: zodResolver(fichaSchema), defaultValues: { produto_id: "", rendimento: undefined, unidade_rendimento: "" } });
-
-  async function onSubmit(values: FichaForm) {
-    try {
-      await createMutation.mutateAsync({ data: { produto_id: values.produto_id, rendimento: values.rendimento ?? null, unidade_rendimento: values.unidade_rendimento || null } });
-      toast.success("Ficha técnica criada!");
-      qc.invalidateQueries({ queryKey: getListFichasQueryKey() });
-      setOpen(false);
-    } catch { toast.error("Erro ao criar ficha técnica."); }
-  }
 
   async function handleDelete() {
     if (!deleteId) return;
@@ -171,6 +313,16 @@ export default function FichaTecnica() {
 
   if (detailId) return <FichaDetail fichaId={detailId} onBack={() => setDetailId(null)} />;
 
+  if (showForm) return (
+    <div className="space-y-6" data-testid="ficha-tecnica-page">
+      <div className="flex items-center gap-3">
+        <Button variant="ghost" size="icon" onClick={() => setShowForm(false)}><ArrowLeft size={18} /></Button>
+        <h1 className="text-2xl font-bold text-foreground">Nova Ficha Técnica</h1>
+      </div>
+      <NovaFichaForm onCancel={() => setShowForm(false)} onCreated={(id) => { setShowForm(false); setDetailId(id); }} />
+    </div>
+  );
+
   return (
     <div className="space-y-6" data-testid="ficha-tecnica-page">
       <div className="flex items-center justify-between">
@@ -178,7 +330,7 @@ export default function FichaTecnica() {
           <h1 className="text-2xl font-bold text-foreground">Fichas Técnicas</h1>
           <p className="text-sm text-muted-foreground mt-1">Composição e custo de cada receita</p>
         </div>
-        <Button onClick={() => setOpen(true)} data-testid="button-create-ficha"><Plus size={16} className="mr-2" />Nova Ficha</Button>
+        <Button onClick={() => setShowForm(true)} data-testid="button-create-ficha"><Plus size={16} className="mr-2" />Nova Ficha</Button>
       </div>
 
       {isLoading ? (
@@ -190,7 +342,7 @@ export default function FichaTecnica() {
             <p className="font-semibold">Nenhuma ficha técnica</p>
             <p className="text-sm text-muted-foreground mt-1">Crie fichas para calcular o CMV dos seus produtos</p>
           </div>
-          <Button onClick={() => setOpen(true)} data-testid="button-empty-create-ficha"><Plus size={16} className="mr-2" />Criar Ficha Técnica</Button>
+          <Button onClick={() => setShowForm(true)} data-testid="button-empty-create-ficha"><Plus size={16} className="mr-2" />Criar Ficha Técnica</Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -214,37 +366,6 @@ export default function FichaTecnica() {
           ))}
         </div>
       )}
-
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle>Nova Ficha Técnica</DialogTitle></DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField control={form.control} name="produto_id" render={({ field }) => (
-                <FormItem><FormLabel>Produto *</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl><SelectTrigger data-testid="select-ficha-produto"><SelectValue placeholder="Selecione o produto..." /></SelectTrigger></FormControl>
-                    <SelectContent>{produtos?.map(p => <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>)}</SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <div className="grid grid-cols-2 gap-4">
-                <FormField control={form.control} name="rendimento" render={({ field }) => (
-                  <FormItem><FormLabel>Rendimento</FormLabel><FormControl><Input type="number" step="0.001" {...field} placeholder="Ex: 12" data-testid="input-ficha-rendimento" /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={form.control} name="unidade_rendimento" render={({ field }) => (
-                  <FormItem><FormLabel>Unidade</FormLabel><FormControl><Input {...field} placeholder="Ex: unidades, fatias" data-testid="input-ficha-unidade" /></FormControl><FormMessage /></FormItem>
-                )} />
-              </div>
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-                <Button type="submit" disabled={createMutation.isPending} data-testid="button-submit-ficha">Criar Ficha</Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>

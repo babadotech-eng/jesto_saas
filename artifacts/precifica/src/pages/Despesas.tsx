@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -16,6 +17,53 @@ import { toast } from "sonner";
 function fmt(n: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(n);
 }
+
+const CATEGORIAS = [
+  {
+    grupo: "Matérias-Primas e Insumos",
+    itens: ["Ingredientes e alimentos", "Embalagens e descartáveis", "Temperos e condimentos", "Bebidas e líquidos", "Produtos de panificação e confeitaria"],
+  },
+  {
+    grupo: "Custos de Produção",
+    itens: ["Mão de obra direta", "Mão de obra terceirizada", "Gás e combustível de cozinha", "Utensílios e pequenos equipamentos", "Manutenção de equipamentos", "Uniformes e EPIs"],
+  },
+  {
+    grupo: "Infraestrutura e Utilidades",
+    itens: ["Aluguel do espaço", "Condomínio", "Energia elétrica", "Água e esgoto", "Internet e telefone", "IPTU"],
+  },
+  {
+    grupo: "Vendas e Delivery",
+    itens: ["Taxa de aplicativo (iFood, Rappi etc.)", "Taxa de cartão de crédito/débito", "Frete e entrega", "Embalagem para delivery", "Material de divulgação e panfletos"],
+  },
+  {
+    grupo: "Marketing e Digital",
+    itens: ["Publicidade nas redes sociais", "Criação de conteúdo", "Fotografia de produtos", "Site e domínio", "E-mail marketing"],
+  },
+  {
+    grupo: "Administrativo e Financeiro",
+    itens: ["Contador e escritório contábil", "Taxas bancárias", "IOF e tarifas financeiras", "Software de gestão", "Material de escritório"],
+  },
+  {
+    grupo: "Impostos e Obrigações Legais",
+    itens: ["MEI e Simples Nacional", "Alvará e licenças sanitárias", "Vigilância sanitária", "Certificações e registros"],
+  },
+  {
+    grupo: "Pessoal e RH",
+    itens: ["Salários e pró-labore", "Férias e 13º", "INSS e encargos", "Vale-transporte e alimentação", "Cursos e capacitações"],
+  },
+  {
+    grupo: "Limpeza e Higiene",
+    itens: ["Produtos de limpeza", "Higienização de equipamentos", "Controle de pragas", "Descarte de resíduos"],
+  },
+  {
+    grupo: "Transporte e Logística",
+    itens: ["Combustível próprio", "Manutenção de veículo", "Seguro do veículo", "Estacionamento"],
+  },
+  {
+    grupo: "Outros",
+    itens: ["Seguros em geral", "Despesas eventuais", "Perdas e desperdícios", "Outros não categorizados"],
+  },
+];
 
 const schema = z.object({
   descricao: z.string().min(1, "Descrição é obrigatória"),
@@ -37,7 +85,6 @@ export default function Despesas() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues });
-
   const total = data?.reduce((sum, d) => sum + d.valor, 0) ?? 0;
 
   function openCreate() { setEditingId(null); form.reset(defaultValues); setOpen(true); }
@@ -82,7 +129,6 @@ export default function Despesas() {
         <Button onClick={openCreate} data-testid="button-create-despesa"><Plus size={16} className="mr-2" />Nova Despesa</Button>
       </div>
 
-      {/* Total card */}
       <div className="bg-card border border-border rounded-xl p-5 flex items-center gap-4 shadow-sm">
         <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><Wallet size={22} /></div>
         <div>
@@ -145,16 +191,42 @@ export default function Despesas() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField control={form.control} name="descricao" render={({ field }) => (
-                <FormItem><FormLabel>Descrição *</FormLabel><FormControl><Input {...field} placeholder="Ex: Aluguel, Energia, Internet" data-testid="input-despesa-descricao" /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Descrição *</FormLabel><FormControl><Input {...field} placeholder="Ex: Aluguel do espaço" data-testid="input-despesa-descricao" /></FormControl><FormMessage /></FormItem>
               )} />
-              <div className="grid grid-cols-2 gap-4">
-                <FormField control={form.control} name="valor" render={({ field }) => (
-                  <FormItem><FormLabel>Valor (R$) *</FormLabel><FormControl><Input type="number" step="0.01" {...field} data-testid="input-despesa-valor" /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={form.control} name="categoria" render={({ field }) => (
-                  <FormItem><FormLabel>Categoria</FormLabel><FormControl><Input {...field} placeholder="Ex: Aluguel, Utilidades" data-testid="input-despesa-categoria" /></FormControl><FormMessage /></FormItem>
-                )} />
-              </div>
+
+              <FormField control={form.control} name="valor" render={({ field }) => (
+                <FormItem><FormLabel>Valor (R$) *</FormLabel><FormControl><Input type="number" step="0.01" {...field} data-testid="input-despesa-valor" /></FormControl><FormMessage /></FormItem>
+              )} />
+
+              {/* Categoria — grouped select */}
+              <FormField control={form.control} name="categoria" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Categoria</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                    <FormControl>
+                      <SelectTrigger data-testid="input-despesa-categoria">
+                        <SelectValue placeholder="Selecione uma categoria..." />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="max-h-72">
+                      {CATEGORIAS.map(grupo => (
+                        <div key={grupo.grupo}>
+                          <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/40 sticky top-0">
+                            {grupo.grupo}
+                          </div>
+                          {grupo.itens.map(item => (
+                            <SelectItem key={item} value={item} className="pl-4">
+                              {item}
+                            </SelectItem>
+                          ))}
+                        </div>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
                 <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending} data-testid="button-submit-despesa">Salvar</Button>
