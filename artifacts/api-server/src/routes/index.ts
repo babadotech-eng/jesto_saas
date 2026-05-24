@@ -9,6 +9,7 @@ import lancamentosRouter from "./lancamentos";
 import relatoriosRouter from "./relatorios";
 import assinaturasRouter from "./assinaturas";
 import perfisRouter from "./perfis";
+import funcionariosRouter from "./funcionarios";
 
 const router: IRouter = Router();
 
@@ -22,5 +23,6 @@ router.use(lancamentosRouter);
 router.use(relatoriosRouter);
 router.use(assinaturasRouter);
 router.use(perfisRouter);
+router.use(funcionariosRouter);
 
 export default router;

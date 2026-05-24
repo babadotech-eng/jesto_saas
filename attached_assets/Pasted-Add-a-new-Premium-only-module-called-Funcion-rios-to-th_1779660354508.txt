@@ -1,0 +1,178 @@
+Add a new Premium-only module called "Funcionários" to the existing app. Do not rebuild the app and do not add extra features beyond this scope.
+
+Context:
+- Existing app: React + Vite + Tailwind + Supabase
+- Existing modules already include produtos, insumos, ficha técnica, despesas e relatórios
+- Keep all text in Portuguese
+- Keep currency in BRL
+- Respect RLS and authenticated user scope
+- Keep implementation lightweight and stable
+
+Goal:
+Create a Premium module where the user can register employees and automatically calculate payroll totals so this value is included in fixed costs and premium reports.
+
+Scope for this round only:
+- Create Funcionários module
+- CRUD of employees
+- Payroll calculations
+- Include total payroll in fixed costs and premium reports
+
+Do NOT do in this round:
+- Excel import for employees
+- Product cost allocation / labor apportionment
+- PDF export
+
+1. Route and access
+- Add route: /funcionarios
+- Add sidebar item: "Funcionários"
+- Only Premium users can access it
+- If user is not premium, show:
+  "Este módulo está disponível apenas no plano Premium."
+  Button: "Fazer upgrade para Premium" → /planos
+
+2. Database
+Create this table if it does not exist:
+
+CREATE TABLE IF NOT EXISTS funcionarios (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  nome TEXT NOT NULL,
+  salario NUMERIC NOT NULL DEFAULT 0,
+  setor TEXT,
+  cargo TEXT,
+  tipo_contratacao TEXT NOT NULL,
+  vale_transporte NUMERIC DEFAULT 0,
+  vale_refeicao NUMERIC DEFAULT 0,
+  convenio_medico NUMERIC DEFAULT 0,
+  carga_horaria_mensal NUMERIC DEFAULT 220,
+  provisao_ferias_pct NUMERIC DEFAULT 11.11,
+  provisao_terco_ferias_pct NUMERIC DEFAULT 3.70,
+  provisao_decimo_terceiro_pct NUMERIC DEFAULT 8.33,
+  provisao_decimo_terceiro_ferias_pct NUMERIC DEFAULT 1.03,
+  inss_patronal_pct NUMERIC DEFAULT 20,
+  sat_rat_pct NUMERIC DEFAULT 1,
+  salario_educacao_pct NUMERIC DEFAULT 2.5,
+  sistema_s_pct NUMERIC DEFAULT 3.3,
+  fgts_pct NUMERIC DEFAULT 8,
+  fgts_rescisao_pct NUMERIC DEFAULT 4,
+  encargos_trabalhistas_pct NUMERIC DEFAULT 0,
+  encargos_sociais_pct NUMERIC DEFAULT 0,
+  encargos_totais_pct NUMERIC DEFAULT 0,
+  total_mensal NUMERIC DEFAULT 0,
+  valor_hora NUMERIC DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+Enable RLS and create policies so each user can only access their own rows.
+
+3. Calculations
+Auto-calculate live:
+- encargos_trabalhistas_pct =
+  provisao_ferias_pct +
+  provisao_terco_ferias_pct +
+  provisao_decimo_terceiro_pct +
+  provisao_decimo_terceiro_ferias_pct
+
+- encargos_sociais_pct =
+  inss_patronal_pct +
+  sat_rat_pct +
+  salario_educacao_pct +
+  sistema_s_pct +
+  fgts_pct +
+  fgts_rescisao_pct
+
+- encargos_totais_pct =
+  encargos_trabalhistas_pct + encargos_sociais_pct
+
+- valor_encargos =
+  salario * encargos_totais_pct / 100
+
+- total_mensal =
+  salario + valor_encargos + vale_transporte + vale_refeicao + convenio_medico
+
+- valor_hora =
+  total_mensal / carga_horaria_mensal
+
+If carga_horaria_mensal is empty or zero, use 220.
+
+4. UI
+Create page /funcionarios with:
+- Summary cards:
+  - Total da folha mensal
+  - Total de encargos
+  - Custo médio por funcionário
+  - Valor/hora médio
+
+- Employee table with:
+  - Nome
+  - Cargo
+  - Setor
+  - Contratação
+  - Salário
+  - Encargos totais (%)
+  - Total mensal
+  - Valor/hora
+  - Actions: editar / excluir
+
+- Button: "Novo Funcionário"
+
+Form fields:
+- Nome do funcionário
+- Salário
+- Setor
+- Cargo
+- Contratação (CLT, Estágio, PJ)
+- Vale transporte
+- Vale refeição
+- Convênio médico
+- Carga horária mensal
+
+Sections:
+- Encargos trabalhistas:
+  - Provisão Férias +30%
+  - Provisão 13º salário
+  - Provisão 13º sobre férias
+  - Total Encargos Trabalhistas (%) read-only
+
+- Encargos sociais:
+  - INSS
+  - SAT/RAT
+  - Salário Educação
+  - INCRA/SEST/SEBRAE/SENAT
+  - FGTS
+  - FGTS + Provisão de Rescisão Contratual
+  - Total Encargos Sociais (%) read-only
+
+- Total geral:
+  - Total Geral dos Encargos (%) read-only
+  - Total Mensal read-only
+  - Valor/Hora read-only
+
+5. Integration
+- Add payroll total to fixed monthly costs
+- Include payroll total in:
+  - Simulação de Cenários
+  - Ponto de Equilíbrio
+  - Análise Individual de Produto
+
+6. Official links
+Add an info block in the module:
+"Consulte alíquotas e tabelas oficiais atualizadas em:"
+- https://www.gov.br/esocial/pt-br
+- https://frontend.esocial.gov.br/adm/
+
+Add this note:
+"As alíquotas podem variar conforme regime tributário, CNAE, grau de risco e tipo de contratação. Por isso, os campos são editáveis."
+
+Rules:
+- Reuse existing components and patterns
+- Do not refactor unrelated modules
+- Use toast messages for success/error
+- Keep everything mobile responsive
+- Do not implement any feature outside this scope
+
+When finished, return:
+1. Summary of implementation
+2. Files changed
+3. SQL created/applied
+4. Manual tests I should run

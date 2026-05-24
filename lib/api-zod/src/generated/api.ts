@@ -346,6 +346,135 @@ export const DeleteFichaItemParams = zod.object({
 
 
 /**
+ * @summary List employees (Premium only)
+ */
+export const ListFuncionariosResponseItem = zod.object({
+  "id": zod.string(),
+  "nome": zod.string(),
+  "salario": zod.number(),
+  "setor": zod.string().nullish(),
+  "cargo": zod.string().nullish(),
+  "tipo_contratacao": zod.string(),
+  "vale_transporte": zod.number().optional(),
+  "vale_refeicao": zod.number().optional(),
+  "convenio_medico": zod.number().optional(),
+  "carga_horaria_mensal": zod.number().optional(),
+  "provisao_ferias_pct": zod.number().optional(),
+  "provisao_terco_ferias_pct": zod.number().optional(),
+  "provisao_decimo_terceiro_pct": zod.number().optional(),
+  "provisao_decimo_terceiro_ferias_pct": zod.number().optional(),
+  "inss_patronal_pct": zod.number().optional(),
+  "sat_rat_pct": zod.number().optional(),
+  "salario_educacao_pct": zod.number().optional(),
+  "sistema_s_pct": zod.number().optional(),
+  "fgts_pct": zod.number().optional(),
+  "fgts_rescisao_pct": zod.number().optional(),
+  "encargos_trabalhistas_pct": zod.number().optional(),
+  "encargos_sociais_pct": zod.number().optional(),
+  "encargos_totais_pct": zod.number(),
+  "valor_encargos": zod.number().optional(),
+  "total_mensal": zod.number(),
+  "valor_hora": zod.number(),
+  "created_at": zod.string().nullish()
+})
+export const ListFuncionariosResponse = zod.array(ListFuncionariosResponseItem)
+
+
+/**
+ * @summary Create employee
+ */
+export const CreateFuncionarioBody = zod.object({
+  "nome": zod.string(),
+  "salario": zod.number(),
+  "setor": zod.string().nullish(),
+  "cargo": zod.string().nullish(),
+  "tipo_contratacao": zod.string(),
+  "vale_transporte": zod.number().optional(),
+  "vale_refeicao": zod.number().optional(),
+  "convenio_medico": zod.number().optional(),
+  "carga_horaria_mensal": zod.number().optional(),
+  "provisao_ferias_pct": zod.number().optional(),
+  "provisao_terco_ferias_pct": zod.number().optional(),
+  "provisao_decimo_terceiro_pct": zod.number().optional(),
+  "provisao_decimo_terceiro_ferias_pct": zod.number().optional(),
+  "inss_patronal_pct": zod.number().optional(),
+  "sat_rat_pct": zod.number().optional(),
+  "salario_educacao_pct": zod.number().optional(),
+  "sistema_s_pct": zod.number().optional(),
+  "fgts_pct": zod.number().optional(),
+  "fgts_rescisao_pct": zod.number().optional()
+})
+
+
+/**
+ * @summary Update employee
+ */
+export const UpdateFuncionarioParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const UpdateFuncionarioBody = zod.object({
+  "nome": zod.string(),
+  "salario": zod.number(),
+  "setor": zod.string().nullish(),
+  "cargo": zod.string().nullish(),
+  "tipo_contratacao": zod.string(),
+  "vale_transporte": zod.number().optional(),
+  "vale_refeicao": zod.number().optional(),
+  "convenio_medico": zod.number().optional(),
+  "carga_horaria_mensal": zod.number().optional(),
+  "provisao_ferias_pct": zod.number().optional(),
+  "provisao_terco_ferias_pct": zod.number().optional(),
+  "provisao_decimo_terceiro_pct": zod.number().optional(),
+  "provisao_decimo_terceiro_ferias_pct": zod.number().optional(),
+  "inss_patronal_pct": zod.number().optional(),
+  "sat_rat_pct": zod.number().optional(),
+  "salario_educacao_pct": zod.number().optional(),
+  "sistema_s_pct": zod.number().optional(),
+  "fgts_pct": zod.number().optional(),
+  "fgts_rescisao_pct": zod.number().optional()
+})
+
+export const UpdateFuncionarioResponse = zod.object({
+  "id": zod.string(),
+  "nome": zod.string(),
+  "salario": zod.number(),
+  "setor": zod.string().nullish(),
+  "cargo": zod.string().nullish(),
+  "tipo_contratacao": zod.string(),
+  "vale_transporte": zod.number().optional(),
+  "vale_refeicao": zod.number().optional(),
+  "convenio_medico": zod.number().optional(),
+  "carga_horaria_mensal": zod.number().optional(),
+  "provisao_ferias_pct": zod.number().optional(),
+  "provisao_terco_ferias_pct": zod.number().optional(),
+  "provisao_decimo_terceiro_pct": zod.number().optional(),
+  "provisao_decimo_terceiro_ferias_pct": zod.number().optional(),
+  "inss_patronal_pct": zod.number().optional(),
+  "sat_rat_pct": zod.number().optional(),
+  "salario_educacao_pct": zod.number().optional(),
+  "sistema_s_pct": zod.number().optional(),
+  "fgts_pct": zod.number().optional(),
+  "fgts_rescisao_pct": zod.number().optional(),
+  "encargos_trabalhistas_pct": zod.number().optional(),
+  "encargos_sociais_pct": zod.number().optional(),
+  "encargos_totais_pct": zod.number(),
+  "valor_encargos": zod.number().optional(),
+  "total_mensal": zod.number(),
+  "valor_hora": zod.number(),
+  "created_at": zod.string().nullish()
+})
+
+
+/**
+ * @summary Delete employee
+ */
+export const DeleteFuncionarioParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+
+/**
  * @summary List fixed costs
  */
 export const ListDespesasResponseItem = zod.object({

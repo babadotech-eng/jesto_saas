@@ -2,6 +2,7 @@ import { Router } from "express";
 import { eq, and, gte, lte, desc } from "drizzle-orm";
 import { db, produtosTable, despesasFixasTable, lancamentosTable, fichasTecnicasTable, fichaItensTable, insumosTable } from "@workspace/db";
 import { requireAuth, getUserId } from "../middlewares/auth";
+import { calcTotalFolhaMensal } from "./funcionarios";
 
 const router = Router();
 
@@ -56,7 +57,8 @@ router.get("/relatorios/dashboard", requireAuth, async (req, res): Promise<void>
 
   const receitaTotal = lancamentos.filter(l => l.tipo === "receita").reduce((s, l) => s + Number(l.valor), 0);
   const custoLancamentos = lancamentos.filter(l => l.tipo === "despesa").reduce((s, l) => s + Number(l.valor), 0);
-  const custosTotais = custoLancamentos + despesas.reduce((s, d) => s + Number(d.valor), 0);
+  const folhaTotal = await calcTotalFolhaMensal(userId);
+  const custosTotais = custoLancamentos + despesas.reduce((s, d) => s + Number(d.valor), 0) + folhaTotal;
 
   const margens = await Promise.all(produtos.map(p => calcMargemForProduto(userId, p)));
   const margemMedia = margens.length > 0 ? margens.reduce((s, m) => s + m.margemPct, 0) / margens.length : 0;
@@ -139,7 +141,8 @@ router.get("/relatorios/ponto-equilibrio", requireAuth, async (req, res): Promis
     db.select().from(produtosTable).where(eq(produtosTable.userId, userId)),
   ]);
 
-  const despesasTotal = despesas.reduce((s, d) => s + Number(d.valor), 0);
+  const folhaTotal = await calcTotalFolhaMensal(userId);
+  const despesasTotal = despesas.reduce((s, d) => s + Number(d.valor), 0) + folhaTotal;
   const margens = await Promise.all(produtos.map(p => calcMargemForProduto(userId, p)));
   const margemMedia = margens.length > 0 ? margens.reduce((s, m) => s + m.margemPct, 0) / margens.length : 0;
   const margemMediaDecimal = margemMedia / 100;

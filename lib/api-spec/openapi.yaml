@@ -25,6 +25,8 @@ tags:
     description: Reports and analytics
   - name: assinaturas
     description: Subscriptions
+  - name: funcionarios
+    description: Employees and payroll (Premium)
 
 paths:
   /healthz:
@@ -370,6 +372,65 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        "204":
+          description: Deleted
+
+  /funcionarios:
+    get:
+      operationId: listFuncionarios
+      tags: [funcionarios]
+      summary: List employees (Premium only)
+      responses:
+        "200":
+          description: List
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Funcionario" }
+        "403":
+          description: Premium required
+    post:
+      operationId: createFuncionario
+      tags: [funcionarios]
+      summary: Create employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/FuncionarioInput" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Funcionario" }
+
+  /funcionarios/{id}:
+    put:
+      operationId: updateFuncionario
+      tags: [funcionarios]
+      summary: Update employee
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/FuncionarioInput" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Funcionario" }
+    delete:
+      operationId: deleteFuncionario
+      tags: [funcionarios]
+      summary: Delete employee
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
       responses:
         "204":
           description: Deleted
@@ -852,6 +913,62 @@ components:
         categoria:
           type: ["string", "null"]
       required: [descricao, valor]
+
+    Funcionario:
+      type: object
+      properties:
+        id: { type: string }
+        nome: { type: string }
+        salario: { type: number }
+        setor: { type: ["string", "null"] }
+        cargo: { type: ["string", "null"] }
+        tipo_contratacao: { type: string }
+        vale_transporte: { type: number }
+        vale_refeicao: { type: number }
+        convenio_medico: { type: number }
+        carga_horaria_mensal: { type: number }
+        provisao_ferias_pct: { type: number }
+        provisao_terco_ferias_pct: { type: number }
+        provisao_decimo_terceiro_pct: { type: number }
+        provisao_decimo_terceiro_ferias_pct: { type: number }
+        inss_patronal_pct: { type: number }
+        sat_rat_pct: { type: number }
+        salario_educacao_pct: { type: number }
+        sistema_s_pct: { type: number }
+        fgts_pct: { type: number }
+        fgts_rescisao_pct: { type: number }
+        encargos_trabalhistas_pct: { type: number }
+        encargos_sociais_pct: { type: number }
+        encargos_totais_pct: { type: number }
+        valor_encargos: { type: number }
+        total_mensal: { type: number }
+        valor_hora: { type: number }
+        created_at: { type: ["string", "null"] }
+      required: [id, nome, salario, tipo_contratacao, total_mensal, valor_hora, encargos_totais_pct]
+
+    FuncionarioInput:
+      type: object
+      properties:
+        nome: { type: string }
+        salario: { type: number }
+        setor: { type: ["string", "null"] }
+        cargo: { type: ["string", "null"] }
+        tipo_contratacao: { type: string }
+        vale_transporte: { type: number }
+        vale_refeicao: { type: number }
+        convenio_medico: { type: number }
+        carga_horaria_mensal: { type: number }
+        provisao_ferias_pct: { type: number }
+        provisao_terco_ferias_pct: { type: number }
+        provisao_decimo_terceiro_pct: { type: number }
+        provisao_decimo_terceiro_ferias_pct: { type: number }
+        inss_patronal_pct: { type: number }
+        sat_rat_pct: { type: number }
+        salario_educacao_pct: { type: number }
+        sistema_s_pct: { type: number }
+        fgts_pct: { type: number }
+        fgts_rescisao_pct: { type: number }
+      required: [nome, salario, tipo_contratacao]
 
     Lancamento:
       type: object

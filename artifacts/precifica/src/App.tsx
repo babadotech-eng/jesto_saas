@@ -20,6 +20,7 @@ import Despesas from "@/pages/Despesas";
 import Lancamentos from "@/pages/Lancamentos";
 import Relatorios from "@/pages/Relatorios";
 import Configuracoes from "@/pages/Configuracoes";
+import Funcionarios from "@/pages/Funcionarios";
 import Onboarding from "@/pages/Onboarding";
 import { usePerfil } from "@/hooks/usePerfil";
 
@@ -83,6 +84,7 @@ function Router() {
       <Route path="/despesas"><ProtectedRoute component={Despesas} /></Route>
       <Route path="/lancamentos"><ProtectedRoute component={Lancamentos} /></Route>
       <Route path="/relatorios"><ProtectedRoute component={Relatorios} /></Route>
+      <Route path="/funcionarios"><ProtectedRoute component={Funcionarios} /></Route>
       <Route path="/configuracoes"><ProtectedRoute component={Configuracoes} /></Route>
       <Route component={NotFound} />
     </Switch>

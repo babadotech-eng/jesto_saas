@@ -1,4 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
+import { useAssinatura } from "@/hooks/useAssinatura";
 import { Link, useLocation } from "wouter";
 import { 
   LayoutDashboard, 
@@ -9,6 +10,7 @@ import {
   ArrowRightLeft, 
   BarChart3, 
   Settings,
+  Users,
   LogOut
 } from "lucide-react";
 import { ReactNode } from "react";
@@ -21,12 +23,16 @@ const navigation = [
   { name: "Despesas", href: "/despesas", icon: Wallet },
   { name: "Lançamentos", href: "/lancamentos", icon: ArrowRightLeft },
   { name: "Relatórios", href: "/relatorios", icon: BarChart3 },
+  { name: "Funcionários", href: "/funcionarios", icon: Users, premium: true },
   { name: "Configurações", href: "/configuracoes", icon: Settings },
 ];
 
 export default function Layout({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const { signOut } = useAuth();
+  const { data: assinatura } = useAssinatura();
+  const isPremium = assinatura?.plano === "premium";
+  const visibleNav = navigation.filter(item => !item.premium || isPremium);
 
   return (
     <div className="flex min-h-screen w-full bg-gradient-to-bl from-[#A1A1A1]/30 to-[#EFEFEF]">
@@ -42,7 +48,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         </div>
         
         <nav className="flex-1 py-6 px-3 flex flex-col gap-1 overflow-y-auto">
-          {navigation.map((item) => {
+          {visibleNav.map((item) => {
             const isActive = location === item.href;
             return (
               <Link 

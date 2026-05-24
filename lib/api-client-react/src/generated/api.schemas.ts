@@ -175,6 +175,63 @@ export interface DespesaInput {
   categoria?: string | null;
 }
 
+export interface Funcionario {
+  id: string;
+  nome: string;
+  salario: number;
+  /** @nullable */
+  setor?: string | null;
+  /** @nullable */
+  cargo?: string | null;
+  tipo_contratacao: string;
+  vale_transporte?: number;
+  vale_refeicao?: number;
+  convenio_medico?: number;
+  carga_horaria_mensal?: number;
+  provisao_ferias_pct?: number;
+  provisao_terco_ferias_pct?: number;
+  provisao_decimo_terceiro_pct?: number;
+  provisao_decimo_terceiro_ferias_pct?: number;
+  inss_patronal_pct?: number;
+  sat_rat_pct?: number;
+  salario_educacao_pct?: number;
+  sistema_s_pct?: number;
+  fgts_pct?: number;
+  fgts_rescisao_pct?: number;
+  encargos_trabalhistas_pct?: number;
+  encargos_sociais_pct?: number;
+  encargos_totais_pct: number;
+  valor_encargos?: number;
+  total_mensal: number;
+  valor_hora: number;
+  /** @nullable */
+  created_at?: string | null;
+}
+
+export interface FuncionarioInput {
+  nome: string;
+  salario: number;
+  /** @nullable */
+  setor?: string | null;
+  /** @nullable */
+  cargo?: string | null;
+  tipo_contratacao: string;
+  vale_transporte?: number;
+  vale_refeicao?: number;
+  convenio_medico?: number;
+  carga_horaria_mensal?: number;
+  provisao_ferias_pct?: number;
+  provisao_terco_ferias_pct?: number;
+  provisao_decimo_terceiro_pct?: number;
+  provisao_decimo_terceiro_ferias_pct?: number;
+  inss_patronal_pct?: number;
+  sat_rat_pct?: number;
+  salario_educacao_pct?: number;
+  sistema_s_pct?: number;
+  fgts_pct?: number;
+  fgts_rescisao_pct?: number;
+}
+
 export type LancamentoTipo = typeof LancamentoTipo[keyof typeof LancamentoTipo];
 
 

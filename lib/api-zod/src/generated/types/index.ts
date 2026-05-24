@@ -19,6 +19,8 @@ export * from './fichaItemInput';
 export * from './fichaTecnica';
 export * from './fichaTecnicaDetalhada';
 export * from './fluxoDiario';
+export * from './funcionario';
+export * from './funcionarioInput';
 export * from './healthStatus';
 export * from './insumo';
 export * from './insumoInput';
