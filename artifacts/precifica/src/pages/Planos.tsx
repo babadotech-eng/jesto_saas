@@ -31,7 +31,7 @@ export default function Planos() {
               className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${anual ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
               onClick={() => setAnual(true)}
             >
-              Anual <span className="ml-1 text-xs opacity-80">(Economize 15%)</span>
+              Anual <span className="ml-1 text-xs opacity-80">2 meses grátis</span>
             </button>
           </div>
         </div>

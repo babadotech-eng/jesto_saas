@@ -139,19 +139,19 @@ export default function Painel() {
   }, {});
 
   return (
-    <div className="-m-8 min-h-full bg-[#F3F4F6] p-7" data-testid="painel-page">
+    <div className="-m-4 sm:-m-6 md:-m-8 min-h-full bg-gray-100 p-4 sm:p-6 md:p-7" data-testid="painel-page">
 
       {/* ── HEADER ──────────────────────────────────────────────────────── */}
-      <div className="flex items-start justify-between mb-5">
-        <div>
+      <div className="flex items-start justify-between mb-5 gap-4">
+        <div className="min-w-0">
           <p className="text-zinc-500 text-sm font-medium mb-0.5">{greeting}</p>
-          <h1 className="text-4xl font-black text-zinc-900 tracking-tight leading-none">
+          <h1 className="text-2xl sm:text-4xl font-black text-zinc-900 tracking-tight leading-none truncate">
             {displayName
               ? displayName.charAt(0).toUpperCase() + displayName.slice(1)
               : user?.email?.split("@")[0]}
           </h1>
         </div>
-        <div className="flex items-center gap-8">
+        <div className="hidden sm:flex items-center gap-4 md:gap-8 shrink-0">
           {[
             { icon: Package, value: summary?.total_produtos ?? 0, label: "Produtos" },
             { icon: FileText, value: summary?.total_fichas ?? 0, label: "Fichas" },
@@ -162,14 +162,14 @@ export default function Painel() {
                 <Icon size={13} />
                 <span className="text-[11px] font-medium">{label}</span>
               </div>
-              <span className="text-4xl font-black text-zinc-900 leading-none tabular-nums">{value}</span>
+              <span className="text-3xl md:text-4xl font-black text-zinc-900 leading-none tabular-nums">{value}</span>
             </div>
           ))}
         </div>
       </div>
 
       {/* ── METRIC PILLS ────────────────────────────────────────────────── */}
-      <div className="flex gap-2.5 mb-5">
+      <div className="grid grid-cols-2 sm:flex gap-2.5 mb-5">
         <MetricPill label="Receita" pct={maxVal > 0 ? (receitaTotal / maxVal) * 100 : 0} variant="amber" />
         <MetricPill label="Custos" pct={maxVal > 0 ? (custosTotal / maxVal) * 100 : 0} variant="dark" />
         <MetricPill label="Margem Média" pct={margem} variant="stripe" />
@@ -177,7 +177,7 @@ export default function Painel() {
       </div>
 
       {/* ── MAIN GRID ───────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-[200px_1fr_1fr_200px] gap-3 mb-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-[200px_1fr_1fr_200px] gap-3 mb-3">
 
         {/* Col 1 — Dark summary */}
         <div className="bg-zinc-900 rounded-2xl p-5 flex flex-col justify-between text-white min-h-[220px]">
@@ -298,7 +298,7 @@ export default function Painel() {
       </div>
 
       {/* ── BOTTOM ROW ──────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-[200px_1fr_200px] gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-[200px_1fr_200px] gap-3">
 
         {/* Col 1 — Despesas accordion */}
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#E5E7EB]">

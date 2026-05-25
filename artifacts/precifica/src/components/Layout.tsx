@@ -35,7 +35,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const visibleNav = navigation.filter(item => !item.premium || isPremium);
 
   return (
-    <div className="flex min-h-screen w-full bg-gradient-to-bl from-[#A1A1A1]/30 to-[#EFEFEF]">
+    <div className="flex min-h-screen w-full bg-gray-100">
       {/* Sidebar */}
       <aside className="w-64 bg-[#111827] text-white border-r border-zinc-800 hidden md:flex flex-col">
         <div className="h-16 flex items-center px-6 border-b border-zinc-800">
@@ -83,7 +83,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <header className="h-16 bg-white border-b border-[#E5E7EB] flex items-center px-8 md:hidden shadow-sm">
            <div className="font-bold text-lg text-amber-500">Precifica</div>
         </header>
-        <div className="flex-1 p-8 overflow-y-auto bg-gradient-to-bl from-[#A1A1A1]/30 to-[#EFEFEF]">
+        <div className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto bg-gray-100">
           {children}
         </div>
       </main>
