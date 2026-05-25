@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useListProdutos, useCreateProduto, useUpdateProduto, useDeleteProduto, getListProdutosQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Search, Pencil, Trash2, Package, HelpCircle } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Package, HelpCircle, Download, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
+import * as XLSX from "xlsx";
 
 function fmt(n: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(n);
@@ -63,6 +64,14 @@ const defaultValues: FormValues = {
   imposto_pct: 0, taxa_cartao_pct: 0, taxa_app_pct: 0, comissao_pct: 0, taxa_vr_pct: 0,
 };
 
+interface ImportRow {
+  nome: string; categoria: string | null;
+  preco_venda: number; custo_mao_obra: number; frete: number;
+  imposto_pct: number; taxa_cartao_pct: number; taxa_app_pct: number;
+  comissao_pct: number; taxa_vr_pct: number;
+  valid: boolean; error?: string;
+}
+
 export default function Produtos() {
   const qc = useQueryClient();
   const { data, isLoading } = useListProdutos();
@@ -74,6 +83,10 @@ export default function Produtos() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [importOpen, setImportOpen] = useState(false);
+  const [importRows, setImportRows] = useState<ImportRow[]>([]);
+  const [importing, setImporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues });
 
@@ -116,6 +129,99 @@ export default function Produtos() {
     setDeleteId(null);
   }
 
+  // ── Excel template download ──────────────────────────────────────────────
+  function downloadTemplate() {
+    const headers = [
+      "nome", "categoria", "preco_venda", "custo_mao_obra", "frete",
+      "imposto_pct", "taxa_cartao_pct", "taxa_app_pct", "comissao_pct", "taxa_vr_pct",
+    ];
+    const ws = XLSX.utils.aoa_to_sheet([
+      headers,
+      ["Marmita fitness", "Marmitas", 22.90, 4.50, 0, 6, 2.5, 0, 0, 0],
+      ["Bolo de cenoura", "Bolos", 45.00, 8.00, 0, 6, 0, 12, 0, 0],
+      ["Coxinha frango", "Salgados", 5.50, 1.20, 0, 0, 2.5, 15, 5, 0],
+    ]);
+    const headerStyle = {
+      fill: { patternType: "solid", fgColor: { rgb: "A1A1A1" } },
+      font: { bold: true, color: { rgb: "FFFFFF" } },
+      alignment: { horizontal: "center", vertical: "center" },
+      protection: { locked: true },
+    };
+    headers.forEach((_, i) => {
+      const cellRef = XLSX.utils.encode_cell({ r: 0, c: i });
+      if (!ws[cellRef]) ws[cellRef] = { v: headers[i], t: "s" };
+      ws[cellRef].s = headerStyle;
+    });
+    ws["!cols"] = [
+      { wch: 25 }, { wch: 16 }, { wch: 14 }, { wch: 16 }, { wch: 10 },
+      { wch: 14 }, { wch: 16 }, { wch: 14 }, { wch: 14 }, { wch: 13 },
+    ];
+    ws["!freeze"] = { xSplit: 0, ySplit: 1 };
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Produtos");
+    XLSX.writeFile(wb, "produtos_modelo.xlsx");
+    toast.success("Planilha modelo baixada!");
+  }
+
+  // ── Excel import parse ───────────────────────────────────────────────────
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const rawData = new Uint8Array(ev.target!.result as ArrayBuffer);
+      const wb = XLSX.read(rawData, { type: "array" });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows: Record<string, unknown>[] = XLSX.utils.sheet_to_json(ws);
+      const parsed: ImportRow[] = rows.map(r => {
+        const nome = String(r["nome"] ?? "").trim();
+        const categoria = r["categoria"] ? String(r["categoria"]).trim() : null;
+        const preco_venda = Number(r["preco_venda"]);
+        const custo_mao_obra = Number(r["custo_mao_obra"] ?? 0) || 0;
+        const frete = Number(r["frete"] ?? 0) || 0;
+        const imposto_pct = Number(r["imposto_pct"] ?? 0) || 0;
+        const taxa_cartao_pct = Number(r["taxa_cartao_pct"] ?? 0) || 0;
+        const taxa_app_pct = Number(r["taxa_app_pct"] ?? 0) || 0;
+        const comissao_pct = Number(r["comissao_pct"] ?? 0) || 0;
+        const taxa_vr_pct = Number(r["taxa_vr_pct"] ?? 0) || 0;
+        const base = { nome, categoria, preco_venda, custo_mao_obra, frete, imposto_pct, taxa_cartao_pct, taxa_app_pct, comissao_pct, taxa_vr_pct };
+        if (!nome) return { ...base, valid: false, error: "Nome obrigatório" };
+        if (isNaN(preco_venda) || preco_venda < 0) return { ...base, valid: false, error: "Preço inválido" };
+        return { ...base, valid: true };
+      });
+      setImportRows(parsed);
+      setImportOpen(true);
+    };
+    reader.readAsArrayBuffer(file);
+    e.target.value = "";
+  }
+
+  async function confirmImport() {
+    const valid = importRows.filter(r => r.valid);
+    const errors = importRows.filter(r => !r.valid).length;
+    if (!valid.length) { toast.error("Nenhuma linha válida para importar."); return; }
+    setImporting(true);
+    let successCount = 0;
+    for (const row of valid) {
+      try {
+        await createMutation.mutateAsync({
+          data: {
+            nome: row.nome, categoria: row.categoria,
+            preco_venda: row.preco_venda, custo_mao_obra: row.custo_mao_obra, frete: row.frete,
+            imposto_pct: row.imposto_pct, taxa_cartao_pct: row.taxa_cartao_pct,
+            taxa_app_pct: row.taxa_app_pct, comissao_pct: row.comissao_pct, taxa_vr_pct: row.taxa_vr_pct,
+          }
+        });
+        successCount++;
+      } catch { /* skip row errors */ }
+    }
+    setImporting(false);
+    qc.invalidateQueries({ queryKey: getListProdutosQueryKey() });
+    setImportOpen(false);
+    setImportRows([]);
+    toast.success(`${successCount} produtos importados.${errors > 0 ? ` ${errors} erros ignorados.` : ""}`);
+  }
+
   const watchedValues = form.watch();
   const editingProduto = editingId ? data?.find(p => p.id === editingId) : null;
   const cmv = Number(editingProduto?.cmv ?? 0);
@@ -132,12 +238,21 @@ export default function Produtos() {
 
   return (
     <div className="space-y-6" data-testid="produtos-page">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Produtos</h1>
           <p className="text-sm text-muted-foreground mt-1">Gerencie seus produtos e precificações</p>
         </div>
-        <Button onClick={openCreate} data-testid="button-create-produto"><Plus size={16} className="mr-2" />Novo Produto</Button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button variant="outline" size="sm" onClick={downloadTemplate} className="gap-1.5">
+            <Download size={14} />Baixar planilha modelo
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} className="gap-1.5">
+            <Upload size={14} />Importar Excel
+          </Button>
+          <input ref={fileInputRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleFileChange} />
+          <Button onClick={openCreate} data-testid="button-create-produto"><Plus size={16} className="mr-2" />Novo Produto</Button>
+        </div>
       </div>
 
       <div className="relative">
@@ -190,6 +305,7 @@ export default function Produtos() {
         </div>
       )}
 
+      {/* Create/Edit Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -298,6 +414,48 @@ export default function Produtos() {
               </DialogFooter>
             </form>
           </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Import Preview Dialog */}
+      <Dialog open={importOpen} onOpenChange={v => { if (!v) { setImportOpen(false); setImportRows([]); } }}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Prévia da Importação</DialogTitle></DialogHeader>
+          <div className="text-sm text-muted-foreground mb-3">
+            {importRows.filter(r => r.valid).length} linhas válidas · {importRows.filter(r => !r.valid).length} com erros (serão ignoradas)
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm border border-border rounded-xl overflow-hidden">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="text-left px-3 py-2 font-medium text-muted-foreground">Nome</th>
+                  <th className="text-left px-3 py-2 font-medium text-muted-foreground hidden sm:table-cell">Categoria</th>
+                  <th className="text-right px-3 py-2 font-medium text-muted-foreground">Preço</th>
+                  <th className="px-3 py-2"></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {importRows.map((r, i) => (
+                  <tr key={i} className={r.valid ? "" : "bg-red-50"}>
+                    <td className="px-3 py-2">{r.nome || <span className="text-red-500 italic">vazio</span>}</td>
+                    <td className="px-3 py-2 text-muted-foreground hidden sm:table-cell">{r.categoria ?? "-"}</td>
+                    <td className="px-3 py-2 text-right">{fmt(r.preco_venda)}</td>
+                    <td className="px-3 py-2 text-right">
+                      {r.valid
+                        ? <span className="text-green-600 text-xs">✓</span>
+                        : <span className="text-red-500 text-xs" title={r.error}><X size={12} /></span>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setImportOpen(false); setImportRows([]); }}>Cancelar</Button>
+            <Button onClick={confirmImport} disabled={importing || !importRows.some(r => r.valid)}>
+              {importing ? "Importando..." : `Importar ${importRows.filter(r => r.valid).length} produtos`}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 

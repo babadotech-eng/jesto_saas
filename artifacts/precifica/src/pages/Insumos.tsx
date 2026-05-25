@@ -352,28 +352,7 @@ export default function Insumos() {
 
               <div className="grid grid-cols-2 gap-4">
                 <FormField control={form.control} name="preco_unitario" render={({ field }) => (
-                  <FormItem><FormLabel>Preço/unid. (R$)</FormLabel><FormControl><Input type="number" step="0.01" {...field} data-testid="input-insumo-preco" /></FormControl><FormMessage /></FormItem>
-                )} />
-
-                <FormField control={form.control} name="fator_correcao" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center gap-1">
-                      Fator Correção
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <button type="button" className="text-muted-foreground hover:text-foreground transition-colors">
-                            <HelpCircle size={13} />
-                          </button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-72 text-sm" side="top">
-                          <p className="font-semibold mb-1">Fator de correção</p>
-                          <p className="text-muted-foreground">Representa a perda no preparo. Ex: 1kg de frango comprado rende 0,75kg limpo → fator = <strong>1,33</strong>. Preenchendo Peso Bruto e Líquido abaixo, o fator é calculado automaticamente.</p>
-                        </PopoverContent>
-                      </Popover>
-                    </FormLabel>
-                    <FormControl><Input type="number" step="0.001" {...field} data-testid="input-insumo-fator" /></FormControl>
-                    <FormMessage />
-                  </FormItem>
+                  <FormItem className="col-span-2"><FormLabel>Preço/unid. (R$)</FormLabel><FormControl><Input type="number" step="0.01" {...field} data-testid="input-insumo-preco" /></FormControl><FormMessage /></FormItem>
                 )} />
 
                 <FormField control={form.control} name="peso_bruto" render={({ field }) => (
@@ -408,6 +387,38 @@ export default function Insumos() {
                       </Popover>
                     </FormLabel>
                     <FormControl><Input type="number" step="0.001" placeholder="Ex: 0.75" {...field} data-testid="input-insumo-peso-liquido" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
+                <FormField control={form.control} name="fator_correcao" render={({ field }) => (
+                  <FormItem className="col-span-2">
+                    <FormLabel className="flex items-center gap-1">
+                      Fator de Correção
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button type="button" className="text-muted-foreground hover:text-foreground transition-colors">
+                            <HelpCircle size={13} />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-72 text-sm" side="top">
+                          <p className="font-semibold mb-1">Fator de correção</p>
+                          <p className="text-muted-foreground">Calculado automaticamente a partir do Peso Bruto e Peso Líquido (Bruto ÷ Líquido). Ex: 1 kg de frango com osso rendendo 0,75 kg limpo → fator = <strong>1,333</strong>.</p>
+                        </PopoverContent>
+                      </Popover>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="0.001"
+                        readOnly
+                        tabIndex={-1}
+                        className="bg-muted/50 cursor-not-allowed text-muted-foreground"
+                        {...field}
+                        data-testid="input-insumo-fator"
+                      />
+                    </FormControl>
+                    <p className="text-xs text-muted-foreground">Preenchido automaticamente ao informar Peso Bruto e Peso Líquido</p>
                     <FormMessage />
                   </FormItem>
                 )} />

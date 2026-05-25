@@ -17,7 +17,7 @@ function fmt(n: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(n);
 }
 
-const UNIDADES_RENDIMENTO = ["unidades", "porções", "kg", "L"];
+const UNIDADES_RENDIMENTO = ["unidades", "porções", "kg", "L", "dz", "pacote"];
 
 interface ImportItemRow { nome: string; quantidade: number; valid: boolean; error?: string; resolvedId?: string; }
 
