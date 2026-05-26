@@ -1,8 +1,9 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useGetAssinatura, useGetMe } from "@workspace/api-client-react";
-import { usePerfil, useUpdatePerfil } from "@/hooks/usePerfil";
+import { usePerfil, useUpdatePerfil, PERFIL_QUERY_KEY } from "@/hooks/usePerfil";
 import { supabase } from "@/lib/supabase";
 import { useLocation } from "wouter";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,13 +28,14 @@ export default function Configuracoes() {
   const [, setLocation] = useLocation();
   const { data: assinatura, isLoading: loadingAssinatura } = useGetAssinatura();
   const { data: me, isLoading: loadingMe } = useGetMe();
+  const qc = useQueryClient();
   const { data: perfil, isLoading: loadingPerfil } = usePerfil();
   const updatePerfil = useUpdatePerfil();
   const logoInputRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
     nome_completo: "", nome_negocio: "", tipo_negocio: "",
-    volume_mensal: "", cidade_estado: "", whatsapp: "",
+    volume_mensal: "", cidade_estado: "", whatsapp: "", email: "",
   });
   const [logoUploading, setLogoUploading] = useState(false);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -47,12 +49,24 @@ export default function Configuracoes() {
         volume_mensal: perfil.volume_mensal ?? "",
         cidade_estado: perfil.cidade_estado ?? "",
         whatsapp: perfil.whatsapp ?? "",
+        email: perfil.email ?? "",
       });
       setLogoPreview(perfil.logo_url ?? null);
     }
   }, [perfil]);
 
   async function handleSaveProfile() {
+    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      toast.error("Por favor, preencha um e-mail válido para continuar.");
+      return;
+    }
+    if (form.whatsapp) {
+      const digits = form.whatsapp.replace(/\D/g, "");
+      if (digits.length < 10 || digits.length > 11) {
+        toast.error("Por favor, preencha um telefone com DDD e número válido.");
+        return;
+      }
+    }
     try {
       await updatePerfil.mutateAsync({
         nome_completo: form.nome_completo || null,
@@ -61,6 +75,7 @@ export default function Configuracoes() {
         volume_mensal: form.volume_mensal || null,
         cidade_estado: form.cidade_estado || null,
         whatsapp: form.whatsapp || null,
+        email: form.email || null,
       });
       toast.success("Perfil atualizado!");
     } catch {
@@ -103,6 +118,7 @@ export default function Configuracoes() {
 
       await updatePerfil.mutateAsync({ logo_url: publicUrl } as Parameters<typeof updatePerfil.mutateAsync>[0]);
       setLogoPreview(publicUrl);
+      qc.invalidateQueries({ queryKey: PERFIL_QUERY_KEY });
       toast.success("Logo atualizado com sucesso!");
     } catch {
       toast.error("Erro ao fazer upload do logo.");
@@ -243,6 +259,16 @@ export default function Configuracoes() {
                   data-testid="input-config-whatsapp"
                 />
               </div>
+              <div className="sm:col-span-2">
+                <Label>E-mail de contato</Label>
+                <Input
+                  type="email"
+                  value={form.email}
+                  onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                  placeholder="contato@seunegocio.com"
+                  data-testid="input-config-email"
+                />
+              </div>
             </div>
             <Button onClick={handleSaveProfile} disabled={updatePerfil.isPending} data-testid="button-save-profile">
               <Save size={16} className="mr-2" />
@@ -293,29 +319,6 @@ export default function Configuracoes() {
         </div>
       </div>
 
-      {/* Bucket setup instructions */}
-      <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-sm text-amber-900" data-testid="bucket-instructions">
-        <p className="font-semibold mb-3">Como configurar o upload de logo</p>
-        <p className="text-xs text-amber-700 mb-3">Siga todos os passos — o bucket precisa existir E ter uma política de acesso.</p>
-        <ol className="list-decimal list-outside ml-4 space-y-2 text-amber-800">
-          <li>Acesse o painel do Supabase do seu projeto</li>
-          <li>Vá em <strong>Storage</strong> → <strong>Buckets</strong> → <strong>New bucket</strong></li>
-          <li>Nome do bucket: <code className="bg-amber-100 px-1 rounded font-mono">logos</code></li>
-          <li>Marque <strong>Public bucket</strong> e clique em <strong>Save</strong></li>
-          <li className="font-semibold">Agora adicione a política de upload:
-            <ul className="font-normal mt-2 ml-0 space-y-1.5 list-none">
-              <li>→ Clique no bucket <strong>logos</strong> → aba <strong>Policies</strong> → <strong>New policy</strong></li>
-              <li>→ Escolha <strong>For full customization</strong></li>
-              <li>→ Nome: <code className="bg-amber-100 px-1 rounded font-mono">Autenticados podem fazer upload</code></li>
-              <li>→ Operações: marque <strong>INSERT</strong> e <strong>UPDATE</strong></li>
-              <li>→ Target roles: <strong>authenticated</strong></li>
-              <li>→ Deixe a expressão <code className="bg-amber-100 px-1 rounded font-mono">WITH CHECK</code> como <code className="bg-amber-100 px-1 rounded font-mono">true</code></li>
-              <li>→ Clique em <strong>Save policy</strong></li>
-            </ul>
-          </li>
-        </ol>
-        <p className="mt-3 text-xs text-amber-700">Após criar a política, o botão "Enviar logo" funcionará normalmente.</p>
-      </div>
     </div>
   );
 }

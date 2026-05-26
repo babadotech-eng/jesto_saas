@@ -182,8 +182,12 @@ export default function Painel() {
         {/* Col 1 — Dark summary */}
         <div className="bg-zinc-900 rounded-2xl p-5 flex flex-col justify-between text-white min-h-[220px]">
           <div>
-            <div className="w-10 h-10 rounded-xl bg-amber-400 flex items-center justify-center mb-3">
-              <span className="text-zinc-900 font-black text-lg">P</span>
+            <div className="w-10 h-10 rounded-xl bg-amber-400 flex items-center justify-center mb-3 overflow-hidden shrink-0">
+              {perfil?.logo_url ? (
+                <img src={perfil.logo_url} alt="Logo" className="w-full h-full object-contain" />
+              ) : (
+                <span className="text-zinc-900 font-black text-lg">P</span>
+              )}
             </div>
             <p className="text-zinc-400 text-xs font-medium">Resultado do mês</p>
             <p className={`text-2xl font-black mt-0.5 leading-none ${resultado >= 0 ? "text-amber-400" : "text-red-400"}`}>

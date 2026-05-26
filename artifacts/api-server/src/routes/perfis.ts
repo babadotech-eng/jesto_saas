@@ -16,6 +16,7 @@ function serializePerfil(row: typeof perfisTable.$inferSelect) {
     volume_mensal: row.volumeMensal ?? null,
     cidade_estado: row.cidadeEstado ?? null,
     whatsapp: row.whatsapp ?? null,
+    email: row.email ?? null,
     origem: row.origem ?? null,
     logo_url: row.logoUrl ?? null,
     created_at: row.createdAt?.toISOString() ?? null,
@@ -41,7 +42,7 @@ router.get("/perfis/me", requireAuth, async (req, res): Promise<void> => {
 
 router.put("/perfis/me", requireAuth, async (req, res): Promise<void> => {
   const userId = getUserId(req);
-  const { nome_completo, nome_negocio, tipo_negocio, volume_mensal, cidade_estado, whatsapp, origem, logo_url } = req.body;
+  const { nome_completo, nome_negocio, tipo_negocio, volume_mensal, cidade_estado, whatsapp, email, origem, logo_url } = req.body;
   try {
     const rows = await db.select().from(perfisTable).where(eq(perfisTable.userId, userId)).limit(1);
     if (rows.length === 0) {
@@ -53,6 +54,7 @@ router.put("/perfis/me", requireAuth, async (req, res): Promise<void> => {
         volumeMensal: volume_mensal ?? null,
         cidadeEstado: cidade_estado ?? null,
         whatsapp: whatsapp ?? null,
+        email: email ?? null,
         origem: origem ?? null,
         logoUrl: logo_url ?? null,
       }).returning();
@@ -67,6 +69,7 @@ router.put("/perfis/me", requireAuth, async (req, res): Promise<void> => {
         volumeMensal: volume_mensal ?? rows[0].volumeMensal,
         cidadeEstado: cidade_estado ?? rows[0].cidadeEstado,
         whatsapp: whatsapp ?? rows[0].whatsapp,
+        email: email !== undefined ? email : rows[0].email,
         origem: origem ?? rows[0].origem,
         logoUrl: logo_url !== undefined ? logo_url : rows[0].logoUrl,
         updatedAt: new Date(),

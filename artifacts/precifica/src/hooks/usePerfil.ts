@@ -10,6 +10,7 @@ export interface Perfil {
   volume_mensal: string | null;
   cidade_estado: string | null;
   whatsapp: string | null;
+  email: string | null;
   origem: string | null;
   logo_url: string | null;
   created_at: string;
