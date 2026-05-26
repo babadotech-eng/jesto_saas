@@ -99,11 +99,15 @@ export default function Painel() {
   const { user } = useAuth();
   const { data: perfil } = usePerfil();
   const { data: summary } = useGetDashboardSummary();
-  const { data: topProdutos } = useGetTopProdutos();
-  const { data: fluxo } = useGetFluxoSemanal();
+  const { data: topProdutosRaw } = useGetTopProdutos();
+  const topProdutos = Array.isArray(topProdutosRaw) ? topProdutosRaw : [];
+  const { data: fluxoRaw } = useGetFluxoSemanal();
+  const fluxo = Array.isArray(fluxoRaw) ? fluxoRaw : [];
   const { data: pe } = useGetPontoEquilibrio();
-  const { data: despesas } = useListDespesas();
-  const { data: lancamentos } = useListLancamentos();
+  const { data: despesasRaw } = useListDespesas();
+  const despesas = Array.isArray(despesasRaw) ? despesasRaw : [];
+  const { data: lancamentosRaw } = useListLancamentos();
+  const lancamentos = Array.isArray(lancamentosRaw) ? lancamentosRaw : [];
 
   const greeting = getGreeting();
   const displayName = perfil?.nome_completo?.trim().split(" ")[0] || perfil?.nome_negocio || user?.email?.split("@")[0] || "";

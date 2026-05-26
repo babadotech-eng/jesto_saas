@@ -22,20 +22,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Initial session fetch
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    // Listen for auth changes
+    // onAuthStateChange fires INITIAL_SESSION synchronously on mount,
+    // giving us the stored session (or null) immediately. For fresh email
+    // confirmations the hash is processed async and fires SIGNED_IN after.
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      setLoading(false);
+      // Mark loading as done on any definitive auth event.
+      // INITIAL_SESSION fires first (may be null), SIGNED_IN fires once
+      // the email-confirmation hash is exchanged for a real session.
+      if (
+        event === "INITIAL_SESSION" ||
+        event === "SIGNED_IN" ||
+        event === "SIGNED_OUT" ||
+        event === "USER_UPDATED" ||
+        event === "TOKEN_REFRESHED"
+      ) {
+        setLoading(false);
+      }
     });
 
     return () => subscription.unsubscribe();
