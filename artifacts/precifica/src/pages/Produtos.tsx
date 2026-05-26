@@ -380,8 +380,8 @@ export default function Produtos() {
                       <Input
                         type="number" step="0.01"
                         {...field}
-                        readOnly={autoMaoObra !== null}
-                        className={autoMaoObra !== null ? "bg-muted cursor-not-allowed" : ""}
+                        readOnly
+                        className="bg-muted cursor-not-allowed"
                         data-testid="input-produto-mao-obra"
                       />
                     </FormControl>
