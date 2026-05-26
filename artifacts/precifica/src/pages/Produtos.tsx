@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useListProdutos, useCreateProduto, useUpdateProduto, useDeleteProduto, getListProdutosQueryKey, useListFuncionarios } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Search, Pencil, Trash2, Package, HelpCircle, Download, Upload, X } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Package, HelpCircle, Download, Upload, X, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,9 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { useAssinatura } from "@/hooks/useAssinatura";
+import { getLimites, getFeatures } from "@/lib/planConfig";
+import { UpgradeModal } from "@/components/UpgradeModal";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -78,6 +81,7 @@ export default function Produtos() {
   const qc = useQueryClient();
   const { data, isLoading } = useListProdutos();
   const { data: funcionarios } = useListFuncionarios();
+  const { data: assinatura } = useAssinatura();
   const createMutation = useCreateProduto();
   const updateMutation = useUpdateProduto();
   const deleteMutation = useDeleteProduto();
@@ -91,9 +95,14 @@ export default function Produtos() {
   const [importing, setImporting] = useState(false);
   const [prepMinutos, setPrepMinutos] = useState("");
   const [cargoResponsavel, setCargoResponsavel] = useState("");
+  const [limiteOpen, setLimiteOpen] = useState(false);
+  const [featureOpen, setFeatureOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues });
+
+  const planLimites = getLimites(assinatura?.plano ?? "gratis");
+  const planFeatures = getFeatures(assinatura?.plano ?? "gratis");
 
   // Build cargo → avg valor_hora map from Funcionários data
   const cargoMap: Record<string, number> = (() => {
@@ -130,6 +139,10 @@ export default function Produtos() {
   const filtered = data?.filter(p => p.nome.toLowerCase().includes(search.toLowerCase())) ?? [];
 
   function openCreate() {
+    if ((data?.length ?? 0) >= planLimites.produtos) {
+      setLimiteOpen(true);
+      return;
+    }
     setEditingId(null);
     form.reset(defaultValues);
     setPrepMinutos("");
@@ -245,6 +258,12 @@ export default function Produtos() {
     const valid = importRows.filter(r => r.valid);
     const errors = importRows.filter(r => !r.valid).length;
     if (!valid.length) { toast.error("Nenhuma linha válida para importar."); return; }
+    const atual = data?.length ?? 0;
+    if (atual + valid.length > planLimites.produtos) {
+      setImportOpen(false);
+      setLimiteOpen(true);
+      return;
+    }
     setImporting(true);
     let successCount = 0;
     for (const row of valid) {
@@ -289,13 +308,21 @@ export default function Produtos() {
           <p className="text-sm text-muted-foreground mt-1">Gerencie seus produtos e precificações</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <Button variant="outline" size="sm" onClick={downloadTemplate} className="gap-1.5">
-            <Download size={14} />Baixar planilha modelo
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} className="gap-1.5">
-            <Upload size={14} />Importar Excel
-          </Button>
-          <input ref={fileInputRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleFileChange} />
+          {planFeatures.excelImportExport ? (
+            <>
+              <Button variant="outline" size="sm" onClick={downloadTemplate} className="gap-1.5">
+                <Download size={14} />Baixar planilha modelo
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} className="gap-1.5">
+                <Upload size={14} />Importar Excel
+              </Button>
+              <input ref={fileInputRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleFileChange} />
+            </>
+          ) : (
+            <Button variant="outline" size="sm" onClick={() => setFeatureOpen(true)} className="gap-1.5 text-muted-foreground">
+              <Lock size={14} />Excel (Pro/Premium)
+            </Button>
+          )}
           <Button onClick={openCreate} data-testid="button-create-produto"><Plus size={16} className="mr-2" />Novo Produto</Button>
         </div>
       </div>
@@ -395,40 +422,44 @@ export default function Produtos() {
                   </FormItem>
                 )} />
 
-                {/* Tempo de preparo + Cargo/Função — usados para cálculo automático de mão de obra */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Tempo de preparo (min)</Label>
-                  <Input
-                    type="number" step="1" min="0" placeholder="Ex: 15"
-                    value={prepMinutos}
-                    onChange={e => setPrepMinutos(e.target.value)}
-                    data-testid="input-produto-prep-minutos"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Cargo/Função responsável</Label>
-                  {cargos.length > 0 ? (
-                    <Select value={cargoResponsavel} onValueChange={setCargoResponsavel}>
-                      <SelectTrigger data-testid="select-produto-cargo">
-                        <SelectValue placeholder="Selecione o cargo..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {cargos.map(c => (
-                          <SelectItem key={c} value={c}>
-                            {c} — {fmt(cargoMap[c])}/h
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    <Input disabled placeholder="Nenhum cargo cadastrado" />
-                  )}
-                  {cargoResponsavel && prepMinutos && autoMaoObra !== null && (
-                    <p className="text-xs text-muted-foreground">
-                      {fmt(cargoMap[cargoResponsavel])}/h × {prepMinutos} min = {fmt(autoMaoObra)}
-                    </p>
-                  )}
-                </div>
+                {/* Tempo de preparo + Cargo/Função — cálculo automático de mão de obra (Premium) */}
+                {planFeatures.autoLaborCost && (
+                  <>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Tempo de preparo (min)</Label>
+                      <Input
+                        type="number" step="1" min="0" placeholder="Ex: 15"
+                        value={prepMinutos}
+                        onChange={e => setPrepMinutos(e.target.value)}
+                        data-testid="input-produto-prep-minutos"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Cargo/Função responsável</Label>
+                      {cargos.length > 0 ? (
+                        <Select value={cargoResponsavel} onValueChange={setCargoResponsavel}>
+                          <SelectTrigger data-testid="select-produto-cargo">
+                            <SelectValue placeholder="Selecione o cargo..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {cargos.map(c => (
+                              <SelectItem key={c} value={c}>
+                                {c} — {fmt(cargoMap[c])}/h
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input disabled placeholder="Nenhum cargo cadastrado" />
+                      )}
+                      {cargoResponsavel && prepMinutos && autoMaoObra !== null && (
+                        <p className="text-xs text-muted-foreground">
+                          {fmt(cargoMap[cargoResponsavel])}/h × {prepMinutos} min = {fmt(autoMaoObra)}
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
 
                 <FormField control={form.control} name="frete" render={({ field }) => (
                   <FormItem><FormLabel>Frete (R$)</FormLabel><FormControl><Input type="number" step="0.01" {...field} data-testid="input-produto-frete" /></FormControl><FormMessage /></FormItem>
@@ -566,6 +597,19 @@ export default function Produtos() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <UpgradeModal
+        open={limiteOpen}
+        onClose={() => setLimiteOpen(false)}
+        titulo="Limite de produtos atingido"
+        descricao={`Você atingiu o limite de ${planLimites.produtos} produtos do seu plano atual. Faça upgrade para continuar criando produtos e expandir seu catálogo.`}
+      />
+      <UpgradeModal
+        open={featureOpen}
+        onClose={() => setFeatureOpen(false)}
+        titulo="Recurso disponível nos planos Pro e Premium"
+        descricao="Importar e exportar produtos via planilha Excel está disponível nos planos Pro e Premium."
+      />
     </div>
   );
 }

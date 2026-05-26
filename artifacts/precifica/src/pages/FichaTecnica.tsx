@@ -2,7 +2,8 @@ import { useState, useRef } from "react";
 import { useListFichas, useCreateFicha, useDeleteFicha, useGetFicha, useAddFichaItem, useDeleteFichaItem, useListProdutos, useListInsumos, getListFichasQueryKey, getGetFichaQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAssinatura } from "@/hooks/useAssinatura";
-import { useLocation } from "wouter";
+import { getLimites, getFeatures } from "@/lib/planConfig";
+import { UpgradeModal } from "@/components/UpgradeModal";
 import { Lock } from "lucide-react";
 import { Plus, Trash2, FileText, ArrowLeft, Download, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -524,24 +525,23 @@ function NovaFichaForm({ onCancel, onCreated }: { onCancel: () => void; onCreate
   );
 }
 
-const LIMITE_FICHAS_GRATIS = 1;
-
 export default function FichaTecnica() {
   const qc = useQueryClient();
   const { data, isLoading } = useListFichas();
   const { data: assinatura } = useAssinatura();
-  const [, setLocation] = useLocation();
   const deleteMutation = useDeleteFicha();
 
   const [showForm, setShowForm] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [limiteOpen, setLimiteOpen] = useState(false);
+  const [featureOpen, setFeatureOpen] = useState(false);
 
-  const isGratis = assinatura?.plano === "gratis";
+  const planLimites = getLimites(assinatura?.plano ?? "gratis");
+  const planFeatures = getFeatures(assinatura?.plano ?? "gratis");
 
   function handleNovaFicha() {
-    if (isGratis && (data?.length ?? 0) >= LIMITE_FICHAS_GRATIS) {
+    if ((data?.length ?? 0) >= planLimites.fichas) {
       setLimiteOpen(true);
       return;
     }
@@ -590,9 +590,15 @@ export default function FichaTecnica() {
           <p className="text-sm text-muted-foreground mt-1">Composição e custo de cada receita</p>
         </div>
         <div className="flex gap-2 flex-wrap">
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={exportListaFichas}>
-            <Download size={14} />Exportar lista
-          </Button>
+          {planFeatures.excelImportExport ? (
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={exportListaFichas}>
+              <Download size={14} />Exportar lista
+            </Button>
+          ) : (
+            <Button variant="outline" size="sm" className="gap-1.5 text-muted-foreground" onClick={() => setFeatureOpen(true)}>
+              <Lock size={14} />Exportar (Pro/Premium)
+            </Button>
+          )}
           <Button onClick={handleNovaFicha} data-testid="button-create-ficha"><Plus size={16} className="mr-2" />Nova Ficha</Button>
         </div>
       </div>
@@ -656,27 +662,18 @@ export default function FichaTecnica() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Limite do plano grátis */}
-      <Dialog open={limiteOpen} onOpenChange={setLimiteOpen}>
-        <DialogContent className="max-w-sm text-center">
-          <div className="flex justify-center mb-2">
-            <div className="bg-amber-100 text-amber-600 p-4 rounded-full"><Lock size={28} /></div>
-          </div>
-          <DialogHeader>
-            <DialogTitle className="text-center">Limite do plano grátis</DialogTitle>
-          </DialogHeader>
-          <p className="text-sm text-muted-foreground mt-1">
-            O plano grátis permite apenas <strong>{LIMITE_FICHAS_GRATIS} ficha técnica</strong> cadastrada.
-            Faça upgrade para o plano Premium e crie fichas técnicas ilimitadas.
-          </p>
-          <DialogFooter className="flex-col gap-2 sm:flex-col mt-2">
-            <Button className="w-full bg-[#FF6C3A] hover:bg-[#E8542A] text-white" onClick={() => { setLimiteOpen(false); setLocation("/planos"); }}>
-              Fazer upgrade para Premium
-            </Button>
-            <Button variant="ghost" className="w-full" onClick={() => setLimiteOpen(false)}>Agora não</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <UpgradeModal
+        open={limiteOpen}
+        onClose={() => setLimiteOpen(false)}
+        titulo="Limite de fichas técnicas atingido"
+        descricao={`Você atingiu o limite de fichas técnicas do seu plano atual (${planLimites.fichas === Infinity ? "ilimitado" : planLimites.fichas}). Faça upgrade para cadastrar mais fichas técnicas e expandir seu negócio.`}
+      />
+      <UpgradeModal
+        open={featureOpen}
+        onClose={() => setFeatureOpen(false)}
+        titulo="Recurso disponível nos planos Pro e Premium"
+        descricao="Exportar e importar fichas técnicas em Excel está disponível nos planos Pro e Premium."
+      />
     </div>
   );
 }

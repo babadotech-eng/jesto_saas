@@ -3,7 +3,8 @@ import { useListInsumos, useCreateInsumo, useUpdateInsumo, useDeleteInsumo, getL
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus, Search, Pencil, Trash2, Carrot, HelpCircle, Download, Upload, X, Lock } from "lucide-react";
 import { useAssinatura } from "@/hooks/useAssinatura";
-import { useLocation } from "wouter";
+import { getLimites, getFeatures } from "@/lib/planConfig";
+import { UpgradeModal } from "@/components/UpgradeModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,8 +18,6 @@ import { z } from "zod";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
-
-const LIMITE_INSUMOS_GRATIS = 10;
 
 function fmt(n: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(n);
@@ -91,7 +90,6 @@ export default function Insumos() {
   const qc = useQueryClient();
   const { data, isLoading } = useListInsumos();
   const { data: assinatura } = useAssinatura();
-  const [, setLocation] = useLocation();
   const createMutation = useCreateInsumo();
   const updateMutation = useUpdateInsumo();
   const deleteMutation = useDeleteInsumo();
@@ -104,9 +102,11 @@ export default function Insumos() {
   const [importRows, setImportRows] = useState<ImportRow[]>([]);
   const [importing, setImporting] = useState(false);
   const [limiteOpen, setLimiteOpen] = useState(false);
+  const [featureOpen, setFeatureOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const isGratis = assinatura?.plano === "gratis";
+  const planLimites = getLimites(assinatura?.plano ?? "gratis");
+  const planFeatures = getFeatures(assinatura?.plano ?? "gratis");
 
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues });
   const filtered = data?.filter(i => i.nome.toLowerCase().includes(search.toLowerCase())) ?? [];
@@ -130,7 +130,7 @@ export default function Insumos() {
 
   async function onSubmit(values: FormValues) {
     if (!editingId) {
-      if (isGratis && (data?.length ?? 0) >= LIMITE_INSUMOS_GRATIS) {
+      if ((data?.length ?? 0) >= planLimites.insumos) {
         setOpen(false);
         setLimiteOpen(true);
         return;
@@ -247,13 +247,11 @@ export default function Insumos() {
     const valid = importRows.filter(r => r.valid);
     const errors = importRows.filter(r => !r.valid).length;
     if (!valid.length) { toast.error("Nenhuma linha válida para importar."); return; }
-    if (isGratis) {
-      const atual = data?.length ?? 0;
-      if (atual + valid.length > LIMITE_INSUMOS_GRATIS) {
-        setImportOpen(false);
-        setLimiteOpen(true);
-        return;
-      }
+    const atual = data?.length ?? 0;
+    if (atual + valid.length > planLimites.insumos) {
+      setImportOpen(false);
+      setLimiteOpen(true);
+      return;
     }
     setImporting(true);
     let successCount = 0;
@@ -285,13 +283,21 @@ export default function Insumos() {
           <p className="text-sm text-muted-foreground mt-1">Ingredientes e matérias-primas</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <Button variant="outline" size="sm" onClick={downloadTemplate} className="gap-1.5">
-            <Download size={14} />Baixar planilha modelo
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} className="gap-1.5">
-            <Upload size={14} />Importar Excel
-          </Button>
-          <input ref={fileInputRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleFileChange} />
+          {planFeatures.excelImportExport ? (
+            <>
+              <Button variant="outline" size="sm" onClick={downloadTemplate} className="gap-1.5">
+                <Download size={14} />Baixar planilha modelo
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} className="gap-1.5">
+                <Upload size={14} />Importar Excel
+              </Button>
+              <input ref={fileInputRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleFileChange} />
+            </>
+          ) : (
+            <Button variant="outline" size="sm" onClick={() => setFeatureOpen(true)} className="gap-1.5 text-muted-foreground">
+              <Lock size={14} />Excel (Pro/Premium)
+            </Button>
+          )}
           <Button onClick={openCreate} data-testid="button-create-insumo"><Plus size={16} className="mr-2" />Novo Insumo</Button>
         </div>
       </div>
@@ -546,27 +552,18 @@ export default function Insumos() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Limite do plano grátis */}
-      <Dialog open={limiteOpen} onOpenChange={setLimiteOpen}>
-        <DialogContent className="max-w-sm text-center">
-          <div className="flex justify-center mb-2">
-            <div className="bg-amber-100 text-amber-600 p-4 rounded-full"><Lock size={28} /></div>
-          </div>
-          <DialogHeader>
-            <DialogTitle className="text-center">Limite do plano grátis</DialogTitle>
-          </DialogHeader>
-          <p className="text-sm text-muted-foreground mt-1">
-            O plano grátis permite até <strong>{LIMITE_INSUMOS_GRATIS} insumos</strong> cadastrados.
-            Faça upgrade para o plano Premium e cadastre insumos ilimitados.
-          </p>
-          <DialogFooter className="flex-col gap-2 sm:flex-col mt-2">
-            <Button className="w-full bg-[#FF6C3A] hover:bg-[#E8542A] text-white" onClick={() => { setLimiteOpen(false); setLocation("/planos"); }}>
-              Fazer upgrade para Premium
-            </Button>
-            <Button variant="ghost" className="w-full" onClick={() => setLimiteOpen(false)}>Agora não</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <UpgradeModal
+        open={limiteOpen}
+        onClose={() => setLimiteOpen(false)}
+        titulo="Limite de insumos atingido"
+        descricao={`Você atingiu o limite de ${planLimites.insumos === Infinity ? "ilimitado" : planLimites.insumos} insumos do seu plano atual. Faça upgrade para continuar cadastrando ingredientes e matérias-primas.`}
+      />
+      <UpgradeModal
+        open={featureOpen}
+        onClose={() => setFeatureOpen(false)}
+        titulo="Recurso disponível nos planos Pro e Premium"
+        descricao="Importar e exportar insumos via planilha Excel está disponível nos planos Pro e Premium."
+      />
     </div>
   );
 }

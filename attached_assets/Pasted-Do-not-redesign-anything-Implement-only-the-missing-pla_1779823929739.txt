@@ -1,0 +1,110 @@
+Do not redesign anything. Implement only the missing plan logic, feature gating, and usage limits described below.
+
+Read the current implementation first and change only the plan logic and plan limits described below.
+
+Goal:
+Implement plan-based access control for Free, Pro, and Premium in the existing app.
+
+Current plans to support:
+- gratis
+- pro
+- premium
+
+Business rules:
+
+1. Free plan limits
+- produtos: max 5
+- insumos: max 15
+- fichas_tecnicas: max 5
+- despesas: max 20
+
+2. Pro plan limits
+- produtos: max 100
+- insumos: max 200
+- fichas_tecnicas: max 100
+- despesas: max 200
+
+3. Premium plan limits
+- use very high limits or unlimited for:
+  - produtos
+  - insumos
+  - fichas_tecnicas
+  - despesas
+
+4. Feature access by plan
+
+Free:
+- cadastro manual only
+- basic reports only
+- no Excel import/export
+- no Funcionários module
+- no automatic labor cost by role
+- no advanced reports
+- no scenario simulation
+
+Pro:
+- manual + Excel import/export
+- bulk select and bulk delete
+- intermediate reports
+- product analysis
+- break-even analysis
+- no advanced Funcionários intelligence if currently separated from Premium
+
+Premium:
+- everything in Pro
+- Funcionários module
+- automatic labor cost by role
+- advanced reports
+- scenario simulation
+- advanced business insights
+- full branding/personalization if already supported
+
+5. Enforcement points
+Apply limits and access control in all relevant entry points:
+- manual create forms
+- Excel upload/import
+- action buttons
+- routes/pages/modules
+- bulk actions if relevant
+
+6. Behavior when user hits a limit
+- block the action
+- do not partially create records
+- show a clean popup/modal in Portuguese
+- explain which plan limit was reached
+- include a strong upgrade CTA
+- example tone:
+  "Você atingiu o limite do plano Grátis. Faça upgrade para continuar cadastrando e expandir seu negócio."
+
+7. Behavior when user tries a locked feature
+- show upgrade modal/card instead of allowing access
+- explain that the feature belongs to Pro or Premium
+- keep wording simple and commercial
+- UI text must be in Portuguese
+
+8. Duplicate protection
+Keep existing duplicate protection working for manual creation and Excel import, even when plan limits are checked.
+
+9. Technical constraints
+- Reuse the current user/profile/subscription structure if it already exists
+- If no centralized plan config exists, create one simple source of truth for limits and features
+- Do not redesign the app
+- Do not change unrelated business logic
+- Keep changes minimal and maintainable
+
+10. Deliverable behavior
+Implement a clear plan config structure like:
+- limits by plan
+- features by plan
+Then use it consistently across the app.
+
+Important:
+Before coding, inspect how the current app stores the user plan and where products/insumos/fichas/despesas are created or imported.
+Then implement only the missing gating and limits.
+
+When finished, return:
+1. Which files were changed
+2. How plan detection works
+3. Which limits were enforced
+4. Which features were gated
+5. Manual tests I should run

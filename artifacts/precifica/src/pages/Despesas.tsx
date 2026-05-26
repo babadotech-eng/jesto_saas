@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useListDespesas, useCreateDespesa, useUpdateDespesa, useDeleteDespesa, getListDespesasQueryKey } from "@workspace/api-client-react";
+import { useAssinatura } from "@/hooks/useAssinatura";
+import { getLimites } from "@/lib/planConfig";
+import { UpgradeModal } from "@/components/UpgradeModal";
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus, Pencil, Trash2, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -76,6 +79,7 @@ const defaultValues: FormValues = { descricao: "", valor: 0, categoria: "" };
 export default function Despesas() {
   const qc = useQueryClient();
   const { data, isLoading } = useListDespesas();
+  const { data: assinatura } = useAssinatura();
   const createMutation = useCreateDespesa();
   const updateMutation = useUpdateDespesa();
   const deleteMutation = useDeleteDespesa();
@@ -83,11 +87,22 @@ export default function Despesas() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [limiteOpen, setLimiteOpen] = useState(false);
 
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues });
   const total = data?.reduce((sum, d) => sum + d.valor, 0) ?? 0;
 
-  function openCreate() { setEditingId(null); form.reset(defaultValues); setOpen(true); }
+  const planLimites = getLimites(assinatura?.plano ?? "gratis");
+
+  function openCreate() {
+    if ((data?.length ?? 0) >= planLimites.despesas) {
+      setLimiteOpen(true);
+      return;
+    }
+    setEditingId(null);
+    form.reset(defaultValues);
+    setOpen(true);
+  }
   function openEdit(d: NonNullable<typeof data>[0]) {
     setEditingId(d.id);
     form.reset({ descricao: d.descricao, valor: d.valor, categoria: d.categoria ?? "" });
@@ -248,6 +263,13 @@ export default function Despesas() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <UpgradeModal
+        open={limiteOpen}
+        onClose={() => setLimiteOpen(false)}
+        titulo="Limite de despesas atingido"
+        descricao={`Você atingiu o limite de ${planLimites.despesas} despesas fixas do seu plano atual. Faça upgrade para continuar cadastrando despesas e ter um controle financeiro completo.`}
+      />
     </div>
   );
 }
