@@ -22,8 +22,8 @@ const navigation = [
   { name: "Fichas Técnicas", href: "/ficha-tecnica", icon: FileText },
   { name: "Despesas", href: "/despesas", icon: Wallet },
   { name: "Lançamentos", href: "/lancamentos", icon: ArrowRightLeft },
-  { name: "Relatórios", href: "/relatorios", icon: BarChart3 },
   { name: "Funcionários", href: "/funcionarios", icon: Users, premium: true },
+  { name: "Relatórios", href: "/relatorios", icon: BarChart3 },
   { name: "Configurações", href: "/configuracoes", icon: Settings },
 ];
 

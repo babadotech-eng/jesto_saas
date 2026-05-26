@@ -17,6 +17,7 @@ function serializePerfil(row: typeof perfisTable.$inferSelect) {
     cidade_estado: row.cidadeEstado ?? null,
     whatsapp: row.whatsapp ?? null,
     origem: row.origem ?? null,
+    logo_url: row.logoUrl ?? null,
     created_at: row.createdAt?.toISOString() ?? null,
     updated_at: row.updatedAt?.toISOString() ?? null,
   };
@@ -40,7 +41,7 @@ router.get("/perfis/me", requireAuth, async (req, res): Promise<void> => {
 
 router.put("/perfis/me", requireAuth, async (req, res): Promise<void> => {
   const userId = getUserId(req);
-  const { nome_completo, nome_negocio, tipo_negocio, volume_mensal, cidade_estado, whatsapp, origem } = req.body;
+  const { nome_completo, nome_negocio, tipo_negocio, volume_mensal, cidade_estado, whatsapp, origem, logo_url } = req.body;
   try {
     const rows = await db.select().from(perfisTable).where(eq(perfisTable.userId, userId)).limit(1);
     if (rows.length === 0) {
@@ -53,6 +54,7 @@ router.put("/perfis/me", requireAuth, async (req, res): Promise<void> => {
         cidadeEstado: cidade_estado ?? null,
         whatsapp: whatsapp ?? null,
         origem: origem ?? null,
+        logoUrl: logo_url ?? null,
       }).returning();
       res.json(serializePerfil(created));
       return;
@@ -66,6 +68,7 @@ router.put("/perfis/me", requireAuth, async (req, res): Promise<void> => {
         cidadeEstado: cidade_estado ?? rows[0].cidadeEstado,
         whatsapp: whatsapp ?? rows[0].whatsapp,
         origem: origem ?? rows[0].origem,
+        logoUrl: logo_url !== undefined ? logo_url : rows[0].logoUrl,
         updatedAt: new Date(),
       })
       .where(eq(perfisTable.userId, userId))

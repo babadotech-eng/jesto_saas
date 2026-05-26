@@ -106,7 +106,7 @@ export default function Painel() {
   const { data: lancamentos } = useListLancamentos();
 
   const greeting = getGreeting();
-  const displayName = perfil?.nome_negocio || perfil?.nome_completo || user?.email?.split("@")[0] || "";
+  const displayName = perfil?.nome_completo?.trim().split(" ")[0] || perfil?.nome_negocio || user?.email?.split("@")[0] || "";
   const greetingText = displayName ? `${greeting}, ${displayName}!` : greeting;
 
   const receitaTotal = summary?.receita_total ?? 0;

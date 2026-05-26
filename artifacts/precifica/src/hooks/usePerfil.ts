@@ -11,6 +11,7 @@ export interface Perfil {
   cidade_estado: string | null;
   whatsapp: string | null;
   origem: string | null;
+  logo_url: string | null;
   created_at: string;
   updated_at: string;
 }

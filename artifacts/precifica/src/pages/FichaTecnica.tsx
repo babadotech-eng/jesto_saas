@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useListFichas, useCreateFicha, useDeleteFicha, useGetFicha, useAddFichaItem, useDeleteFichaItem, useListProdutos, useListInsumos, getListFichasQueryKey, getGetFichaQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2, FileText, ChevronRight, ArrowLeft, Download, Upload, X } from "lucide-react";
+import { Plus, Trash2, FileText, ArrowLeft, Download, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,6 +19,31 @@ function fmt(n: number) {
 
 const UNIDADES_RENDIMENTO = ["unidades", "porções", "kg", "L", "dz", "pacote"];
 
+const UNIDADES_FRACAO: Record<string, string[]> = {
+  kg: ["g", "kg"],
+  g: ["g", "kg"],
+  L: ["ml", "L"],
+  ml: ["ml", "L"],
+  un: ["un", "dz"],
+  unid: ["un", "dz"],
+  dz: ["un", "dz"],
+};
+
+function getUnidadesParaInsumo(nativeUnit: string): string[] {
+  return UNIDADES_FRACAO[nativeUnit] ?? [nativeUnit];
+}
+
+function convertToNativeUnit(qty: number, fromUnit: string, toUnit: string): number {
+  if (fromUnit === toUnit) return qty;
+  if (fromUnit === "g" && toUnit === "kg") return qty / 1000;
+  if (fromUnit === "kg" && toUnit === "g") return qty * 1000;
+  if (fromUnit === "ml" && toUnit === "L") return qty / 1000;
+  if (fromUnit === "L" && toUnit === "ml") return qty * 1000;
+  if (fromUnit === "dz" && toUnit === "un") return qty * 12;
+  if (fromUnit === "un" && toUnit === "dz") return qty / 12;
+  return qty;
+}
+
 interface ImportItemRow { nome: string; quantidade: number; valid: boolean; error?: string; resolvedId?: string; }
 
 function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void }) {
@@ -30,18 +55,40 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
 
   const [addInsumoId, setAddInsumoId] = useState("");
   const [addQtd, setAddQtd] = useState("");
+  const [addUnit, setAddUnit] = useState("");
   const [importOpen, setImportOpen] = useState(false);
   const [importRows, setImportRows] = useState<ImportItemRow[]>([]);
   const [importing, setImporting] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
+  const selectedInsumo = insumos?.find(i => i.id === addInsumoId);
+  const nativeUnit = selectedInsumo?.unidade ?? "";
+  const unitOptions = nativeUnit ? getUnidadesParaInsumo(nativeUnit) : [];
+  const effectiveUnit = addUnit || nativeUnit;
+
+  const custoPreview = (() => {
+    if (!selectedInsumo || !addQtd) return null;
+    const qtd = parseFloat(addQtd);
+    if (isNaN(qtd) || qtd <= 0) return null;
+    const converted = convertToNativeUnit(qtd, effectiveUnit, nativeUnit);
+    return converted * Number(selectedInsumo.preco_unitario) * Number(selectedInsumo.fator_correcao);
+  })();
+
+  function handleInsumoChange(id: string) {
+    setAddInsumoId(id);
+    setAddUnit("");
+  }
+
   async function handleAddItem() {
     if (!addInsumoId || !addQtd) { toast.error("Selecione o ingrediente e a quantidade."); return; }
+    const qtd = parseFloat(addQtd);
+    if (isNaN(qtd) || qtd <= 0) { toast.error("Quantidade inválida."); return; }
+    const converted = convertToNativeUnit(qtd, effectiveUnit, nativeUnit);
     try {
-      await addItemMutation.mutateAsync({ id: fichaId, data: { insumo_id: addInsumoId, quantidade: parseFloat(addQtd) } });
+      await addItemMutation.mutateAsync({ id: fichaId, data: { insumo_id: addInsumoId, quantidade: converted } });
       toast.success("Ingrediente adicionado!");
       qc.invalidateQueries({ queryKey: getGetFichaQueryKey(fichaId) });
-      setAddInsumoId(""); setAddQtd("");
+      setAddInsumoId(""); setAddQtd(""); setAddUnit("");
     } catch { toast.error("Erro ao adicionar ingrediente."); }
   }
 
@@ -71,7 +118,6 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
       ws["!sheetProtect"] = { selectLockedCells: true, selectUnlockedCells: true };
     };
 
-    // Sheet 1: FichasTecnicas
     const fichaHeaders = ["produto", "categoria", "rendimento", "unidade_rendimento", "cmv_total"];
     const wsFicha = XLSX.utils.aoa_to_sheet([
       fichaHeaders,
@@ -80,7 +126,6 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
     wsFicha["!cols"] = [{ wch: 25 }, { wch: 18 }, { wch: 14 }, { wch: 20 }, { wch: 14 }];
     applyHeader(wsFicha, fichaHeaders);
 
-    // Sheet 2: Ingredientes
     const ingHeaders = ["ingrediente", "quantidade", "unidade", "custo_item"];
     const ingData = (ficha.itens ?? []).map(item => [
       item.insumo_nome ?? "", item.quantidade, item.unidade ?? "", item.custo_item ?? 0,
@@ -103,7 +148,6 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
     reader.onload = (ev) => {
       const raw = new Uint8Array(ev.target!.result as ArrayBuffer);
       const wb = XLSX.read(raw, { type: "array" });
-      // Prefer "Ingredientes" sheet if present, else first sheet
       const sheetName = wb.SheetNames.find(n => n.toLowerCase() === "ingredientes") ?? wb.SheetNames[0];
       const ws = wb.Sheets[sheetName];
       const rows: Record<string, unknown>[] = XLSX.utils.sheet_to_json(ws);
@@ -167,18 +211,40 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
       <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
         <h3 className="font-semibold mb-4">Ingredientes</h3>
 
-        <div className="flex gap-2 mb-4 flex-wrap">
+        <div className="flex gap-2 mb-1 flex-wrap">
           <div className="flex-1 min-w-[180px]">
-            <Select value={addInsumoId} onValueChange={setAddInsumoId}>
+            <Select value={addInsumoId} onValueChange={handleInsumoChange}>
               <SelectTrigger data-testid="select-item-insumo"><SelectValue placeholder="Selecione o ingrediente..." /></SelectTrigger>
               <SelectContent>{insumos?.map(i => <SelectItem key={i.id} value={i.id}>{i.nome} ({i.unidade})</SelectItem>)}</SelectContent>
             </Select>
           </div>
-          <Input type="number" step="0.001" placeholder="Quantidade" value={addQtd} onChange={e => setAddQtd(e.target.value)} className="w-32" data-testid="input-item-quantidade" />
+          <Input
+            type="number" step="0.001" placeholder="Quantidade"
+            value={addQtd} onChange={e => setAddQtd(e.target.value)}
+            className="w-28" data-testid="input-item-quantidade"
+          />
+          {unitOptions.length > 1 ? (
+            <Select value={effectiveUnit} onValueChange={setAddUnit}>
+              <SelectTrigger className="w-20"><SelectValue /></SelectTrigger>
+              <SelectContent>{unitOptions.map(u => <SelectItem key={u} value={u}>{u}</SelectItem>)}</SelectContent>
+            </Select>
+          ) : (
+            <div className="flex items-center px-2 text-sm text-muted-foreground w-16">{nativeUnit}</div>
+          )}
           <Button onClick={handleAddItem} disabled={addItemMutation.isPending} size="sm" data-testid="button-add-item">
             <Plus size={14} className="mr-1" />{addItemMutation.isPending ? "..." : "Adicionar"}
           </Button>
         </div>
+
+        {custoPreview !== null && (
+          <p className="text-xs text-muted-foreground mb-4 pl-1">
+            Custo estimado: <span className="font-semibold text-foreground">{fmt(custoPreview)}</span>
+            {effectiveUnit !== nativeUnit && (
+              <span className="ml-1 text-xs">({convertToNativeUnit(parseFloat(addQtd) || 0, effectiveUnit, nativeUnit).toFixed(4).replace(/\.?0+$/, "")} {nativeUnit})</span>
+            )}
+          </p>
+        )}
+        {!custoPreview && <div className="mb-4" />}
 
         {!ficha.itens?.length ? (
           <div className="text-center py-8 text-sm text-muted-foreground border border-dashed border-border rounded-xl">
@@ -219,7 +285,6 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
         )}
       </div>
 
-      {/* Import dialog */}
       <Dialog open={importOpen} onOpenChange={v => { if (!v) { setImportOpen(false); setImportRows([]); } }}>
         <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Importar Ingredientes</DialogTitle></DialogHeader>
@@ -440,6 +505,18 @@ export default function FichaTecnica() {
     setDeleteId(null);
   }
 
+  function exportListaFichas() {
+    if (!data?.length) { toast.error("Nenhuma ficha cadastrada."); return; }
+    const headers = ["produto", "rendimento", "unidade_rendimento", "cmv_total"];
+    const rows = data.map(f => [f.produto_nome ?? "", f.rendimento ?? "", f.unidade_rendimento ?? "", f.cmv_total ?? 0]);
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+    ws["!cols"] = [{ wch: 28 }, { wch: 12 }, { wch: 20 }, { wch: 14 }];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "FichasTecnicas");
+    XLSX.writeFile(wb, "fichas_tecnicas.xlsx");
+    toast.success("Lista de fichas exportada!");
+  }
+
   if (detailId) return <FichaDetail fichaId={detailId} onBack={() => setDetailId(null)} />;
 
   if (showForm) return (
@@ -454,12 +531,17 @@ export default function FichaTecnica() {
 
   return (
     <div className="space-y-6" data-testid="ficha-tecnica-page">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Fichas Técnicas</h1>
           <p className="text-sm text-muted-foreground mt-1">Composição e custo de cada receita</p>
         </div>
-        <Button onClick={() => setShowForm(true)} data-testid="button-create-ficha"><Plus size={16} className="mr-2" />Nova Ficha</Button>
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={exportListaFichas}>
+            <Download size={14} />Exportar lista
+          </Button>
+          <Button onClick={() => setShowForm(true)} data-testid="button-create-ficha"><Plus size={16} className="mr-2" />Nova Ficha</Button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -468,37 +550,52 @@ export default function FichaTecnica() {
         <div className="bg-card border border-border rounded-xl p-12 flex flex-col items-center gap-4">
           <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center"><FileText size={24} className="text-muted-foreground" /></div>
           <div className="text-center">
-            <p className="font-semibold">Nenhuma ficha técnica</p>
-            <p className="text-sm text-muted-foreground mt-1">Crie fichas para calcular o CMV dos seus produtos</p>
+            <p className="font-semibold">Nenhuma ficha técnica cadastrada</p>
+            <p className="text-sm text-muted-foreground mt-1">Crie sua primeira ficha técnica para calcular o CMV das suas receitas</p>
           </div>
           <Button onClick={() => setShowForm(true)} data-testid="button-empty-create-ficha"><Plus size={16} className="mr-2" />Criar Ficha Técnica</Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {data.map(f => (
-            <div key={f.id} className="bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer group" onClick={() => setDetailId(f.id)} data-testid={`card-ficha-${f.id}`}>
-              <div className="flex items-start justify-between">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-3">
-                  <FileText size={18} />
+          {data.map(ficha => (
+            <button
+              key={ficha.id}
+              onClick={() => setDetailId(ficha.id)}
+              className="bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-all text-left group"
+              data-testid={`card-ficha-${ficha.id}`}
+            >
+              <div className="flex items-start justify-between gap-2 mb-3">
+                <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary/20 transition-colors shrink-0">
+                  <FileText size={16} />
                 </div>
-                <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 h-7 w-7" onClick={e => { e.stopPropagation(); setDeleteId(f.id); }} data-testid={`button-delete-ficha-${f.id}`}>
-                  <Trash2 size={12} className="text-destructive" />
-                </Button>
+                <button
+                  onClick={e => { e.stopPropagation(); setDeleteId(ficha.id); }}
+                  className="text-muted-foreground hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
+                  data-testid={`button-delete-ficha-${ficha.id}`}
+                >
+                  <Trash2 size={14} />
+                </button>
               </div>
-              <p className="font-semibold text-foreground">{f.produto_nome ?? "Produto não vinculado"}</p>
-              <p className="text-sm text-muted-foreground mt-1">CMV: <span className="font-medium text-foreground">{fmt(f.cmv_total ?? 0)}</span></p>
-              {f.rendimento && <p className="text-xs text-muted-foreground mt-1">Rendimento: {f.rendimento} {f.unidade_rendimento ?? "un"}</p>}
-              <div className="flex items-center gap-1 mt-3 text-primary text-xs font-medium">
-                Ver detalhes <ChevronRight size={12} />
+              <p className="font-semibold text-foreground leading-tight">{ficha.produto_nome ?? "Sem produto"}</p>
+              <div className="mt-2 space-y-1">
+                <p className="text-xs text-muted-foreground">
+                  Rendimento: <span className="font-medium text-foreground">{ficha.rendimento ?? "-"} {ficha.unidade_rendimento ?? ""}</span>
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  CMV: <span className="font-semibold text-primary">{fmt(ficha.cmv_total ?? 0)}</span>
+                </p>
               </div>
-            </div>
+            </button>
           ))}
         </div>
       )}
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
-          <AlertDialogHeader><AlertDialogTitle>Excluir ficha?</AlertDialogTitle><AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription></AlertDialogHeader>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir ficha técnica?</AlertDialogTitle>
+            <AlertDialogDescription>Esta ação não pode ser desfeita. Os dados desta ficha serão removidos permanentemente.</AlertDialogDescription>
+          </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Excluir</AlertDialogAction>

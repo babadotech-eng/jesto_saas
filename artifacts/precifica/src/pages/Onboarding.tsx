@@ -39,6 +39,14 @@ export default function Onboarding() {
   const [, setLocation] = useLocation();
   const updatePerfil = useUpdatePerfil();
 
+  function formatPhone(v: string): string {
+    const digits = v.replace(/\D/g, "").slice(0, 11);
+    if (digits.length <= 2) return digits.length ? `(${digits}` : "";
+    if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  }
+
   const current = STEPS[step];
   const isLast = step === STEPS.length - 1;
   const progress = (step / STEPS.length) * 100;
@@ -135,7 +143,7 @@ export default function Onboarding() {
               <Input
                 type={current.type}
                 value={values[current.field]}
-                onChange={e => setValue(e.target.value)}
+                onChange={e => setValue(current.field === "whatsapp" ? formatPhone(e.target.value) : e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={current.placeholder}
                 autoFocus

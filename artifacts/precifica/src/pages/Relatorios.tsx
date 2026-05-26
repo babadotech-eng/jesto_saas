@@ -1,60 +1,56 @@
 import { useState } from "react";
 import { useGetTopProdutos, useGetAlertasMargem, useGetFluxoSemanal, useGetPontoEquilibrio, useListProdutos } from "@workspace/api-client-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { useAssinatura } from "@/hooks/useAssinatura";
+import { TrendingUp, AlertTriangle, Target, Sliders, BarChart2 } from "lucide-react";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertTriangle, TrendingUp, Lock, Sliders, Target, BarChart2 } from "lucide-react";
-import { useAssinatura } from "@/hooks/useAssinatura";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Crown } from "lucide-react";
+import { useLocation } from "wouter";
+import { Button } from "@/components/ui/button";
 
 function fmt(n: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(n);
 }
 
 function MargemBadge({ pct }: { pct: number }) {
-  if (pct > 30) return <Badge className="bg-green-100 text-green-700 border-green-200">{pct.toFixed(1)}%</Badge>;
-  if (pct >= 15) return <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200">{pct.toFixed(1)}%</Badge>;
-  return <Badge className="bg-red-100 text-red-700 border-red-200">{pct.toFixed(1)}%</Badge>;
+  const color = pct >= 30 ? "bg-green-100 text-green-700 border-green-200" : pct >= 15 ? "bg-yellow-100 text-yellow-700 border-yellow-200" : "bg-red-100 text-red-700 border-red-200";
+  return <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border ${color}`}>{pct.toFixed(1)}%</span>;
 }
 
 function PremiumLock({ title, description, icon: Icon, onClick }: { title: string; description: string; icon: React.ElementType; onClick: () => void }) {
+  const [, setLocation] = useLocation();
   return (
-    <div className="bg-card border border-border rounded-xl p-5 shadow-sm relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-background/60 to-background/80 backdrop-blur-[1px] flex flex-col items-center justify-center gap-3 z-10">
-        <div className="bg-primary/10 p-3 rounded-full">
-          <Lock size={20} className="text-primary" />
-        </div>
-        <div className="text-center px-4">
-          <p className="font-semibold text-foreground">{title}</p>
-          <p className="text-xs text-muted-foreground mt-1">{description}</p>
-        </div>
-        <Button size="sm" onClick={onClick} className="mt-1">
-          Acessar Premium
-        </Button>
+    <div className="bg-card border border-border rounded-xl p-5 shadow-sm opacity-70 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-background/50 to-background/20 backdrop-blur-[1px] flex flex-col items-center justify-center gap-2 z-10">
+        <Crown size={20} className="text-yellow-500" />
+        <span className="text-xs font-semibold text-foreground">Apenas Premium</span>
+        <Button size="sm" variant="outline" className="text-xs h-7 mt-1" onClick={() => setLocation("/planos")}>Ver planos</Button>
       </div>
-      <h2 className="font-semibold mb-4 flex items-center gap-2 opacity-30">
-        <Icon size={18} className="text-primary" />{title}
-      </h2>
-      <div className="h-32 bg-muted/30 rounded-lg opacity-30" />
+      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-3">
+        <Icon size={18} />
+      </div>
+      <p className="font-semibold text-foreground">{title}</p>
+      <p className="text-sm text-muted-foreground mt-1">{description}</p>
     </div>
   );
 }
 
-// Modal 1: Simulação de cenário
+// Modal 1: Simulação de Cenário
 function SimulacaoModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { data: produtos } = useListProdutos();
   const [produtoId, setProdutoId] = useState("");
   const [novoPreco, setNovoPreco] = useState("");
 
   const produto = produtos?.find(p => p.id === produtoId);
-  const preco = Number(novoPreco) || 0;
+  const preco = parseFloat(novoPreco) || 0;
 
   function simular() {
-    if (!produto || !preco) return null;
+    if (!produto || preco <= 0) return null;
     const cmv = produto.cmv ?? 0;
     const maoObra = produto.custo_mao_obra;
     const frete = produto.frete;
@@ -117,13 +113,34 @@ function SimulacaoModal({ open, onClose }: { open: boolean; onClose: () => void 
               </div>
             </div>
           )}
+
+          {sim && produto && preco > 0 && (
+            <div className="bg-muted/20 border border-border rounded-lg p-4 space-y-2 text-sm">
+              <p className="font-semibold text-foreground">Como interpretar os resultados</p>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Melhor cenário sugerido</p>
+              <p className="text-muted-foreground leading-relaxed">
+                {sim.margemPct >= 30
+                  ? `Com o preço de ${fmt(preco)}, a margem de ${sim.margemPct.toFixed(1)}% está saudável (acima de 30%). Este é um bom cenário para o seu negócio.`
+                  : sim.margemPct >= 15
+                  ? `Com o preço de ${fmt(preco)}, a margem de ${sim.margemPct.toFixed(1)}% está em atenção (entre 15% e 30%). Considere reduzir custos ou aumentar o preço para melhorar a lucratividade.`
+                  : `Com o preço de ${fmt(preco)}, a margem de ${sim.margemPct.toFixed(1)}% está crítica (abaixo de 15%). Recomenda-se aumentar o preço ou revisar os custos de produção.`}
+              </p>
+              {delta !== 0 && (
+                <p className="text-muted-foreground leading-relaxed">
+                  {delta > 0
+                    ? `O novo preço aumenta a margem em ${delta.toFixed(1)} p.p. em relação ao preço atual — uma melhora significativa.`
+                    : `O novo preço reduz a margem em ${Math.abs(delta).toFixed(1)} p.p. em relação ao preço atual.`}
+                </p>
+              )}
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
   );
 }
 
-// Modal 2: Break-even detalhado
+// Modal 2: Ponto de Equilíbrio Detalhado
 function BreakevenModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { data: pe, isLoading } = useGetPontoEquilibrio();
   const { data: produtos } = useListProdutos();
@@ -135,7 +152,7 @@ function BreakevenModal({ open, onClose }: { open: boolean; onClose: () => void 
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2"><Target size={18} className="text-primary" />Break-even Detalhado</DialogTitle>
+          <DialogTitle className="flex items-center gap-2"><Target size={18} className="text-primary" />Ponto de Equilíbrio Detalhado</DialogTitle>
         </DialogHeader>
         {isLoading ? <Skeleton className="h-40 w-full" /> : pe ? (
           <div className="space-y-4">
@@ -167,8 +184,17 @@ function BreakevenModal({ open, onClose }: { open: boolean; onClose: () => void 
               )}
             </div>
 
-            <div className="text-xs text-muted-foreground bg-muted/20 rounded-lg p-3">
-              <strong>Como interpretar:</strong> Para cobrir todas as despesas fixas, você precisa faturar pelo menos <strong>{fmt(pe.ponto_contabil)}</strong> por mês. Para ter 20% de lucro líquido, o faturamento mínimo é <strong>{fmt(pe.ponto_economico)}</strong>.
+            <div className="bg-muted/20 border border-border rounded-lg p-4 space-y-2 text-sm">
+              <p className="font-semibold text-foreground">Como interpretar os resultados</p>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Melhor resultado sugerido</p>
+              <p className="text-muted-foreground leading-relaxed">
+                Para cobrir todas as despesas fixas, você precisa faturar pelo menos <strong className="text-foreground">{fmt(pe.ponto_contabil)}</strong> por mês (PE Contábil). Para obter 20% de lucro líquido, o faturamento mínimo é <strong className="text-foreground">{fmt(pe.ponto_economico)}</strong> (PE Econômico).
+              </p>
+              {pe.ponto_economico > 0 && (
+                <p className="text-muted-foreground leading-relaxed">
+                  Foque em atingir o PE Econômico — ele garante tanto a cobertura dos custos fixos quanto uma margem de lucro real de 20%, tornando o negócio sustentável no longo prazo.
+                </p>
+              )}
             </div>
           </div>
         ) : (
@@ -202,6 +228,9 @@ function AnaliseProdutoModal({ open, onClose }: { open: boolean; onClose: () => 
     { label: "Taxa Vale Refeição", value: produto.preco_venda * (produto.taxa_vr_pct ?? 0) / 100, pct: produto.taxa_vr_pct ?? 0 },
   ].filter(i => i.value > 0) : [];
 
+  const mainCost = items.length > 0 ? [...items].sort((a, b) => b.value - a.value)[0] : null;
+  const margemPct = produto?.margem_pct ?? 0;
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
@@ -228,9 +257,9 @@ function AnaliseProdutoModal({ open, onClose }: { open: boolean; onClose: () => 
                   <p className="text-xs text-muted-foreground">Custo total</p>
                   <p className="text-base font-bold text-red-600">{fmt(custoTotal)}</p>
                 </div>
-                <div className={`rounded-xl p-3 border ${(produto.margem_pct ?? 0) > 30 ? "bg-green-50 border-green-200" : (produto.margem_pct ?? 0) >= 15 ? "bg-yellow-50 border-yellow-200" : "bg-red-50 border-red-200"}`}>
+                <div className={`rounded-xl p-3 border ${margemPct > 30 ? "bg-green-50 border-green-200" : margemPct >= 15 ? "bg-yellow-50 border-yellow-200" : "bg-red-50 border-red-200"}`}>
                   <p className="text-xs text-muted-foreground">Margem</p>
-                  <p className={`text-base font-bold ${(produto.margem_pct ?? 0) > 30 ? "text-green-700" : (produto.margem_pct ?? 0) >= 15 ? "text-yellow-700" : "text-red-700"}`}>{(produto.margem_pct ?? 0).toFixed(1)}%</p>
+                  <p className={`text-base font-bold ${margemPct > 30 ? "text-green-700" : margemPct >= 15 ? "text-yellow-700" : "text-red-700"}`}>{margemPct.toFixed(1)}%</p>
                 </div>
               </div>
 
@@ -258,6 +287,22 @@ function AnaliseProdutoModal({ open, onClose }: { open: boolean; onClose: () => 
                     {fmt(produto.margem_contribuicao ?? 0)}
                   </span>
                 </div>
+              </div>
+
+              <div className="bg-muted/20 border border-border rounded-lg p-4 space-y-2 text-sm">
+                <p className="font-semibold text-foreground">Como interpretar os resultados</p>
+                <p className="text-muted-foreground leading-relaxed">
+                  {margemPct >= 30
+                    ? `A margem de ${margemPct.toFixed(1)}% está saudável. Este produto contribui bem para a lucratividade do negócio — continue monitorando os custos para mantê-la.`
+                    : margemPct >= 15
+                    ? `A margem de ${margemPct.toFixed(1)}% está em atenção. Considere revisar os custos ou ajustar o preço de venda para chegar acima de 30%.`
+                    : `A margem de ${margemPct.toFixed(1)}% está crítica. Este produto cobre poucos custos — avalie aumentar o preço ou reduzir insumos urgentemente.`}
+                </p>
+                {mainCost && (
+                  <p className="text-muted-foreground leading-relaxed">
+                    O maior custo deste produto é <strong className="text-foreground">{mainCost.label}</strong> ({fmt(mainCost.value)}, {mainCost.pct.toFixed(1)}% do preço de venda).
+                  </p>
+                )}
               </div>
             </>
           )}
@@ -405,13 +450,15 @@ export default function Relatorios() {
                 </div>
                 <p className="font-semibold text-foreground">Simulação de Cenário</p>
                 <p className="text-sm text-muted-foreground mt-1">Veja o impacto de novos preços na sua margem</p>
+                <p className="text-xs text-muted-foreground/70 mt-2 border-t border-border/50 pt-2">CMV = Custo da Mercadoria Vendida · MO = Mão de obra · MC = Margem de Contribuição</p>
               </button>
               <button onClick={() => setModalBreakeven(true)} className="bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-all text-left group">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-3 group-hover:bg-primary/20 transition-colors">
                   <Target size={18} />
                 </div>
-                <p className="font-semibold text-foreground">Break-even Detalhado</p>
+                <p className="font-semibold text-foreground">Ponto de Equilíbrio Detalhado</p>
                 <p className="text-sm text-muted-foreground mt-1">Análise completa do ponto de equilíbrio</p>
+                <p className="text-xs text-muted-foreground/70 mt-2 border-t border-border/50 pt-2">PE Contábil = faturamento mín. p/ cobrir custos fixos · PE Econômico = PE + 20% de lucro</p>
               </button>
               <button onClick={() => setModalAnalise(true)} className="bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-all text-left group">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-3 group-hover:bg-primary/20 transition-colors">
@@ -419,12 +466,13 @@ export default function Relatorios() {
                 </div>
                 <p className="font-semibold text-foreground">Análise Individual</p>
                 <p className="text-sm text-muted-foreground mt-1">Detalhe completo de cada produto</p>
+                <p className="text-xs text-muted-foreground/70 mt-2 border-t border-border/50 pt-2">CMV, MO, Imposto, VR = Vale Refeição · % = participação no preço de venda</p>
               </button>
             </>
           ) : (
             <>
               <PremiumLock title="Simulação de Cenário" description="Teste novos preços e veja o impacto na margem" icon={Sliders} onClick={() => {}} />
-              <PremiumLock title="Break-even Detalhado" description="Análise completa do ponto de equilíbrio" icon={Target} onClick={() => {}} />
+              <PremiumLock title="Ponto de Equilíbrio Detalhado" description="Análise completa do ponto de equilíbrio" icon={Target} onClick={() => {}} />
               <PremiumLock title="Análise Individual" description="Detalhe completo de custos por produto" icon={BarChart2} onClick={() => {}} />
             </>
           )}

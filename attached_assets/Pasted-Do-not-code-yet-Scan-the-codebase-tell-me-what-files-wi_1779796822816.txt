@@ -1,0 +1,112 @@
+Do not code yet. Scan the codebase, tell me what files will be affected and your minimal implementation plan for the changes below. Wait for my approval before starting.
+
+Small scoped update. Do NOT rebuild the app, do NOT touch unrelated modules, do NOT redesign any screen.
+
+First step:
+- Read the codebase and identify where ficha técnica, insumos, the sidebar/menu, and the painel welcome message are implemented.
+- Before coding, show affected files and your minimal implementation plan.
+- Wait for approval before starting.
+
+Scope:
+
+1. Ficha Técnica — Excel buttons
+- Move Excel import/export buttons out of any card/container
+- Place them directly in the Ficha Técnica page header/action area, same pattern used or to be used in Produtos
+
+2. Ficha Técnica — Fracionamento de insumos
+- When adding an insumo to a recipe, show a quantity field + unit selector side by side
+- The unit selector must list: g, kg, ml, L, un, dz, pacote, and any units already supported
+- Auto-calculate the fractional cost proportionally:
+  Example: if 1 kg of arroz = R$10,00, then 100g = R$1,00
+- Store and display the fractional quantity and calculated cost per line in the recipe
+- Do not break existing recipe lines or existing costing logic
+
+3. Menu lateral
+- Add "Funcionários" button between "Lançamentos" and "Relatórios" in the sidebar
+- Route: /funcionarios
+- Keep the same sidebar style, icon pattern, and active state behavior as other items
+
+4. Painel — bom dia
+- In the painel welcome message, remove the company name
+- Show only the user's first name (get from authenticated user profile/metadata)
+- Example: "Bom dia, Michel" instead of "Bom dia, [empresa]"
+
+Rules:
+- Reuse existing components and patterns
+- Do not add new libraries unless unavoidable
+- Do not change database schema unless strictly needed
+- Keep UI in Portuguese
+
+When finished, return:
+1. Summary of changes
+2. Files changed
+3. Assumptions made
+4. Manual tests to run
+
+
+Small scoped update. Do NOT rebuild the app, do NOT touch unrelated modules, do NOT redesign any screen.
+
+First step:
+- Read the codebase and identify where Relatórios, Funcionários, phone/telefone fields, and Configurações are implemented.
+- Before coding, show affected files and your minimal plan.
+- Wait for approval before starting.
+
+Scope:
+
+1. Relatórios — renomear terminologia
+- Replace every occurrence of "Break-even" with "Margem de contribuição" only in the Relatórios section labels and titles
+- Do not change variable names, database fields, or calculation logic
+
+2. Simulação de cenário — interpretação
+- Below the results section of Simulação de Cenário, add a collapsible or static block:
+  - Title: "Como interpretar os resultados"
+  - Subtitle: "Melhor cenário sugerido"
+  - Show which scenario has the highest margin or lowest break-even and explain why in plain Portuguese
+  - Base the explanation on the calculated values already displayed
+
+3. Break-even detalhado — interpretação
+- Below the results section, add the same pattern:
+  - "Como interpretar os resultados"
+  - "Melhor resultado sugerido"
+  - Plain language explanation based on displayed values
+
+4. Análise individual do Produto — interpretação
+- Below the results, add only:
+  - "Como interpretar os resultados"
+  - Plain language explanation
+  - No "melhor resultado" block needed here
+
+5. Relatórios Avançados — legendas nos cards
+- In each of the 3 advanced reports cards, add a legend/glossary section explaining the abbreviations used in that specific card
+- Keep it compact (tooltip, footnote or small legend block below the card)
+- Do not redesign the cards
+
+6. Funcionários — vale refeição
+- In the Funcionários form, add an info tooltip/pop-up on the "Vale Refeição" field
+- Text: "Se o funcionário se alimenta na empresa, adicione aqui o custo relacionado à refeição individual ou mensal."
+
+7. Telefone/WhatsApp — máscara automática
+- Apply Brazilian phone mask to all telefone/WhatsApp fields in the app
+- Format: (XX) XXXX-XXXX or (XX) XXXXX-XXXX (detect mobile vs fixed automatically)
+- Accept only numeric input
+- Auto-insert ( ), space, and - as the user types
+- Do not use external libraries if a simple regex/onInput handler solves it
+
+8. Configurações — logo da empresa
+- Add a field in Configurações to upload the company logo
+- Store the logo using the existing storage solution (Supabase Storage or equivalent already in use)
+- Display the uploaded logo in the "Resultado do Mês" card in the painel
+- If no logo is uploaded, show nothing in that space (do not use a placeholder image)
+
+Rules:
+- Reuse existing components, patterns and storage already in use
+- Do not add new libraries unless unavoidable
+- Do not change database schema beyond what is strictly needed for logo storage
+- Do not change business logic or calculation formulas
+- Keep UI in Portuguese
+
+When finished, return:
+1. Summary of changes
+2. Files changed
+3. Assumptions made
+4. Manual tests to run

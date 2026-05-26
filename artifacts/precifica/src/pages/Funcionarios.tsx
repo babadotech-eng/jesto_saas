@@ -7,13 +7,14 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useAssinatura } from "@/hooks/useAssinatura";
 import { useLocation } from "wouter";
-import { Plus, Pencil, Trash2, Users, Crown, DollarSign, Calculator, TrendingUp, ExternalLink } from "lucide-react";
+import { Plus, Pencil, Trash2, Users, Crown, DollarSign, Calculator, TrendingUp, ExternalLink, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -332,7 +333,25 @@ export default function Funcionarios() {
                     <FormItem><FormLabel>Cargo</FormLabel><FormControl><Input {...field} placeholder="Ex: Auxiliar" data-testid="input-func-cargo" /></FormControl><FormMessage /></FormItem>
                   )} />
                   <NumberField control={form.control} name="vale_transporte" label="Vale transporte (R$)" />
-                  <NumberField control={form.control} name="vale_refeicao" label="Vale refeição (R$)" />
+                  <FormField control={form.control} name="vale_refeicao" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-1.5">
+                        Vale refeição (R$)
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <button type="button" className="text-muted-foreground hover:text-foreground transition-colors">
+                              <HelpCircle size={13} />
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="text-xs max-w-xs" side="top">
+                            Se o funcionário se alimenta na empresa, adicione aqui o custo relacionado à refeição individual ou mensal. Este valor entra no custo total do funcionário.
+                          </PopoverContent>
+                        </Popover>
+                      </FormLabel>
+                      <FormControl><Input type="number" step="0.01" {...field} data-testid="input-func-vale_refeicao" /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
                   <NumberField control={form.control} name="convenio_medico" label="Convênio médico (R$)" />
                   <NumberField control={form.control} name="carga_horaria_mensal" label="Carga horária mensal (h)" />
                 </div>

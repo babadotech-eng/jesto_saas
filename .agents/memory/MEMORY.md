@@ -1,0 +1,2 @@
+- [Perfil logo_url](perfil-logo.md) — coluna logo_url adicionada à tabela perfis; bucket Supabase Storage "logos" deve ser criado manualmente pelo usuário (público).
+- [Fracionamento FichaTecnica](ficha-fracionamento.md) — conversão de unidade é client-side antes de salvar; tabela UNIDADES_FRACAO mapeia unidade nativa do insumo para opções exibidas.
