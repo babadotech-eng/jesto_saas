@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { useListProdutos, useCreateProduto, useUpdateProduto, useDeleteProduto, getListProdutosQueryKey } from "@workspace/api-client-react";
+import { useState, useRef, useEffect } from "react";
+import { useListProdutos, useCreateProduto, useUpdateProduto, useDeleteProduto, getListProdutosQueryKey, useListFuncionarios } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus, Search, Pencil, Trash2, Package, HelpCircle, Download, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -75,6 +77,7 @@ interface ImportRow {
 export default function Produtos() {
   const qc = useQueryClient();
   const { data, isLoading } = useListProdutos();
+  const { data: funcionarios } = useListFuncionarios();
   const createMutation = useCreateProduto();
   const updateMutation = useUpdateProduto();
   const deleteMutation = useDeleteProduto();
@@ -86,13 +89,53 @@ export default function Produtos() {
   const [importOpen, setImportOpen] = useState(false);
   const [importRows, setImportRows] = useState<ImportRow[]>([]);
   const [importing, setImporting] = useState(false);
+  const [prepMinutos, setPrepMinutos] = useState("");
+  const [cargoResponsavel, setCargoResponsavel] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues });
 
+  // Build cargo → avg valor_hora map from Funcionários data
+  const cargoMap: Record<string, number> = (() => {
+    const groups: Record<string, number[]> = {};
+    (funcionarios ?? []).forEach(f => {
+      const cargo = (f.cargo ?? "").trim();
+      if (!cargo || f.valor_hora == null) return;
+      if (!groups[cargo]) groups[cargo] = [];
+      groups[cargo].push(Number(f.valor_hora));
+    });
+    const result: Record<string, number> = {};
+    Object.entries(groups).forEach(([cargo, vals]) => {
+      result[cargo] = vals.reduce((s, v) => s + v, 0) / vals.length;
+    });
+    return result;
+  })();
+  const cargos = Object.keys(cargoMap);
+
+  // Auto labor cost: (prepMinutos / 60) * valorHora do cargo selecionado
+  const autoMaoObra = (() => {
+    const mins = parseFloat(prepMinutos);
+    if (!cargoResponsavel || isNaN(mins) || mins <= 0) return null;
+    const valorHora = cargoMap[cargoResponsavel];
+    if (valorHora == null) return null;
+    return parseFloat(((mins / 60) * valorHora).toFixed(2));
+  })();
+
+  useEffect(() => {
+    if (autoMaoObra !== null) {
+      form.setValue("custo_mao_obra", autoMaoObra, { shouldValidate: true });
+    }
+  }, [autoMaoObra]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const filtered = data?.filter(p => p.nome.toLowerCase().includes(search.toLowerCase())) ?? [];
 
-  function openCreate() { setEditingId(null); form.reset(defaultValues); setOpen(true); }
+  function openCreate() {
+    setEditingId(null);
+    form.reset(defaultValues);
+    setPrepMinutos("");
+    setCargoResponsavel("");
+    setOpen(true);
+  }
   function openEdit(p: NonNullable<typeof data>[0]) {
     setEditingId(p.id);
     form.reset({
@@ -101,6 +144,8 @@ export default function Produtos() {
       imposto_pct: p.imposto_pct, taxa_cartao_pct: p.taxa_cartao_pct, taxa_app_pct: p.taxa_app_pct,
       comissao_pct: p.comissao_pct, taxa_vr_pct: p.taxa_vr_pct ?? 0,
     });
+    setPrepMinutos("");
+    setCargoResponsavel("");
     setOpen(true);
   }
 
@@ -328,13 +373,63 @@ export default function Produtos() {
                     <FormLabel>
                       <TooltipLabel
                         label="Mão de Obra (R$)"
-                        tip="Custo direto de mão de obra para produzir esta unidade. Inclua o valor proporcional do seu tempo ou de funcionários envolvidos na produção."
+                        tip="Custo direto de mão de obra por unidade produzida. Preenchido automaticamente quando o cargo e o tempo de preparo são informados."
                       />
                     </FormLabel>
-                    <FormControl><Input type="number" step="0.01" {...field} data-testid="input-produto-mao-obra" /></FormControl>
+                    <FormControl>
+                      <Input
+                        type="number" step="0.01"
+                        {...field}
+                        readOnly={autoMaoObra !== null}
+                        className={autoMaoObra !== null ? "bg-muted cursor-not-allowed" : ""}
+                        data-testid="input-produto-mao-obra"
+                      />
+                    </FormControl>
+                    {autoMaoObra !== null && (
+                      <p className="text-xs text-muted-foreground">Calculado automaticamente</p>
+                    )}
+                    {autoMaoObra === null && cargos.length === 0 && (
+                      <p className="text-xs text-muted-foreground">Sem funcionários com cargo — insira manualmente.</p>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )} />
+
+                {/* Tempo de preparo + Cargo/Função — usados para cálculo automático de mão de obra */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Tempo de preparo (min)</Label>
+                  <Input
+                    type="number" step="1" min="0" placeholder="Ex: 15"
+                    value={prepMinutos}
+                    onChange={e => setPrepMinutos(e.target.value)}
+                    data-testid="input-produto-prep-minutos"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Cargo/Função responsável</Label>
+                  {cargos.length > 0 ? (
+                    <Select value={cargoResponsavel} onValueChange={setCargoResponsavel}>
+                      <SelectTrigger data-testid="select-produto-cargo">
+                        <SelectValue placeholder="Selecione o cargo..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {cargos.map(c => (
+                          <SelectItem key={c} value={c}>
+                            {c} — {fmt(cargoMap[c])}/h
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Input disabled placeholder="Nenhum cargo cadastrado" />
+                  )}
+                  {cargoResponsavel && prepMinutos && autoMaoObra !== null && (
+                    <p className="text-xs text-muted-foreground">
+                      {fmt(cargoMap[cargoResponsavel])}/h × {prepMinutos} min = {fmt(autoMaoObra)}
+                    </p>
+                  )}
+                </div>
+
                 <FormField control={form.control} name="frete" render={({ field }) => (
                   <FormItem><FormLabel>Frete (R$)</FormLabel><FormControl><Input type="number" step="0.01" {...field} data-testid="input-produto-frete" /></FormControl><FormMessage /></FormItem>
                 )} />
