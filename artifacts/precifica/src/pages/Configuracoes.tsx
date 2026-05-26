@@ -87,10 +87,13 @@ export default function Configuracoes() {
         .upload(path, file, { upsert: true, contentType: file.type });
 
       if (uploadError) {
-        if (uploadError.message?.includes("bucket") || uploadError.message?.includes("not found")) {
-          toast.error("Bucket de logos não encontrado. Veja as instruções ao final da página.");
+        const msg = uploadError.message ?? "";
+        if (msg.includes("bucket") || msg.includes("not found") || msg.includes("Bucket")) {
+          toast.error("Bucket 'logos' não encontrado. Crie-o seguindo as instruções ao final da página.");
+        } else if (msg.includes("policy") || msg.includes("row-level") || msg.includes("security") || msg.includes("new row violates") || msg.includes("Unauthorized") || uploadError.statusCode === "403" || (uploadError as { status?: number }).status === 403) {
+          toast.error("Permissão negada. Adicione a política de upload no Supabase (passo 5 das instruções).");
         } else {
-          toast.error(`Erro no upload: ${uploadError.message}`);
+          toast.error(`Erro no upload: ${msg || "tente novamente."}`);
         }
         return;
       }
@@ -292,15 +295,26 @@ export default function Configuracoes() {
 
       {/* Bucket setup instructions */}
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-sm text-amber-900" data-testid="bucket-instructions">
-        <p className="font-semibold mb-2">Como configurar o upload de logo</p>
-        <ol className="list-decimal list-inside space-y-1 text-amber-800">
+        <p className="font-semibold mb-3">Como configurar o upload de logo</p>
+        <p className="text-xs text-amber-700 mb-3">Siga todos os passos — o bucket precisa existir E ter uma política de acesso.</p>
+        <ol className="list-decimal list-outside ml-4 space-y-2 text-amber-800">
           <li>Acesse o painel do Supabase do seu projeto</li>
           <li>Vá em <strong>Storage</strong> → <strong>Buckets</strong> → <strong>New bucket</strong></li>
           <li>Nome do bucket: <code className="bg-amber-100 px-1 rounded font-mono">logos</code></li>
-          <li>Marque <strong>Public bucket</strong> (para que as imagens sejam exibidas sem autenticação)</li>
-          <li>Clique em <strong>Save</strong></li>
+          <li>Marque <strong>Public bucket</strong> e clique em <strong>Save</strong></li>
+          <li className="font-semibold">Agora adicione a política de upload:
+            <ul className="font-normal mt-2 ml-0 space-y-1.5 list-none">
+              <li>→ Clique no bucket <strong>logos</strong> → aba <strong>Policies</strong> → <strong>New policy</strong></li>
+              <li>→ Escolha <strong>For full customization</strong></li>
+              <li>→ Nome: <code className="bg-amber-100 px-1 rounded font-mono">Autenticados podem fazer upload</code></li>
+              <li>→ Operações: marque <strong>INSERT</strong> e <strong>UPDATE</strong></li>
+              <li>→ Target roles: <strong>authenticated</strong></li>
+              <li>→ Deixe a expressão <code className="bg-amber-100 px-1 rounded font-mono">WITH CHECK</code> como <code className="bg-amber-100 px-1 rounded font-mono">true</code></li>
+              <li>→ Clique em <strong>Save policy</strong></li>
+            </ul>
+          </li>
         </ol>
-        <p className="mt-2 text-xs text-amber-700">Feito isso, o botão "Enviar logo" acima funcionará normalmente.</p>
+        <p className="mt-3 text-xs text-amber-700">Após criar a política, o botão "Enviar logo" funcionará normalmente.</p>
       </div>
     </div>
   );
