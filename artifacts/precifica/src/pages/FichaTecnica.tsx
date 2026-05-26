@@ -338,7 +338,7 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
   );
 }
 
-interface DraftIngredient { insumo_id: string; quantidade: string; }
+interface DraftIngredient { insumo_id: string; quantidade: string; unidade: string; }
 
 function NovaFichaForm({ onCancel, onCreated }: { onCancel: () => void; onCreated: (id: string) => void }) {
   const qc = useQueryClient();
@@ -351,22 +351,30 @@ function NovaFichaForm({ onCancel, onCreated }: { onCancel: () => void; onCreate
   const [rendimento, setRendimento] = useState("");
   const [unidadeRendimento, setUnidadeRendimento] = useState("unidades");
   const [observacoes, setObservacoes] = useState("");
-  const [ingredientes, setIngredientes] = useState<DraftIngredient[]>([{ insumo_id: "", quantidade: "" }]);
+  const [ingredientes, setIngredientes] = useState<DraftIngredient[]>([{ insumo_id: "", quantidade: "", unidade: "" }]);
   const [saving, setSaving] = useState(false);
 
   const produtoSelecionado = produtos?.find(p => p.id === produtoId);
   const categoriaHerdada = produtoSelecionado?.categoria ?? null;
 
-  function addIngrediente() { setIngredientes(prev => [...prev, { insumo_id: "", quantidade: "" }]); }
+  function addIngrediente() { setIngredientes(prev => [...prev, { insumo_id: "", quantidade: "", unidade: "" }]); }
   function removeIngrediente(i: number) { setIngredientes(prev => prev.filter((_, idx) => idx !== i)); }
   function updateIngrediente(i: number, field: keyof DraftIngredient, val: string) {
-    setIngredientes(prev => prev.map((item, idx) => idx === i ? { ...item, [field]: val } : item));
+    setIngredientes(prev => prev.map((item, idx) => {
+      if (idx !== i) return item;
+      // When the insumo changes, reset the unit selection
+      if (field === "insumo_id") return { ...item, insumo_id: val, unidade: "" };
+      return { ...item, [field]: val };
+    }));
   }
 
   const cmvPreview = ingredientes.reduce((sum, ing) => {
     const insumo = insumos?.find(ins => ins.id === ing.insumo_id);
     if (!insumo || !ing.quantidade) return sum;
-    return sum + Number(ing.quantidade) * Number(insumo.preco_unitario) * Number(insumo.fator_correcao);
+    const nativeUnit = insumo.unidade ?? "";
+    const effectiveUnit = ing.unidade || nativeUnit;
+    const converted = convertToNativeUnit(parseFloat(ing.quantidade) || 0, effectiveUnit, nativeUnit);
+    return sum + converted * Number(insumo.preco_unitario) * Number(insumo.fator_correcao);
   }, 0);
   const rend = parseFloat(rendimento) || 0;
   const custoPorcao = rend > 0 ? cmvPreview / rend : 0;
@@ -387,7 +395,11 @@ function NovaFichaForm({ onCancel, onCreated }: { onCancel: () => void; onCreate
       });
       const validIngs = ingredientes.filter(i => i.insumo_id && i.quantidade);
       for (const ing of validIngs) {
-        await addItemMutation.mutateAsync({ id: ficha.id, data: { insumo_id: ing.insumo_id, quantidade: parseFloat(ing.quantidade) } });
+        const insumo = insumos?.find(ins => ins.id === ing.insumo_id);
+        const nativeUnit = insumo?.unidade ?? "";
+        const effectiveUnit = ing.unidade || nativeUnit;
+        const converted = convertToNativeUnit(parseFloat(ing.quantidade), effectiveUnit, nativeUnit);
+        await addItemMutation.mutateAsync({ id: ficha.id, data: { insumo_id: ing.insumo_id, quantidade: converted } });
       }
       qc.invalidateQueries({ queryKey: getListFichasQueryKey() });
       toast.success("Ficha técnica criada!");
@@ -436,30 +448,41 @@ function NovaFichaForm({ onCancel, onCreated }: { onCancel: () => void; onCreate
       <div>
         <h3 className="font-semibold mb-3">Ingredientes</h3>
         <div className="space-y-2">
-          {ingredientes.map((ing, i) => (
-            <div key={i} className="flex gap-2 items-start">
-              <div className="flex-1">
-                <Select value={ing.insumo_id} onValueChange={v => updateIngrediente(i, "insumo_id", v)}>
-                  <SelectTrigger><SelectValue placeholder="Selecione o ingrediente..." /></SelectTrigger>
-                  <SelectContent>{insumos?.map(ins => <SelectItem key={ins.id} value={ins.id}>{ins.nome} ({ins.unidade})</SelectItem>)}</SelectContent>
-                </Select>
+          {ingredientes.map((ing, i) => {
+            const insumoNativo = insumos?.find(ins => ins.id === ing.insumo_id);
+            const nativeUnitDraft = insumoNativo?.unidade ?? "";
+            const unitOptionsDraft = nativeUnitDraft ? getUnidadesParaInsumo(nativeUnitDraft) : [];
+            const effectiveUnitDraft = ing.unidade || nativeUnitDraft;
+            return (
+              <div key={i} className="flex gap-2 items-start">
+                <div className="flex-1">
+                  <Select value={ing.insumo_id} onValueChange={v => updateIngrediente(i, "insumo_id", v)}>
+                    <SelectTrigger><SelectValue placeholder="Selecione o ingrediente..." /></SelectTrigger>
+                    <SelectContent>{insumos?.map(ins => <SelectItem key={ins.id} value={ins.id}>{ins.nome} ({ins.unidade})</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <Input
+                  type="number" step="0.001" placeholder="Qtd"
+                  className="w-24"
+                  value={ing.quantidade}
+                  onChange={e => updateIngrediente(i, "quantidade", e.target.value)}
+                />
+                {unitOptionsDraft.length > 1 ? (
+                  <Select value={effectiveUnitDraft} onValueChange={v => updateIngrediente(i, "unidade", v)}>
+                    <SelectTrigger className="w-20"><SelectValue /></SelectTrigger>
+                    <SelectContent>{unitOptionsDraft.map(u => <SelectItem key={u} value={u}>{u}</SelectItem>)}</SelectContent>
+                  </Select>
+                ) : (
+                  <div className="flex items-center px-2 text-sm text-muted-foreground w-16 h-9">{nativeUnitDraft}</div>
+                )}
+                {ingredientes.length > 1 && (
+                  <Button variant="ghost" size="icon" type="button" className="h-9 w-9 shrink-0 text-destructive" onClick={() => removeIngrediente(i)}>
+                    <Trash2 size={14} />
+                  </Button>
+                )}
               </div>
-              <Input
-                type="number" step="0.001" placeholder="Qtd"
-                className="w-24"
-                value={ing.quantidade}
-                onChange={e => updateIngrediente(i, "quantidade", e.target.value)}
-              />
-              <span className="text-xs text-muted-foreground self-center w-8">
-                {insumos?.find(ins => ins.id === ing.insumo_id)?.unidade ?? ""}
-              </span>
-              {ingredientes.length > 1 && (
-                <Button variant="ghost" size="icon" type="button" className="h-9 w-9 shrink-0 text-destructive" onClick={() => removeIngrediente(i)}>
-                  <Trash2 size={14} />
-                </Button>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
         <Button variant="outline" size="sm" className="mt-3 gap-1" type="button" onClick={addIngrediente}>
           <Plus size={14} />Adicionar ingrediente
