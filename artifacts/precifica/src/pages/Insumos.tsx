@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { useListInsumos, useCreateInsumo, useUpdateInsumo, useDeleteInsumo, getListInsumosQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Search, Pencil, Trash2, Carrot, HelpCircle, Download, Upload, X } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Carrot, HelpCircle, Download, Upload, X, Lock } from "lucide-react";
+import { useAssinatura } from "@/hooks/useAssinatura";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,6 +17,8 @@ import { z } from "zod";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
+
+const LIMITE_INSUMOS_GRATIS = 10;
 
 function fmt(n: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(n);
@@ -86,6 +90,8 @@ function AutoFatorWatcher({ control, setValue }: { control: any; setValue: any }
 export default function Insumos() {
   const qc = useQueryClient();
   const { data, isLoading } = useListInsumos();
+  const { data: assinatura } = useAssinatura();
+  const [, setLocation] = useLocation();
   const createMutation = useCreateInsumo();
   const updateMutation = useUpdateInsumo();
   const deleteMutation = useDeleteInsumo();
@@ -97,7 +103,10 @@ export default function Insumos() {
   const [importOpen, setImportOpen] = useState(false);
   const [importRows, setImportRows] = useState<ImportRow[]>([]);
   const [importing, setImporting] = useState(false);
+  const [limiteOpen, setLimiteOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const isGratis = assinatura?.plano === "gratis";
 
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues });
   const filtered = data?.filter(i => i.nome.toLowerCase().includes(search.toLowerCase())) ?? [];
@@ -120,6 +129,19 @@ export default function Insumos() {
   }
 
   async function onSubmit(values: FormValues) {
+    if (!editingId) {
+      if (isGratis && (data?.length ?? 0) >= LIMITE_INSUMOS_GRATIS) {
+        setOpen(false);
+        setLimiteOpen(true);
+        return;
+      }
+      const nomeLower = values.nome.toLowerCase().trim();
+      const duplicado = data?.find(i => i.nome.toLowerCase().trim() === nomeLower);
+      if (duplicado) {
+        toast.warning(`Já existe um insumo com o nome "${duplicado.nome}". Verifique a lista.`);
+        return;
+      }
+    }
     const payload = {
       nome: values.nome,
       unidade: values.unidade,
@@ -194,6 +216,7 @@ export default function Insumos() {
       const wb = XLSX.read(rawData, { type: "array" });
       const ws = wb.Sheets[wb.SheetNames[0]];
       const rows: Record<string, unknown>[] = XLSX.utils.sheet_to_json(ws);
+      const seenNames = new Set<string>();
       const parsed: ImportRow[] = rows.map(r => {
         const nome = String(r["nome"] ?? "").trim();
         const unidade = String(r["unidade_de_medida"] ?? r["unidade"] ?? "kg").trim() || "kg";
@@ -207,6 +230,10 @@ export default function Insumos() {
         const base = { nome, unidade, preco_unitario: preco, fator_correcao: fator, peso_bruto: pesoBruto, peso_liquido: pesoLiquido, fornecedor, embalagem, quantidade_em_estoque: qtdEstoque };
         if (!nome) return { ...base, valid: false, error: "Nome obrigatório" };
         if (isNaN(preco) || preco < 0) return { ...base, valid: false, error: "Preço inválido" };
+        const nomeLower = nome.toLowerCase().trim();
+        if (seenNames.has(nomeLower)) return { ...base, valid: false, error: "Duplicado na planilha" };
+        seenNames.add(nomeLower);
+        if (data?.some(i => i.nome.toLowerCase().trim() === nomeLower)) return { ...base, valid: false, error: "Já existe na plataforma" };
         return { ...base, valid: true };
       });
       setImportRows(parsed);
@@ -220,6 +247,14 @@ export default function Insumos() {
     const valid = importRows.filter(r => r.valid);
     const errors = importRows.filter(r => !r.valid).length;
     if (!valid.length) { toast.error("Nenhuma linha válida para importar."); return; }
+    if (isGratis) {
+      const atual = data?.length ?? 0;
+      if (atual + valid.length > LIMITE_INSUMOS_GRATIS) {
+        setImportOpen(false);
+        setLimiteOpen(true);
+        return;
+      }
+    }
     setImporting(true);
     let successCount = 0;
     for (const row of valid) {
@@ -510,6 +545,28 @@ export default function Insumos() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Limite do plano grátis */}
+      <Dialog open={limiteOpen} onOpenChange={setLimiteOpen}>
+        <DialogContent className="max-w-sm text-center">
+          <div className="flex justify-center mb-2">
+            <div className="bg-amber-100 text-amber-600 p-4 rounded-full"><Lock size={28} /></div>
+          </div>
+          <DialogHeader>
+            <DialogTitle className="text-center">Limite do plano grátis</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground mt-1">
+            O plano grátis permite até <strong>{LIMITE_INSUMOS_GRATIS} insumos</strong> cadastrados.
+            Faça upgrade para o plano Premium e cadastre insumos ilimitados.
+          </p>
+          <DialogFooter className="flex-col gap-2 sm:flex-col mt-2">
+            <Button className="w-full bg-[#FF6C3A] hover:bg-[#E8542A] text-white" onClick={() => { setLimiteOpen(false); setLocation("/planos"); }}>
+              Fazer upgrade para Premium
+            </Button>
+            <Button variant="ghost" className="w-full" onClick={() => setLimiteOpen(false)}>Agora não</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

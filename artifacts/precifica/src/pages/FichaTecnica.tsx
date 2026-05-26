@@ -1,6 +1,9 @@
 import { useState, useRef } from "react";
 import { useListFichas, useCreateFicha, useDeleteFicha, useGetFicha, useAddFichaItem, useDeleteFichaItem, useListProdutos, useListInsumos, getListFichasQueryKey, getGetFichaQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAssinatura } from "@/hooks/useAssinatura";
+import { useLocation } from "wouter";
+import { Lock } from "lucide-react";
 import { Plus, Trash2, FileText, ArrowLeft, Download, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -83,6 +86,12 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
     if (!addInsumoId || !addQtd) { toast.error("Selecione o ingrediente e a quantidade."); return; }
     const qtd = parseFloat(addQtd);
     if (isNaN(qtd) || qtd <= 0) { toast.error("Quantidade inválida."); return; }
+    const jaAdicionado = ficha?.itens?.some(it => it.insumo_id === addInsumoId);
+    if (jaAdicionado) {
+      const nomeInsumo = insumos?.find(i => i.id === addInsumoId)?.nome ?? "esse ingrediente";
+      toast.warning(`"${nomeInsumo}" já está nesta ficha. Remova o existente antes de adicionar novamente.`);
+      return;
+    }
     const converted = convertToNativeUnit(qtd, effectiveUnit, nativeUnit);
     try {
       await addItemMutation.mutateAsync({ id: fichaId, data: { insumo_id: addInsumoId, quantidade: converted } });
@@ -171,9 +180,15 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
   async function confirmImport() {
     const valid = importRows.filter(r => r.valid && r.resolvedId);
     if (!valid.length) { toast.error("Nenhuma linha válida."); return; }
+    const duplicados = valid.filter(r => ficha?.itens?.some(it => it.insumo_id === r.resolvedId));
+    if (duplicados.length > 0) {
+      toast.warning(`Ignorados por já existirem na ficha: ${duplicados.map(d => d.nome).join(", ")}`);
+    }
+    const novos = valid.filter(r => !ficha?.itens?.some(it => it.insumo_id === r.resolvedId));
+    if (!novos.length) { toast.error("Todos os ingredientes já estão na ficha."); return; }
     setImporting(true);
     let count = 0;
-    for (const row of valid) {
+    for (const row of novos) {
       try {
         await addItemMutation.mutateAsync({ id: fichaId, data: { insumo_id: row.resolvedId!, quantidade: row.quantidade } });
         count++;
@@ -486,14 +501,29 @@ function NovaFichaForm({ onCancel, onCreated }: { onCancel: () => void; onCreate
   );
 }
 
+const LIMITE_FICHAS_GRATIS = 1;
+
 export default function FichaTecnica() {
   const qc = useQueryClient();
   const { data, isLoading } = useListFichas();
+  const { data: assinatura } = useAssinatura();
+  const [, setLocation] = useLocation();
   const deleteMutation = useDeleteFicha();
 
   const [showForm, setShowForm] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
+  const [limiteOpen, setLimiteOpen] = useState(false);
+
+  const isGratis = assinatura?.plano === "gratis";
+
+  function handleNovaFicha() {
+    if (isGratis && (data?.length ?? 0) >= LIMITE_FICHAS_GRATIS) {
+      setLimiteOpen(true);
+      return;
+    }
+    setShowForm(true);
+  }
 
   async function handleDelete() {
     if (!deleteId) return;
@@ -540,7 +570,7 @@ export default function FichaTecnica() {
           <Button variant="outline" size="sm" className="gap-1.5" onClick={exportListaFichas}>
             <Download size={14} />Exportar lista
           </Button>
-          <Button onClick={() => setShowForm(true)} data-testid="button-create-ficha"><Plus size={16} className="mr-2" />Nova Ficha</Button>
+          <Button onClick={handleNovaFicha} data-testid="button-create-ficha"><Plus size={16} className="mr-2" />Nova Ficha</Button>
         </div>
       </div>
 
@@ -553,7 +583,7 @@ export default function FichaTecnica() {
             <p className="font-semibold">Nenhuma ficha técnica cadastrada</p>
             <p className="text-sm text-muted-foreground mt-1">Crie sua primeira ficha técnica para calcular o CMV das suas receitas</p>
           </div>
-          <Button onClick={() => setShowForm(true)} data-testid="button-empty-create-ficha"><Plus size={16} className="mr-2" />Criar Ficha Técnica</Button>
+          <Button onClick={handleNovaFicha} data-testid="button-empty-create-ficha"><Plus size={16} className="mr-2" />Criar Ficha Técnica</Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -602,6 +632,28 @@ export default function FichaTecnica() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Limite do plano grátis */}
+      <Dialog open={limiteOpen} onOpenChange={setLimiteOpen}>
+        <DialogContent className="max-w-sm text-center">
+          <div className="flex justify-center mb-2">
+            <div className="bg-amber-100 text-amber-600 p-4 rounded-full"><Lock size={28} /></div>
+          </div>
+          <DialogHeader>
+            <DialogTitle className="text-center">Limite do plano grátis</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground mt-1">
+            O plano grátis permite apenas <strong>{LIMITE_FICHAS_GRATIS} ficha técnica</strong> cadastrada.
+            Faça upgrade para o plano Premium e crie fichas técnicas ilimitadas.
+          </p>
+          <DialogFooter className="flex-col gap-2 sm:flex-col mt-2">
+            <Button className="w-full bg-[#FF6C3A] hover:bg-[#E8542A] text-white" onClick={() => { setLimiteOpen(false); setLocation("/planos"); }}>
+              Fazer upgrade para Premium
+            </Button>
+            <Button variant="ghost" className="w-full" onClick={() => setLimiteOpen(false)}>Agora não</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

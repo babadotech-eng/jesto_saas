@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { BarChart3, Check, X, Mail } from "lucide-react";
@@ -54,7 +54,36 @@ export default function Cadastro() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [confirmSent, setConfirmSent] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+  const [resending, setResending] = useState(false);
   const [, setLocation] = useLocation();
+
+  useEffect(() => {
+    if (!confirmSent) return;
+    setCountdown(120);
+    const interval = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) { clearInterval(interval); return 0; }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [confirmSent]);
+
+  const handleResend = async () => {
+    setResending(true);
+    const { error } = await supabase.auth.resend({ type: "signup", email });
+    setResending(false);
+    if (error) { toast.error("Erro ao reenviar", { description: error.message }); return; }
+    toast.success("E-mail reenviado! Verifique sua caixa de entrada.");
+    setCountdown(120);
+    const interval = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) { clearInterval(interval); return 0; }
+        return prev - 1;
+      });
+    }, 1000);
+  };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,6 +114,12 @@ export default function Cadastro() {
   };
 
   if (confirmSent) {
+    const mins = Math.floor(countdown / 60);
+    const secs = countdown % 60;
+    const countdownLabel = countdown > 0
+      ? `Aguarde ${mins > 0 ? `${mins}m ` : ""}${secs}s`
+      : "Reenviar e-mail";
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <div className="w-full max-w-md text-center">
@@ -95,7 +130,24 @@ export default function Cadastro() {
           <p className="text-muted-foreground mb-6">
             Enviamos um link de confirmação para <strong>{email}</strong>. Clique no link para ativar sua conta.
           </p>
-          <Link href="/login"><Button className="w-full">Ir para Login</Button></Link>
+          <div className="space-y-3">
+            <Link href="/login"><Button className="w-full">Ir para Login</Button></Link>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={handleResend}
+              disabled={countdown > 0 || resending}
+            >
+              {resending ? "Reenviando..." : countdownLabel}
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full text-muted-foreground"
+              onClick={() => setConfirmSent(false)}
+            >
+              ← Voltar e corrigir e-mail
+            </Button>
+          </div>
         </div>
       </div>
     );
