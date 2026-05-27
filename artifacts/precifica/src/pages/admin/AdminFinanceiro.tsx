@@ -2,9 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
 } from "recharts";
-import { DollarSign, TrendingUp, Star, Crown } from "lucide-react";
+import { DollarSign, TrendingUp, Star, Crown, Download } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { adminFetch, type AdminFinanceiro } from "@/lib/adminFetch";
+import { exportToCsv, todayIso } from "@/lib/exportCsv";
 
 const brl = (v: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
@@ -33,6 +35,19 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
   }
   return null;
 };
+
+function handleExportFinanceiro(historico: AdminFinanceiro["historico"]) {
+  const headers = ["Nome", "E-mail", "Plano", "Valor (R$)", "Data", "Status"];
+  const rows = historico.map(row => [
+    row.nomeCompleto,
+    row.email,
+    row.plano === "premium" ? "Premium" : row.plano === "pro" ? "Pro" : "Grátis",
+    row.valor.toFixed(2).replace(".", ","),
+    row.createdAt ? new Date(row.createdAt).toLocaleDateString("pt-BR") : "",
+    row.status === "ativo" ? "Ativo" : "Cancelado",
+  ]);
+  exportToCsv(`financeiro-${todayIso()}.csv`, headers, rows);
+}
 
 export default function AdminFinanceiro() {
   const { data, isLoading } = useQuery<AdminFinanceiro>({
@@ -74,9 +89,21 @@ export default function AdminFinanceiro() {
 
   return (
     <div className="p-8 space-y-8">
-      <div>
-        <h2 className="text-2xl font-bold text-foreground">Financeiro</h2>
-        <p className="text-sm text-muted-foreground mt-1">Receita e histórico de assinaturas</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Financeiro</h2>
+          <p className="text-sm text-muted-foreground mt-1">Receita e histórico de assinaturas</p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5 shrink-0"
+          disabled={!data?.historico.length}
+          onClick={() => data && handleExportFinanceiro(data.historico)}
+        >
+          <Download size={14} />
+          Exportar CSV
+        </Button>
       </div>
 
       {/* KPI Cards */}

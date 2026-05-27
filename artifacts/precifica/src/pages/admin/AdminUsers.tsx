@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Search, ChevronDown, Trash2, Ban, CheckCircle, Crown, Star,
-  User2, KeyRound, Building2, Phone, MapPin, Package, Calendar,
+  User2, KeyRound, Building2, Phone, MapPin, Package, Calendar, Download,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription,
 } from "@/components/ui/sheet";
 import { adminFetch, type AdminUser, type AdminUserDetail } from "@/lib/adminFetch";
+import { exportToCsv, todayIso } from "@/lib/exportCsv";
 
 function fmtDate(d: string | null | undefined) {
   if (!d) return "—";
@@ -50,6 +51,19 @@ function DetailField({ label, value }: { label: string; value: string | null | u
       <p className="text-sm font-medium text-foreground break-words">{value || "—"}</p>
     </div>
   );
+}
+
+function handleExportUsers(users: AdminUser[]) {
+  const headers = ["Nome", "E-mail", "Negócio", "Plano", "Status", "Data de Cadastro"];
+  const rows = users.map(u => [
+    u.nomeCompleto,
+    u.email,
+    u.nomeNegocio,
+    u.plano === "premium" ? "Premium" : u.plano === "pro" ? "Pro" : "Grátis",
+    u.statusAssinatura === "ativo" ? "Ativo" : "Suspenso",
+    u.createdAt ? new Date(u.createdAt).toLocaleDateString("pt-BR") : "",
+  ]);
+  exportToCsv(`usuarios-${todayIso()}.csv`, headers, rows);
 }
 
 export default function AdminUsers() {
@@ -164,13 +178,25 @@ export default function AdminUsers() {
 
   return (
     <div className="p-8 space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-foreground">Gerenciar Usuários</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          {users
-            ? `${users.length} usuário${users.length !== 1 ? "s" : ""} encontrado${users.length !== 1 ? "s" : ""}`
-            : "Carregando..."}
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Gerenciar Usuários</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            {users
+              ? `${users.length} usuário${users.length !== 1 ? "s" : ""} encontrado${users.length !== 1 ? "s" : ""}`
+              : "Carregando..."}
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5 shrink-0"
+          disabled={!users?.length}
+          onClick={() => users && handleExportUsers(users)}
+        >
+          <Download size={14} />
+          Exportar CSV
+        </Button>
       </div>
 
       <div className="relative max-w-sm">
