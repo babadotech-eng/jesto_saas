@@ -1,0 +1,300 @@
+SCOPE LOCK — VERY IMPORTANT
+Modify only the public landing page / home onepage.
+Do NOT modify the internal app dashboard, sidebar, user area, admin area, auth flows, pricing logic, subscription logic, coupon logic, database, backend, or any working SaaS functionality.
+Use the current dashboard only as visual reference for brand alignment and as source material for landing page mockup composition.
+If you believe the dashboard should also be visually updated, do not change it in this task. Only mention optional suggestions at the end.
+
+PROJECT CONTEXT
+The product name is Precifica.
+It is a Brazilian SaaS for food businesses to organize products, inputs, technical sheets, expenses, launches, margins, pricing, and results.
+The public page must be a single onepage landing page in Brazilian Portuguese.
+The design must feel warm, elegant, premium, trustworthy, and human — not like a cold generic SaaS site.
+
+MAIN GOAL
+Create or redesign the landing/home page as a complete onepage experience focused on conversion.
+The landing page must communicate clarity, control, profitability, and simplicity for food businesses.
+The emotional tone should be welcoming and refined, with subtle sophistication.
+
+VISUAL REFERENCE DIRECTION
+The hero should be inspired by the provided visual reference:
+- warm neutral background
+- premium editorial spacing
+- strong headline
+- elegant composition with cards and image blocks
+- subtle motion
+- soft, inviting atmosphere
+
+IMPORTANT:
+Do not copy the reference literally.
+Do not recreate the same exact layout or proportions.
+Instead, translate the feeling and design principles into an original Precifica landing page.
+The final result must clearly feel custom-made for Precifica.
+
+BRAND / DESIGN DIRECTION
+The visual identity should connect with the current dashboard, but elevate the brand.
+The current dashboard is functional; the landing page should add warmth, sophistication, and stronger perceived value.
+The page should feel like a premium but approachable financial tool made for real food businesses.
+
+STYLE KEYWORDS
+Warm, editorial, refined, premium, soft, inviting, confident, clear, trustworthy, elegant, modern Brazilian SaaS.
+
+TYPOGRAPHY
+The project already uses Satoshi, so keep Satoshi wherever it makes sense.
+Use Satoshi as the main UI and body typeface.
+You may use a second more editorial display font only if really necessary for the hero, but keep the overall system highly cohesive.
+Do not use too many font styles.
+Avoid generic startup typography treatment.
+
+COLOR SYSTEM
+Use a warm premium palette inspired by the approved direction:
+
+Landing:
+- background: #F4EEE7
+- secondary background: #EFE6DC
+- surface/card: #FBF7F2
+- main text: #1F1B17
+- secondary text: #6F675F
+- border: #DDD2C6
+- primary accent: #F0A11E
+- secondary accent: #C96A2B
+- dark accent: #2B241E
+
+App-aligned visual references:
+- sidebar dark: #191C24
+- app background: #F7F2EB
+- app card background: #FFFDF9
+- primary interactive highlight: #E8A11F
+- soft highlight: #F7E3B4
+
+Use subtle shadows, soft borders, warm surfaces, and restrained accent use.
+Do not use neon colors, blue-purple gradients, glowing blobs, or generic AI-looking startup visuals.
+
+MOTION
+Use subtle and tasteful motion only:
+- fade-up reveals on scroll
+- soft hover states on buttons and cards
+- gentle floating/parallax-style micro movement on hero composition if it remains elegant
+- accordion transitions in FAQ
+- reduced motion support is mandatory
+
+Do not use exaggerated motion, large parallax, spinning elements, bouncing cards, or distracting animations.
+
+SEO + COPYWRITING DIRECTION
+Use elegant and persuasive copywriting with natural SEO.
+The page must rank and communicate well for terms semantically related to:
+- precificação
+- ficha técnica
+- controle de custos
+- margem de lucro
+- gestão para restaurantes
+- gestão para alimentação
+- custos de produtos
+- precificação de alimentos
+- controle financeiro para restaurantes
+
+IMPORTANT:
+Do not stuff keywords.
+Use them naturally in headings, paragraphs, alt texts, and section structure.
+The copy must sound premium, clear, and specific — never robotic.
+Avoid buzzwords like:
+- revolucionário
+- all-in-one
+- empodere seu negócio
+- solução definitiva
+- transforme sua jornada
+
+The writing should feel elegant, powerful, direct, and trustworthy.
+
+IMAGE STRATEGY — VERY IMPORTANT
+Do not use random stock photos of smiling business people as the main visual.
+The landing page should use the actual product as the main image system.
+
+Use images in this priority order:
+1. The current Precifica dashboard screenshot(s) as source material
+2. Derived mockups based on the dashboard screenshot(s)
+3. Clean UI compositions built from product fragments, cards, metrics, and interface crops
+4. Only if needed, subtle supporting decorative visuals — never generic stock-photo-led sections
+
+How to use the images:
+- Hero: create a premium hero composition using the current dashboard screenshot as the main product visual
+- You may crop, frame, stylize, layer, or present the screenshot inside a refined browser/device/mockup container
+- Add subtle floating metric cards around the main product mockup
+- In the dashboard section, use a larger clean product showcase based on the existing panel
+- In “how it works”, use smaller interface fragments or mini cards inspired by the app
+- Keep all mockups visually cohesive with the warm palette
+- Do not alter the real dashboard code in this task — use it only as presentation material in the landing page
+
+If the actual screenshots are available in the project, use them directly.
+If needed, create placeholder references clearly structured to be replaced by real screenshots later.
+
+PAGE STRUCTURE
+Build a complete onepage with this structure:
+
+1. HEADER
+- Precifica logo/brand
+- Anchor navigation
+- Main CTA button
+- Clean warm header, elegant and minimal
+
+2. HERO
+- strongest visual moment on the page
+- short premium tag line above the title
+- clear high-impact headline
+- elegant supporting paragraph
+- one main CTA
+- one secondary CTA
+- hero visual inspired by the provided reference but adapted to Precifica
+- main product screenshot/mockup with floating data cards
+- subtle motion only
+
+3. PROBLEM / VALUE SECTION
+- explain that many food businesses sell without clearly understanding real costs, margins, and profitability
+- elegant emotional clarity
+- no exaggerated drama
+- keep concise and specific
+
+4. HOW IT WORKS
+- 4 steps:
+  - cadastre produtos e insumos
+  - monte fichas técnicas
+  - registre despesas e lançamentos
+  - entenda margem e resultado
+- avoid generic identical icon cards
+- make the section feel designed, not templated
+
+5. DASHBOARD SHOWCASE
+- premium showcase of the panel
+- highlight metrics like receita, custos, margem média, ponto de equilíbrio, top produtos, lançamentos recentes
+- this section should reinforce trust and product depth
+
+6. BUSINESS TYPES / USE CASES
+- restaurantes
+- marmitarias
+- confeitarias
+- lanchonetes
+- write practical, real-world value for each
+
+7. BENEFITS SECTION
+- focus on clarity, better decisions, better pricing confidence, organization, time savings
+- again: avoid generic feature-grid clichés
+
+8. PRICING SECTION
+- Free, Pro, Premium
+- monthly and annual presentation
+- elegant design
+- do not place visible coupon field in pricing cards
+- pricing copy should be clear and calm, not aggressive
+
+9. FAQ
+- accordion style
+- smooth transitions
+- elegant and reassuring tone
+
+10. FINAL CTA
+- warm closing section
+- reinforce simplicity, clarity, and profitability
+- one clear CTA
+
+COPY — USE THIS TEXT AS BASE AND IMPROVE IT ONLY IF THE IMPROVEMENT PRESERVES THE SAME TONE
+HERO
+Tag: Teste grátis e entenda melhor a margem do seu negócio
+Title: Precifique com clareza. Venda com mais lucro.
+Subtitle: O Precifica ajuda negócios de alimentação a organizar custos, montar fichas técnicas, acompanhar despesas e entender a margem real de cada produto com muito mais simplicidade.
+Primary CTA: Começar grátis
+Secondary CTA: Ver demonstração
+
+VALUE SECTION
+Title: Muita gente vende todos os dias sem saber exatamente quanto está ganhando.
+Paragraph 1: Quando custo, insumos, despesas e preço de venda ficam espalhados, a operação perde clareza. O resultado aparece no caixa, mas a margem real continua escondida.
+Paragraph 2: O Precifica foi pensado para transformar números soltos em decisões mais simples. Você entende melhor seus custos, monta fichas técnicas com mais segurança e precifica com mais confiança.
+
+HOW IT WORKS
+Title: Tudo o que você precisa em um fluxo simples
+Card 1 Title: Cadastre produtos e insumos
+Card 1 Text: Organize a base do seu negócio em um só lugar para parar de depender de anotações espalhadas e cálculos manuais.
+Card 2 Title: Monte fichas técnicas
+Card 2 Text: Defina ingredientes, quantidades, rendimento e custo de preparo para entender melhor quanto cada item realmente custa.
+Card 3 Title: Registre despesas e lançamentos
+Card 3 Text: Acompanhe saídas, entradas e custos fixos do dia a dia com mais clareza e menos improviso.
+Card 4 Title: Entenda margem e resultado
+Card 4 Text: Visualize indicadores importantes do negócio e tome decisões com mais base, seja para ajustar preço, reduzir desperdício ou melhorar lucro.
+
+DASHBOARD SECTION
+Title: Uma visão mais clara do negócio, sem complicar a rotina
+Text: No painel, você acompanha os números mais importantes em um só lugar: receita, custos, margem média, ponto de equilíbrio, despesas, lançamentos recentes e desempenho dos produtos.
+Support Text: Tudo com leitura simples, visual limpo e foco no que realmente ajuda na decisão.
+
+BUSINESS TYPES
+Title: Feito para a rotina real de quem trabalha com alimentação
+Restaurant: Entenda melhor o custo dos pratos, acompanhe despesas da operação e tenha mais segurança para ajustar preços sem perder competitividade.
+Marmitaria: Organize produção, ingredientes e rendimento para precificar com mais consistência e proteger sua margem mesmo em volumes maiores.
+Confeitaria: Tenha mais controle sobre ingredientes, porções, embalagens e custos de produção para evitar preços abaixo do necessário.
+Lanchonete: Acompanhe custos de insumos, combos e itens de giro rápido com mais clareza para vender melhor e reduzir distorções no preço.
+
+BENEFITS
+Title: Mais clareza para decidir melhor
+Benefit 1 Title: Menos planilhas confusas
+Benefit 1 Text: Centralize informações importantes em uma experiência mais prática e fácil de acompanhar.
+Benefit 2 Title: Mais segurança na precificação
+Benefit 2 Text: Saiba melhor quanto custa produzir e tenha mais confiança na hora de formar preço.
+Benefit 3 Title: Melhor leitura do resultado
+Benefit 3 Text: Visualize números essenciais do negócio sem depender de interpretações complicadas.
+Benefit 4 Title: Mais organização no dia a dia
+Benefit 4 Text: Ganhe tempo na rotina e reduza o retrabalho com uma base de dados mais estruturada.
+
+PRICING
+Title: Escolha o plano que faz sentido para o seu momento
+Support Text: Comece grátis e avance conforme o seu negócio precisar de mais controle, recursos e profundidade de análise.
+Free Description: Para começar e conhecer a lógica da plataforma.
+Pro Description: Para quem já precisa de mais controle na operação e na precificação.
+Premium Description: Para quem quer uma gestão mais completa, com visão mais estratégica do negócio.
+Support Line: Planos mensal e anual disponíveis. Você pode começar pelo grátis e evoluir no seu ritmo.
+
+FAQ
+Title: Dúvidas frequentes
+Q1: Preciso entender de finanças para usar?
+A1: Não. A proposta do Precifica é justamente tornar os números mais fáceis de visualizar e acompanhar, mesmo para quem não tem formação financeira.
+Q2: Serve para pequeno negócio?
+A2: Sim. O Precifica foi pensado para a realidade de negócios de alimentação que precisam organizar custos, fichas técnicas, despesas e margem de forma mais prática.
+Q3: Posso testar grátis?
+A3: Sim. Você pode começar no plano grátis e conhecer a plataforma antes de decidir avançar para um plano pago.
+Q4: Funciona no celular?
+A4: Sim. A plataforma foi pensada para funcionar bem em diferentes dispositivos, facilitando o acesso no dia a dia.
+Q5: Posso cancelar quando quiser?
+A5: Sim. Você pode gerenciar sua assinatura de forma simples, sem burocracia desnecessária.
+
+FINAL CTA
+Title: Comece a olhar para seus números com mais clareza
+Text: Organize custos, acompanhe a margem dos seus produtos e tome decisões com mais segurança no dia a dia do seu negócio.
+Button: Começar grátis
+
+DESIGN RULES
+- This must feel custom-designed, not template-based
+- Avoid the common generic 3-column SaaS icon grid
+- Avoid centered-everything layout
+- Avoid cold enterprise blue aesthetics
+- Avoid heavy gradients
+- Avoid fake-looking AI imagery
+- Use product visuals early and prominently
+- Use one clear primary CTA hierarchy
+- Keep the layout premium, breathable, and conversion-focused
+
+TECHNICAL REQUIREMENTS
+- Responsive onepage
+- Mobile-first quality
+- Smooth anchor scroll
+- Accessible contrast
+- Semantic HTML
+- Good heading hierarchy
+- Alt text on images
+- Reduced motion support
+- Clean structure ready for production
+- Keep implementation maintainable
+
+DELIVERABLE EXPECTATION
+Return:
+1. What landing page files were changed
+2. Whether any image assets were added
+3. What screenshots/mockups were used
+4. Confirmation that the dashboard/app logic was not changed
+5. Any optional future suggestions for aligning the internal app visual identity later
