@@ -22,6 +22,7 @@ import Relatorios from "@/pages/Relatorios";
 import Configuracoes from "@/pages/Configuracoes";
 import Funcionarios from "@/pages/Funcionarios";
 import Onboarding from "@/pages/Onboarding";
+import AdminPanel from "@/pages/admin/AdminPanel";
 import { usePerfil } from "@/hooks/usePerfil";
 
 const queryClient = new QueryClient({
@@ -60,6 +61,14 @@ function OnboardingRoute() {
   return <Onboarding />;
 }
 
+function AdminRoute() {
+  const { session, loading, user } = useAuth();
+  if (loading) return <Loading />;
+  if (!session) return <Redirect to="/login" />;
+  if (user?.email?.toLowerCase() !== "michelkhodair@gmail.com") return <Redirect to="/painel" />;
+  return <AdminPanel />;
+}
+
 function PublicRoute({ component: Component, restricted = false }: { component: React.ComponentType; restricted?: boolean }) {
   const { session, loading } = useAuth();
   if (loading) return <Loading />;
@@ -86,6 +95,8 @@ function Router() {
       <Route path="/relatorios"><ProtectedRoute component={Relatorios} /></Route>
       <Route path="/funcionarios"><ProtectedRoute component={Funcionarios} /></Route>
       <Route path="/configuracoes"><ProtectedRoute component={Configuracoes} /></Route>
+      <Route path="/admin"><AdminRoute /></Route>
+      <Route path="/admin/usuarios"><AdminRoute /></Route>
       <Route component={NotFound} />
     </Switch>
   );

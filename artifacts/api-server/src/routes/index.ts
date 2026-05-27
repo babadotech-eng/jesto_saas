@@ -10,6 +10,7 @@ import relatoriosRouter from "./relatorios";
 import assinaturasRouter from "./assinaturas";
 import perfisRouter from "./perfis";
 import funcionariosRouter from "./funcionarios";
+import adminRouter from "./admin";
 
 const router: IRouter = Router();
 
@@ -24,5 +25,6 @@ router.use(relatoriosRouter);
 router.use(assinaturasRouter);
 router.use(perfisRouter);
 router.use(funcionariosRouter);
+router.use(adminRouter);
 
 export default router;
