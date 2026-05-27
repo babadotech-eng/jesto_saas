@@ -2,11 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
 } from "recharts";
-import { DollarSign, TrendingUp, Star, Crown, Download } from "lucide-react";
+import { DollarSign, TrendingUp, Star, Crown, FileSpreadsheet } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { adminFetch, type AdminFinanceiro } from "@/lib/adminFetch";
-import { exportToCsv, todayIso } from "@/lib/exportCsv";
+import { exportFinanceiroXlsx } from "@/lib/exportXlsx";
 
 const brl = (v: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
@@ -35,19 +35,6 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
   }
   return null;
 };
-
-function handleExportFinanceiro(historico: AdminFinanceiro["historico"]) {
-  const headers = ["Nome", "E-mail", "Plano", "Valor (R$)", "Data", "Status"];
-  const rows = historico.map(row => [
-    row.nomeCompleto,
-    row.email,
-    row.plano === "premium" ? "Premium" : row.plano === "pro" ? "Pro" : "Grátis",
-    row.valor.toFixed(2).replace(".", ","),
-    row.createdAt ? new Date(row.createdAt).toLocaleDateString("pt-BR") : "",
-    row.status === "ativo" ? "Ativo" : "Cancelado",
-  ]);
-  exportToCsv(`financeiro-${todayIso()}.csv`, headers, rows);
-}
 
 export default function AdminFinanceiro() {
   const { data, isLoading } = useQuery<AdminFinanceiro>({
@@ -99,10 +86,10 @@ export default function AdminFinanceiro() {
           size="sm"
           className="gap-1.5 shrink-0"
           disabled={!data?.historico.length}
-          onClick={() => data && handleExportFinanceiro(data.historico)}
+          onClick={() => data && exportFinanceiroXlsx(data)}
         >
-          <Download size={14} />
-          Exportar CSV
+          <FileSpreadsheet size={14} />
+          Exportar Excel
         </Button>
       </div>
 
