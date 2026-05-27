@@ -65,6 +65,18 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --color-red-50: #fff0f0;
+  --color-red-100: #ffdfe0;
+  --color-red-200: #ffb3b6;
+  --color-red-300: #ff7a82;
+  --color-red-400: #ff4752;
+  --color-red-500: #ff000c;
+  --color-red-600: #cc000a;
+  --color-red-700: #990007;
+  --color-red-800: #660005;
+  --color-red-900: #330002;
+  --color-red-950: #190001;
 }
 
 :root {
@@ -111,7 +123,7 @@
   --accent: 15 100% 95%;
   --accent-foreground: 15 100% 35%;
 
-  --destructive: 0 84% 60%;
+  --destructive: 357 100% 50%;
   --destructive-foreground: 0 0% 100%;
 
   --input: 210 20% 86%;
@@ -166,7 +178,7 @@
   --accent: 15 100% 20%;
   --accent-foreground: 15 100% 70%;
   
-  --destructive: 0 62% 30%;
+  --destructive: 357 100% 40%;
   --destructive-foreground: 0 0% 100%;
   
   --input: 217 33% 30%;

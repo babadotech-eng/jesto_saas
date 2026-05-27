@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -223,18 +223,18 @@ export default function Despesas() {
                         <SelectValue placeholder="Selecione uma categoria..." />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent className="max-h-72">
+                    <SelectContent className="max-h-72 overflow-y-auto">
                       {CATEGORIAS.map(grupo => (
-                        <div key={grupo.grupo}>
-                          <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/40 sticky top-0">
+                        <SelectGroup key={grupo.grupo}>
+                          <SelectLabel className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/40 sticky top-0">
                             {grupo.grupo}
-                          </div>
+                          </SelectLabel>
                           {grupo.itens.map(item => (
                             <SelectItem key={item} value={item} className="pl-4">
                               {item}
                             </SelectItem>
                           ))}
-                        </div>
+                        </SelectGroup>
                       ))}
                     </SelectContent>
                   </Select>
