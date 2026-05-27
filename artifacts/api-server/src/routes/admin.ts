@@ -376,6 +376,37 @@ router.get("/admin/financeiro", requireAuth, requireAdmin, async (req, res): Pro
   }
 });
 
+// ── MODULE 5: PROMO CODES LIST (paginated) ───────────────────────────────────
+
+router.get("/admin/promo-codes", requireAuth, requireAdmin, async (req, res): Promise<void> => {
+  const pageRaw = typeof req.query.page === "string" ? parseInt(req.query.page, 10) : 1;
+  const limitRaw = typeof req.query.limit === "string" ? parseInt(req.query.limit, 10) : 20;
+  const page = isNaN(pageRaw) || pageRaw < 1 ? 1 : pageRaw;
+  const limit = isNaN(limitRaw) || limitRaw < 1 ? 20 : Math.min(limitRaw, 100);
+  const offset = (page - 1) * limit;
+
+  try {
+    const [totalRow] = await db
+      .select({ total: sql<number>`COUNT(*)::int` })
+      .from(promoCodesTable);
+
+    const items = await db
+      .select()
+      .from(promoCodesTable)
+      .orderBy(desc(promoCodesTable.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    const total = totalRow?.total ?? 0;
+    const pages = Math.ceil(total / limit);
+
+    res.json({ items, total, page, limit, pages });
+  } catch (err) {
+    req.log.error({ err }, "admin promo-codes list error");
+    res.status(500).json({ error: "Erro interno" });
+  }
+});
+
 // ── MODULE 5: PROMO CODES ─────────────────────────────────────────────────────
 
 router.get("/admin/codigos", requireAuth, requireAdmin, async (req, res): Promise<void> => {

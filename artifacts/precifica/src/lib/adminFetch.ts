@@ -102,3 +102,11 @@ export interface AdminCodigo {
   pagamentoAplicavel: "mensal" | "anual" | "ambos";
   createdAt: string;
 }
+
+export interface AdminPromoCodeList {
+  items: AdminCodigo[];
+  total: number;
+  page: number;
+  limit: number;
+  pages: number;
+}
