@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { and, eq, gte, isNull, lte, or, sql } from "drizzle-orm";
-import { db, assinaturasTable, promoCodesTable } from "@workspace/db";
+import { db, assinaturasTable, promoCodesTable, promoCodeUsesTable } from "@workspace/db";
 import { requireAuth, getUserId } from "../middlewares/auth";
 
 const router = Router();
@@ -117,29 +117,44 @@ router.post("/assinaturas", requireAuth, async (req, res): Promise<void> => {
         .returning();
 
       if (couponId) {
-        const now = new Date();
-        const updated = await tx
-          .update(promoCodesTable)
-          .set({ usosAtuais: sql`${promoCodesTable.usosAtuais} + 1` })
+        const [existingUse] = await tx
+          .select({ id: promoCodeUsesTable.id })
+          .from(promoCodeUsesTable)
           .where(
             and(
-              eq(promoCodesTable.id, couponId),
-              eq(promoCodesTable.ativo, true),
-              lte(promoCodesTable.dataInicio, now),
-              or(
-                isNull(promoCodesTable.dataExpiracao),
-                gte(promoCodesTable.dataExpiracao, now),
-              ),
-              or(
-                isNull(promoCodesTable.limiteUsos),
-                sql`${promoCodesTable.usosAtuais} < ${promoCodesTable.limiteUsos}`,
-              ),
+              eq(promoCodeUsesTable.userId, userId),
+              eq(promoCodeUsesTable.promoCodeId, couponId),
             ),
           )
-          .returning({ id: promoCodesTable.id });
+          .limit(1);
 
-        if (updated.length === 0) {
-          throw new Error("CUPOM_INVALIDO");
+        if (!existingUse) {
+          const now = new Date();
+          const updated = await tx
+            .update(promoCodesTable)
+            .set({ usosAtuais: sql`${promoCodesTable.usosAtuais} + 1` })
+            .where(
+              and(
+                eq(promoCodesTable.id, couponId),
+                eq(promoCodesTable.ativo, true),
+                lte(promoCodesTable.dataInicio, now),
+                or(
+                  isNull(promoCodesTable.dataExpiracao),
+                  gte(promoCodesTable.dataExpiracao, now),
+                ),
+                or(
+                  isNull(promoCodesTable.limiteUsos),
+                  sql`${promoCodesTable.usosAtuais} < ${promoCodesTable.limiteUsos}`,
+                ),
+              ),
+            )
+            .returning({ id: promoCodesTable.id });
+
+          if (updated.length === 0) {
+            throw new Error("CUPOM_INVALIDO");
+          }
+
+          await tx.insert(promoCodeUsesTable).values({ userId, promoCodeId: couponId });
         }
       }
 
