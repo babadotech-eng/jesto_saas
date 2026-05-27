@@ -1,71 +1,125 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Check, X, ArrowLeft, Tag, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
-type CouponResult = {
-  valido: boolean;
-  codeId: string;
-  tipo: "percentual" | "fixo";
-  desconto: number;
-  descontoAplicado: number;
-  valorOriginal: number;
-  valorFinal: number;
+const PLAN_PRICES: Record<string, { mensal: number; anual: number }> = {
+  pro: { mensal: 19.90, anual: 199.00 },
+  premium: { mensal: 39.90, anual: 399.00 },
 };
 
-function fmt(n: number) {
-  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(n);
+type CupomInfo = {
+  tipo: "percentual" | "fixo";
+  desconto: number;
+};
+
+function calcularDesconto(cupom: CupomInfo, preco: number) {
+  if (cupom.tipo === "percentual") {
+    return Math.round(preco * (cupom.desconto / 100) * 100) / 100;
+  }
+  return Math.min(cupom.desconto, preco);
+}
+
+function formatarDesconto(cupom: CupomInfo) {
+  if (cupom.tipo === "percentual") {
+    return `${cupom.desconto}% de desconto`;
+  }
+  return `R$ ${cupom.desconto.toFixed(2).replace(".", ",")} de desconto`;
 }
 
 export default function Planos() {
   const [anual, setAnual] = useState(false);
-  const [couponCode, setCouponCode] = useState("");
-  const [couponLoading, setCouponLoading] = useState(false);
-  const [couponResult, setCouponResult] = useState<CouponResult | null>(null);
-  const [couponError, setCouponError] = useState<string | null>(null);
-  const [couponPlano, setCouponPlano] = useState<string | null>(null);
+  const [codigoCupom, setCodigoCupom] = useState("");
+  const [cupom, setCupom] = useState<CupomInfo | null>(null);
+  const [cupomErro, setCupomErro] = useState("");
+  const [validando, setValidando] = useState(false);
+  const [assinando, setAssinando] = useState(false);
+  const [, navigate] = useLocation();
+  const { session } = useAuth();
 
-  async function handleValidarCupom(plano: string) {
-    if (!couponCode.trim()) return;
-    setCouponLoading(true);
-    setCouponResult(null);
-    setCouponError(null);
-    setCouponPlano(plano);
+  async function validarCupom() {
+    const codigo = codigoCupom.trim();
+    if (!codigo) return;
+
+    setValidando(true);
+    setCupomErro("");
+    setCupom(null);
+
     try {
-      const res = await fetch("/api/promo-codes/validar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          codigo: couponCode.trim().toUpperCase(),
-          plano,
-          pagamento: anual ? "anual" : "mensal",
-        }),
-      });
-      const data = await res.json() as CouponResult & { error?: string };
+      const res = await fetch(`/api/codigos/validar?codigo=${encodeURIComponent(codigo)}`);
+      const data = await res.json() as { valido?: boolean; tipo?: string; desconto?: number; error?: string };
+
       if (!res.ok) {
-        setCouponError(data.error ?? "Cupom inválido");
+        setCupomErro(data.error ?? "Cupom inválido");
       } else {
-        setCouponResult(data);
+        setCupom({
+          tipo: data.tipo as "percentual" | "fixo",
+          desconto: data.desconto!,
+        });
       }
     } catch {
-      setCouponError("Erro ao validar o cupom. Tente novamente.");
+      setCupomErro("Erro ao validar cupom. Tente novamente.");
     } finally {
-      setCouponLoading(false);
+      setValidando(false);
     }
   }
 
-  function handleCouponChange(v: string) {
-    setCouponCode(v.toUpperCase());
-    setCouponResult(null);
-    setCouponError(null);
-    setCouponPlano(null);
+  async function assinar(plano: string) {
+    if (session?.access_token) {
+      setAssinando(true);
+      try {
+        const body: { plano: string; cupomCode?: string } = { plano };
+        if (cupom && codigoCupom.trim()) {
+          body.cupomCode = codigoCupom.trim();
+        }
+
+        const res = await fetch("/api/assinaturas", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify(body),
+        });
+
+        if (!res.ok) {
+          const data = await res.json() as { error?: string };
+          toast.error(data.error ?? "Erro ao assinar plano");
+          return;
+        }
+
+        toast.success("Plano atualizado com sucesso!");
+        navigate("/painel");
+      } catch {
+        toast.error("Erro ao processar assinatura. Tente novamente.");
+      } finally {
+        setAssinando(false);
+      }
+    } else {
+      if (cupom && codigoCupom.trim()) {
+        sessionStorage.setItem("pendingCupomCode", codigoCupom.trim());
+        sessionStorage.setItem("pendingPlano", plano);
+      }
+      navigate(`/cadastro?plano=${plano}${anual ? "&periodo=anual" : ""}`);
+    }
   }
 
-  const proMensal = 49;
-  const premiumMensal = 99;
-  const proAnual = proMensal * 10;
-  const premiumAnual = premiumMensal * 10;
+  const precosPro = PLAN_PRICES["pro"]!;
+  const precosPremium = PLAN_PRICES["premium"]!;
+  const precoPro = anual ? precosPro.anual : precosPro.mensal;
+  const precoPremium = anual ? precosPremium.anual : precosPremium.mensal;
+
+  const descontoPro = cupom ? calcularDesconto(cupom, precoPro) : 0;
+  const descontoPremium = cupom ? calcularDesconto(cupom, precoPremium) : 0;
+  const finalPro = precoPro - descontoPro;
+  const finalPremium = precoPremium - descontoPremium;
+
+  function formatarPreco(valor: number) {
+    return valor.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
 
   return (
     <div className="min-h-screen bg-background py-12 px-4 md:px-8">
@@ -81,19 +135,63 @@ export default function Planos() {
             Escolha o plano ideal para a sua operação. Sem surpresas.
           </p>
 
-          <div className="inline-flex items-center bg-card border border-border p-1 rounded-xl shadow-sm">
+          <div className="inline-flex items-center bg-card border border-border p-1 rounded-xl shadow-sm mb-8">
             <button
               className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${!anual ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
-              onClick={() => { setAnual(false); setCouponResult(null); setCouponError(null); }}
+              onClick={() => { setAnual(false); setCupom(null); setCupomErro(""); }}
             >
               Mensal
             </button>
             <button
               className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${anual ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
-              onClick={() => { setAnual(true); setCouponResult(null); setCouponError(null); }}
+              onClick={() => { setAnual(true); setCupom(null); setCupomErro(""); }}
             >
               Anual <span className="ml-1 text-xs opacity-80">2 meses grátis</span>
             </button>
+          </div>
+
+          {/* Coupon input */}
+          <div className="max-w-sm mx-auto">
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Tag size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  className="pl-8 uppercase placeholder:normal-case placeholder:text-muted-foreground"
+                  placeholder="Código promocional"
+                  value={codigoCupom}
+                  onChange={(e) => {
+                    setCodigoCupom(e.target.value.toUpperCase());
+                    if (cupom || cupomErro) {
+                      setCupom(null);
+                      setCupomErro("");
+                    }
+                  }}
+                  onKeyDown={(e) => { if (e.key === "Enter") validarCupom(); }}
+                  disabled={validando}
+                />
+              </div>
+              <Button
+                variant="outline"
+                onClick={validarCupom}
+                disabled={validando || !codigoCupom.trim()}
+                className="shrink-0"
+              >
+                {validando ? <Loader2 size={15} className="animate-spin" /> : "Aplicar"}
+              </Button>
+            </div>
+
+            {cupom && (
+              <div className="mt-2 flex items-center gap-2 text-sm text-emerald-500">
+                <CheckCircle2 size={15} className="shrink-0" />
+                <span>Cupom válido: {formatarDesconto(cupom)} — será aplicado ao confirmar</span>
+              </div>
+            )}
+            {cupomErro && (
+              <div className="mt-2 flex items-center gap-2 text-sm text-destructive">
+                <AlertCircle size={15} className="shrink-0" />
+                <span>{cupomErro}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -127,32 +225,26 @@ export default function Planos() {
             </div>
             <h3 className="text-xl font-bold mb-2 text-primary">Pro</h3>
             <p className="text-muted-foreground text-sm mb-6 h-10">Para o negócio que quer controle real dos custos.</p>
-            <div className="mb-2">
-              <span className="text-4xl font-black">
-                {couponResult && couponPlano === "pro"
-                  ? fmt(anual ? couponResult.valorFinal * 10 : couponResult.valorFinal)
-                  : fmt(anual ? proAnual : proMensal)}
-              </span>
-              <span className="text-muted-foreground">{anual ? "/ano" : "/mês"}</span>
+            <div className="mb-6">
+              {cupom && descontoPro > 0 ? (
+                <div>
+                  <span className="text-2xl font-black line-through text-muted-foreground/60">R$ {formatarPreco(precoPro)}</span>
+                  <div>
+                    <span className="text-4xl font-black text-emerald-500">R$ {formatarPreco(finalPro)}</span>
+                    <span className="text-muted-foreground">{anual ? "/ano" : "/mês"}</span>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <span className="text-4xl font-black">R$ {formatarPreco(precoPro)}</span>
+                  <span className="text-muted-foreground">{anual ? "/ano" : "/mês"}</span>
+                </div>
+              )}
             </div>
-            {couponResult && couponPlano === "pro" && (
-              <p className="text-sm text-green-600 font-medium mb-1 line-through decoration-red-500">
-                De: {fmt(anual ? proAnual : proMensal)}{anual ? "/ano" : "/mês"}
-              </p>
-            )}
-            <div className="mb-6" />
-            <CupomInput
-              plano="pro"
-              value={couponCode}
-              onChange={handleCouponChange}
-              onValidar={() => handleValidarCupom("pro")}
-              loading={couponLoading && couponPlano === "pro"}
-              result={couponPlano === "pro" ? couponResult : null}
-              error={couponPlano === "pro" ? couponError : null}
-            />
-            <Link href="/cadastro" className="w-full mb-8 mt-4">
-              <Button className="w-full">Assinar Pro</Button>
-            </Link>
+            <Button className="w-full mb-8" onClick={() => assinar("pro")} disabled={assinando}>
+              {assinando ? <Loader2 size={15} className="animate-spin mr-2" /> : null}
+              Assinar Pro
+            </Button>
             <div className="space-y-4 flex-1">
               <Feature text="Produtos Ilimitados" />
               <Feature text="Fichas Técnicas Ilimitadas" />
@@ -169,32 +261,31 @@ export default function Planos() {
           <div className="bg-card rounded-2xl border border-border p-8 shadow-sm flex flex-col">
             <h3 className="text-xl font-bold mb-2">Premium</h3>
             <p className="text-muted-foreground text-sm mb-6 h-10">Gestão financeira completa de ponta a ponta.</p>
-            <div className="mb-2">
-              <span className="text-4xl font-black">
-                {couponResult && couponPlano === "premium"
-                  ? fmt(anual ? couponResult.valorFinal * 10 : couponResult.valorFinal)
-                  : fmt(anual ? premiumAnual : premiumMensal)}
-              </span>
-              <span className="text-muted-foreground">{anual ? "/ano" : "/mês"}</span>
+            <div className="mb-6">
+              {cupom && descontoPremium > 0 ? (
+                <div>
+                  <span className="text-2xl font-black line-through text-muted-foreground/60">R$ {formatarPreco(precoPremium)}</span>
+                  <div>
+                    <span className="text-4xl font-black text-emerald-500">R$ {formatarPreco(finalPremium)}</span>
+                    <span className="text-muted-foreground">{anual ? "/ano" : "/mês"}</span>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <span className="text-4xl font-black">R$ {formatarPreco(precoPremium)}</span>
+                  <span className="text-muted-foreground">{anual ? "/ano" : "/mês"}</span>
+                </div>
+              )}
             </div>
-            {couponResult && couponPlano === "premium" && (
-              <p className="text-sm text-green-600 font-medium mb-1 line-through decoration-red-500">
-                De: {fmt(anual ? premiumAnual : premiumMensal)}{anual ? "/ano" : "/mês"}
-              </p>
-            )}
-            <div className="mb-6" />
-            <CupomInput
-              plano="premium"
-              value={couponCode}
-              onChange={handleCouponChange}
-              onValidar={() => handleValidarCupom("premium")}
-              loading={couponLoading && couponPlano === "premium"}
-              result={couponPlano === "premium" ? couponResult : null}
-              error={couponPlano === "premium" ? couponError : null}
-            />
-            <Link href="/cadastro" className="w-full mb-8 mt-4">
-              <Button variant="outline" className="w-full bg-sidebar text-sidebar-foreground hover:bg-sidebar/90 hover:text-sidebar-foreground border-transparent">Assinar Premium</Button>
-            </Link>
+            <Button
+              variant="outline"
+              className="w-full mb-8 bg-sidebar text-sidebar-foreground hover:bg-sidebar/90 hover:text-sidebar-foreground border-transparent"
+              onClick={() => assinar("premium")}
+              disabled={assinando}
+            >
+              {assinando ? <Loader2 size={15} className="animate-spin mr-2" /> : null}
+              Assinar Premium
+            </Button>
             <div className="space-y-4 flex-1">
               <Feature text="Tudo do plano Pro" />
               <Feature text="Gestão de Despesas Fixas" />
@@ -206,55 +297,6 @@ export default function Planos() {
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function CupomInput({ plano, value, onChange, onValidar, loading, result, error }: {
-  plano: string;
-  value: string;
-  onChange: (v: string) => void;
-  onValidar: () => void;
-  loading: boolean;
-  result: CouponResult | null;
-  error: string | null;
-}) {
-  return (
-    <div className="space-y-2">
-      <div className="flex gap-2">
-        <div className="relative flex-1">
-          <Tag size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Cupom de desconto"
-            value={value}
-            onChange={e => onChange(e.target.value)}
-            className="pl-8 text-sm h-9"
-            onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); onValidar(); } }}
-          />
-        </div>
-        <Button
-          type="button" size="sm" variant="outline"
-          className="h-9 px-3 text-xs shrink-0"
-          onClick={onValidar}
-          disabled={loading || !value.trim()}
-        >
-          {loading ? <Loader2 size={13} className="animate-spin" /> : "Aplicar"}
-        </Button>
-      </div>
-      {result && (
-        <p className="text-xs flex items-center gap-1.5 text-green-600 font-medium">
-          <CheckCircle2 size={12} />
-          {result.tipo === "percentual"
-            ? `${result.desconto}% de desconto aplicado!`
-            : `R$ ${result.descontoAplicado.toFixed(2)} de desconto aplicado!`}
-        </p>
-      )}
-      {error && (
-        <p className="text-xs flex items-center gap-1.5 text-destructive">
-          <AlertCircle size={12} />
-          {error}
-        </p>
-      )}
     </div>
   );
 }

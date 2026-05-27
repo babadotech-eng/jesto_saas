@@ -12,6 +12,7 @@ import perfisRouter from "./perfis";
 import funcionariosRouter from "./funcionarios";
 import adminRouter from "./admin";
 import promoCodesRouter from "./promo_codes";
+import codigosRouter from "./codigos";
 
 const router: IRouter = Router();
 
@@ -28,5 +29,6 @@ router.use(perfisRouter);
 router.use(funcionariosRouter);
 router.use(adminRouter);
 router.use(promoCodesRouter);
+router.use(codigosRouter);
 
 export default router;

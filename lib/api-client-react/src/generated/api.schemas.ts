@@ -323,3 +323,41 @@ export interface Assinatura {
   valido_ate?: string | null;
 }
 
+export type CodigoValidacaoResultTipo = typeof CodigoValidacaoResultTipo[keyof typeof CodigoValidacaoResultTipo];
+
+
+export const CodigoValidacaoResultTipo = {
+  percentual: 'percentual',
+  fixo: 'fixo',
+} as const;
+
+export interface CodigoValidacaoResult {
+  valido: boolean;
+  codeId: string;
+  tipo: CodigoValidacaoResultTipo;
+  desconto: number;
+}
+
+export type AssinaturaInputPlano = typeof AssinaturaInputPlano[keyof typeof AssinaturaInputPlano];
+
+
+export const AssinaturaInputPlano = {
+  gratis: 'gratis',
+  pro: 'pro',
+  premium: 'premium',
+} as const;
+
+export interface AssinaturaInput {
+  plano: AssinaturaInputPlano;
+  /** @nullable */
+  cupomCode?: string | null;
+}
+
+export interface ErrorResponse {
+  error: string;
+}
+
+export type ValidarCodigoParams = {
+codigo: string;
+};
+

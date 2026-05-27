@@ -22,9 +22,12 @@ import type {
 import type {
   AlertaMargem,
   Assinatura,
+  AssinaturaInput,
+  CodigoValidacaoResult,
   DashboardSummary,
   Despesa,
   DespesaInput,
+  ErrorResponse,
   FichaInput,
   FichaItem,
   FichaItemInput,
@@ -42,7 +45,8 @@ import type {
   PontoEquilibrio,
   Produto,
   ProdutoInput,
-  ProdutoRanking
+  ProdutoRanking,
+  ValidarCodigoParams
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -2784,4 +2788,159 @@ export function useGetAssinatura<TData = Awaited<ReturnType<typeof getAssinatura
 
 
 
+
+export const getValidarCodigoUrl = (params: ValidarCodigoParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/codigos/validar?${stringifiedParams}` : `/api/codigos/validar`
+}
+
+/**
+ * @summary Validate a promotional coupon code (public)
+ */
+export const validarCodigo = async (params: ValidarCodigoParams, options?: RequestInit): Promise<CodigoValidacaoResult> => {
+
+  return customFetch<CodigoValidacaoResult>(getValidarCodigoUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getValidarCodigoQueryKey = (params?: ValidarCodigoParams,) => {
+    return [
+    `/api/codigos/validar`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getValidarCodigoQueryOptions = <TData = Awaited<ReturnType<typeof validarCodigo>>, TError = ErrorType<ErrorResponse>>(params: ValidarCodigoParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof validarCodigo>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getValidarCodigoQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof validarCodigo>>> = ({ signal }) => validarCodigo(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof validarCodigo>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ValidarCodigoQueryResult = NonNullable<Awaited<ReturnType<typeof validarCodigo>>>
+export type ValidarCodigoQueryError = ErrorType<ErrorResponse>
+
+
+/**
+ * @summary Validate a promotional coupon code (public)
+ */
+
+export function useValidarCodigo<TData = Awaited<ReturnType<typeof validarCodigo>>, TError = ErrorType<ErrorResponse>>(
+ params: ValidarCodigoParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof validarCodigo>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getValidarCodigoQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCreateAssinaturaUrl = () => {
+
+
+
+
+  return `/api/assinaturas`
+}
+
+/**
+ * @summary Create or update subscription, optionally applying a coupon atomically
+ */
+export const createAssinatura = async (assinaturaInput: AssinaturaInput, options?: RequestInit): Promise<Assinatura> => {
+
+  return customFetch<Assinatura>(getCreateAssinaturaUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      assinaturaInput,)
+  }
+);}
+
+
+
+
+export const getCreateAssinaturaMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAssinatura>>, TError,{data: BodyType<AssinaturaInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createAssinatura>>, TError,{data: BodyType<AssinaturaInput>}, TContext> => {
+
+const mutationKey = ['createAssinatura'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createAssinatura>>, {data: BodyType<AssinaturaInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createAssinatura(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateAssinaturaMutationResult = NonNullable<Awaited<ReturnType<typeof createAssinatura>>>
+    export type CreateAssinaturaMutationBody = BodyType<AssinaturaInput>
+    export type CreateAssinaturaMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Create or update subscription, optionally applying a coupon atomically
+ */
+export const useCreateAssinatura = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAssinatura>>, TError,{data: BodyType<AssinaturaInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createAssinatura>>,
+        TError,
+        {data: BodyType<AssinaturaInput>},
+        TContext
+      > => {
+      return useMutation(getCreateAssinaturaMutationOptions(options));
+    }
 

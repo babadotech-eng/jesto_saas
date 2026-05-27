@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import NotFound from "@/pages/not-found";
 import { setAuthTokenGetter } from "@workspace/api-client-react";
 import { supabase } from "@/lib/supabase";
+import { useEffect } from "react";
 
 import Layout from "@/components/Layout";
 import Painel from "@/pages/Painel";
@@ -44,6 +45,30 @@ function Loading() {
       </div>
     </div>
   );
+}
+
+function PendingCupomApplier() {
+  const { session } = useAuth();
+
+  useEffect(() => {
+    if (!session?.access_token) return;
+    const cupomCode = sessionStorage.getItem("pendingCupomCode");
+    const plano = sessionStorage.getItem("pendingPlano");
+    if (!cupomCode || !plano) return;
+    sessionStorage.removeItem("pendingCupomCode");
+    sessionStorage.removeItem("pendingPlano");
+
+    fetch("/api/assinaturas", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ plano, cupomCode }),
+    }).catch(() => {});
+  }, [session]);
+
+  return null;
 }
 
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
@@ -112,6 +137,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <AuthProvider>
+          <PendingCupomApplier />
           <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
             <Router />
           </WouterRouter>

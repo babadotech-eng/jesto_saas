@@ -659,3 +659,27 @@ export const GetAssinaturaResponse = zod.object({
 })
 
 
+/**
+ * @summary Validate a promotional coupon code (public)
+ */
+export const ValidarCodigoQueryParams = zod.object({
+  "codigo": zod.coerce.string()
+})
+
+export const ValidarCodigoResponse = zod.object({
+  "valido": zod.boolean(),
+  "codeId": zod.string(),
+  "tipo": zod.enum(['percentual', 'fixo']),
+  "desconto": zod.number()
+})
+
+
+/**
+ * @summary Create or update subscription, optionally applying a coupon atomically
+ */
+export const CreateAssinaturaBody = zod.object({
+  "plano": zod.enum(['gratis', 'pro', 'premium']),
+  "cupomCode": zod.string().nullish()
+})
+
+

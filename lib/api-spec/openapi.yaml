@@ -27,6 +27,8 @@ tags:
     description: Subscriptions
   - name: funcionarios
     description: Employees and payroll (Premium)
+  - name: codigos
+    description: Promotional coupon codes (public)
 
 paths:
   /healthz:
@@ -659,6 +661,62 @@ paths:
               schema:
                 $ref: "#/components/schemas/Assinatura"
 
+  /codigos/validar:
+    get:
+      operationId: validarCodigo
+      tags: [codigos]
+      summary: Validate a promotional coupon code (public)
+      parameters:
+        - name: codigo
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Coupon validation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CodigoValidacaoResult"
+        "400":
+          description: Invalid, expired, or exhausted coupon
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Coupon not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /assinaturas:
+    post:
+      operationId: createAssinatura
+      tags: [assinaturas]
+      summary: Create or update subscription, optionally applying a coupon atomically
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssinaturaInput"
+      responses:
+        "201":
+          description: Subscription created or updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Assinatura"
+        "400":
+          description: Invalid plan or coupon error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -1092,3 +1150,34 @@ components:
         valido_ate:
           type: ["string", "null"]
       required: [id, plano, status]
+
+    CodigoValidacaoResult:
+      type: object
+      properties:
+        valido:
+          type: boolean
+        codeId:
+          type: string
+        tipo:
+          type: string
+          enum: [percentual, fixo]
+        desconto:
+          type: number
+      required: [valido, codeId, tipo, desconto]
+
+    AssinaturaInput:
+      type: object
+      properties:
+        plano:
+          type: string
+          enum: [gratis, pro, premium]
+        cupomCode:
+          type: ["string", "null"]
+      required: [plano]
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
