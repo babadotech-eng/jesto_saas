@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Link, useLocation } from "wouter";
-import { Check, X, ArrowLeft, Tag, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { Check, ArrowLeft, Tag, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -29,6 +30,69 @@ function formatarDesconto(cupom: CupomInfo) {
   }
   return `R$ ${cupom.desconto.toFixed(2).replace(".", ",")} de desconto`;
 }
+
+const FAQ_ITEMS = [
+  {
+    pergunta: "Para quem o app foi criado?",
+    resposta: "O app foi pensado para pequenos negócios de alimentação que querem profissionalizar a gestão, entender melhor seus números e precificar com mais segurança.",
+  },
+  {
+    pergunta: "Ele funciona para quem ainda está começando?",
+    resposta: "Sim. Você pode começar de forma simples, organizar a base da operação e evoluir no seu ritmo, sem precisar dominar planilhas ou processos complexos.",
+  },
+  {
+    pergunta: "O que eu consigo controlar dentro do app?",
+    resposta: "Você consegue organizar produtos, insumos, fichas técnicas, CMV, margem, despesas, lançamentos, ponto de equilíbrio e outros indicadores importantes para a rotina do negócio.",
+  },
+  {
+    pergunta: "O app ajuda na formação de preço?",
+    resposta: "Sim. Ele foi pensado para dar mais clareza sobre custos e margem, ajudando você a precificar com mais consistência e menos decisões no improviso.",
+  },
+  {
+    pergunta: "Ele calcula CMV e margem?",
+    resposta: "Sim. O sistema ajuda você a transformar fichas técnicas e custos cadastrados em uma visão mais clara do CMV e da margem dos seus produtos.",
+  },
+  {
+    pergunta: "Preciso entender de finanças para usar?",
+    resposta: "Não. O app foi desenhado para simplificar a gestão e tornar números do dia a dia mais fáceis de interpretar e usar na tomada de decisão.",
+  },
+  {
+    pergunta: "Qual plano faz mais sentido para a maioria dos negócios?",
+    resposta: "Para a maioria das operações que já vendem com frequência e querem mais controle, o plano Pro tende a ser a escolha mais equilibrada entre valor e profundidade.",
+  },
+  {
+    pergunta: "Quando vale a pena escolher o Premium?",
+    resposta: "O Premium faz mais sentido para quem quer acompanhar a operação de ponta a ponta, com visão mais ampla de caixa, despesas, relatórios e estrutura do negócio.",
+  },
+  {
+    pergunta: "Posso começar no Grátis e mudar depois?",
+    resposta: "Sim. Você pode começar no plano gratuito e evoluir para outro plano conforme sua operação crescer e exigir mais controle.",
+  },
+  {
+    pergunta: "O plano anual oferece vantagem?",
+    resposta: "Sim. Para quem pretende usar o app de forma contínua, o plano anual costuma entregar uma relação melhor entre investimento e benefício.",
+  },
+  {
+    pergunta: "O app ajuda a controlar despesas fixas?",
+    resposta: "Sim. Nos planos mais completos, você passa a enxergar com mais clareza o impacto das despesas fixas sobre o resultado do negócio.",
+  },
+  {
+    pergunta: "Também consigo acompanhar entradas e saídas?",
+    resposta: "Sim. O app permite registrar movimentações e acompanhar o fluxo de caixa com mais clareza no dia a dia.",
+  },
+  {
+    pergunta: "Ele mostra o ponto de equilíbrio?",
+    resposta: "Sim. O plano Premium ajuda você a visualizar quanto precisa faturar para cobrir seus custos e operar com mais tranquilidade.",
+  },
+  {
+    pergunta: "Como funciona o cupom promocional?",
+    resposta: "Se houver um cupom válido para o plano e o período escolhidos, ele pode ser aplicado na contratação para ajustar o valor da assinatura.",
+  },
+  {
+    pergunta: "O app serve para restaurante, lanchonete, confeitaria e delivery?",
+    resposta: "Sim. Ele atende diferentes operações de alimentação que precisam organizar custos, receitas, margem e gestão com mais clareza e consistência.",
+  },
+];
 
 export default function Planos() {
   const [anual, setAnual] = useState(false);
@@ -199,7 +263,7 @@ export default function Planos() {
           {/* Grátis */}
           <div className="bg-card rounded-2xl border border-border p-8 shadow-sm flex flex-col">
             <h3 className="text-xl font-bold mb-2">Grátis</h3>
-            <p className="text-muted-foreground text-sm mb-6 h-10">Para quem está começando a testar receitas.</p>
+            <p className="text-muted-foreground text-sm mb-6">Para começar com organização, clareza e mais segurança nas primeiras decisões.</p>
             <div className="mb-6">
               <span className="text-4xl font-black">R$ 0</span>
               <span className="text-muted-foreground">/mês</span>
@@ -208,13 +272,11 @@ export default function Planos() {
               <Button variant="outline" className="w-full">Começar Grátis</Button>
             </Link>
             <div className="space-y-4 flex-1">
-              <Feature text="Até 5 Produtos" />
-              <Feature text="Até 10 Fichas Técnicas" />
-              <Feature text="Até 30 Insumos" />
-              <Feature text="Cálculo de CMV" />
-              <Feature text="Sem controle de despesas" missing />
-              <Feature text="Sem fluxo de caixa" missing />
-              <Feature text="Sem relatórios" missing />
+              <Feature text="Estruture seus primeiros produtos com mais confiança" />
+              <Feature text="Padronize receitas e ganhe consistência na operação" />
+              <Feature text="Organize insumos sem depender de planilhas soltas" />
+              <Feature text="Tenha uma leitura mais clara do CMV dos seus produtos" />
+              <Feature text="Dê os primeiros passos com simplicidade e sem custo" />
             </div>
           </div>
 
@@ -224,7 +286,7 @@ export default function Planos() {
               Mais Popular
             </div>
             <h3 className="text-xl font-bold mb-2 text-primary">Pro</h3>
-            <p className="text-muted-foreground text-sm mb-6 h-10">Para o negócio que quer controle real dos custos.</p>
+            <p className="text-muted-foreground text-sm mb-6">Para quem quer precificar melhor, proteger a margem e crescer com mais controle.</p>
             <div className="mb-6">
               {cupom && descontoPro > 0 ? (
                 <div>
@@ -246,21 +308,19 @@ export default function Planos() {
               Assinar Pro
             </Button>
             <div className="space-y-4 flex-1">
-              <Feature text="Produtos Ilimitados" />
-              <Feature text="Fichas Técnicas Ilimitadas" />
-              <Feature text="Insumos Ilimitados" />
-              <Feature text="Cálculo de Margem Real" />
-              <Feature text="Dashboard de Custos" />
-              <Feature text="Alertas de Margem Baixa" />
-              <Feature text="Sem fluxo de caixa" missing />
-              <Feature text="Sem ponto de equilíbrio" missing />
+              <Feature text="Cadastre toda a sua operação sem limites desnecessários" />
+              <Feature text="Enxergue a margem real de cada item com mais precisão" />
+              <Feature text="Tenha uma visão mais clara dos custos no dia a dia" />
+              <Feature text="Identifique rapidamente produtos com margem abaixo do ideal" />
+              <Feature text="Tome decisões de preço com mais confiança e menos achismo" />
+              <Feature text="Ganhe agilidade para ajustar cardápio, custos e rentabilidade" />
             </div>
           </div>
 
           {/* Premium */}
           <div className="bg-card rounded-2xl border border-border p-8 shadow-sm flex flex-col">
             <h3 className="text-xl font-bold mb-2">Premium</h3>
-            <p className="text-muted-foreground text-sm mb-6 h-10">Gestão financeira completa de ponta a ponta.</p>
+            <p className="text-muted-foreground text-sm mb-6">Para negócios que querem uma visão completa da operação e decisões mais estratégicas.</p>
             <div className="mb-6">
               {cupom && descontoPremium > 0 ? (
                 <div>
@@ -287,31 +347,43 @@ export default function Planos() {
               Assinar Premium
             </Button>
             <div className="space-y-4 flex-1">
-              <Feature text="Tudo do plano Pro" />
-              <Feature text="Gestão de Despesas Fixas" />
-              <Feature text="Fluxo de Caixa (Lançamentos)" />
-              <Feature text="Cálculo de Ponto de Equilíbrio" />
-              <Feature text="Relatórios Avançados" />
-              <Feature text="Controle de Funcionários" />
+              <Feature text="Tudo do plano Pro para elevar o controle da sua operação" />
+              <Feature text="Acompanhe despesas fixas com mais profundidade" />
+              <Feature text="Tenha mais clareza sobre entradas, saídas e fluxo de caixa" />
+              <Feature text="Visualize seu ponto de equilíbrio com mais segurança" />
+              <Feature text="Acesse relatórios mais completos para decidir melhor" />
+              <Feature text="Organize a estrutura da equipe com mais controle" />
+              <Feature text="Consolide custos, rotina e gestão em um só lugar" />
             </div>
           </div>
+        </div>
+
+        {/* FAQ */}
+        <div className="max-w-2xl mx-auto mt-24">
+          <h2 className="text-2xl font-bold text-center mb-8 text-foreground">Perguntas frequentes</h2>
+          <Accordion type="single" collapsible className="w-full space-y-2">
+            {FAQ_ITEMS.map((item, i) => (
+              <AccordionItem key={i} value={`item-${i}`} className="border border-border rounded-xl px-4 bg-card shadow-sm">
+                <AccordionTrigger className="text-sm font-medium text-left py-4 hover:no-underline">
+                  {item.pergunta}
+                </AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground pb-4 leading-relaxed">
+                  {item.resposta}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </div>
     </div>
   );
 }
 
-function Feature({ text, missing = false }: { text: string; missing?: boolean }) {
+function Feature({ text }: { text: string }) {
   return (
     <div className="flex items-start gap-3">
-      {missing ? (
-        <X size={18} className="text-muted-foreground/50 mt-0.5 shrink-0" />
-      ) : (
-        <Check size={18} className="text-primary mt-0.5 shrink-0" />
-      )}
-      <span className={`text-sm ${missing ? "text-muted-foreground/60 line-through" : "text-foreground"}`}>
-        {text}
-      </span>
+      <Check size={18} className="text-primary mt-0.5 shrink-0" />
+      <span className="text-sm text-foreground">{text}</span>
     </div>
   );
 }

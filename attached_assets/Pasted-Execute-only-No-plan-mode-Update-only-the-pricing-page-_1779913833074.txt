@@ -1,0 +1,113 @@
+Execute only. No plan mode.
+
+Update only the pricing page copy and FAQ accordion.
+Do not redesign unrelated pages.
+Do not change pricing logic or checkout behavior.
+
+Use exactly this content:
+
+CARDS
+
+Grátis
+Subtítulo:
+Para começar com organização, clareza e mais segurança nas primeiras decisões.
+
+Bullets:
+- Estruture seus primeiros produtos com mais confiança
+- Padronize receitas e ganhe consistência na operação
+- Organize insumos sem depender de planilhas soltas
+- Tenha uma leitura mais clara do CMV dos seus produtos
+- Dê os primeiros passos com simplicidade e sem custo
+
+CTA:
+Começar Grátis
+
+Pro
+Subtítulo:
+Para quem quer precificar melhor, proteger a margem e crescer com mais controle.
+
+Bullets:
+- Cadastre toda a sua operação sem limites desnecessários
+- Enxergue a margem real de cada item com mais precisão
+- Tenha uma visão mais clara dos custos no dia a dia
+- Identifique rapidamente produtos com margem abaixo do ideal
+- Tome decisões de preço com mais confiança e menos achismo
+- Ganhe agilidade para ajustar cardápio, custos e rentabilidade
+
+CTA:
+Assinar Pro
+
+Premium
+Subtítulo:
+Para negócios que querem uma visão completa da operação e decisões mais estratégicas.
+
+Bullets:
+- Tudo do plano Pro para elevar o controle da sua operação
+- Acompanhe despesas fixas com mais profundidade
+- Tenha mais clareza sobre entradas, saídas e fluxo de caixa
+- Visualize seu ponto de equilíbrio com mais segurança
+- Acesse relatórios mais completos para decidir melhor
+- Organize a estrutura da equipe com mais controle
+- Consolide custos, rotina e gestão em um só lugar
+
+CTA:
+Assinar Premium
+
+FAQ ACCORDION
+
+1. Para quem o app foi criado?
+O app foi pensado para pequenos negócios de alimentação que querem profissionalizar a gestão, entender melhor seus números e precificar com mais segurança.
+
+2. Ele funciona para quem ainda está começando?
+Sim. Você pode começar de forma simples, organizar a base da operação e evoluir no seu ritmo, sem precisar dominar planilhas ou processos complexos.
+
+3. O que eu consigo controlar dentro do app?
+Você consegue organizar produtos, insumos, fichas técnicas, CMV, margem, despesas, lançamentos, ponto de equilíbrio e outros indicadores importantes para a rotina do negócio.
+
+4. O app ajuda na formação de preço?
+Sim. Ele foi pensado para dar mais clareza sobre custos e margem, ajudando você a precificar com mais consistência e menos decisões no improviso.
+
+5. Ele calcula CMV e margem?
+Sim. O sistema ajuda você a transformar fichas técnicas e custos cadastrados em uma visão mais clara do CMV e da margem dos seus produtos.
+
+6. Preciso entender de finanças para usar?
+Não. O app foi desenhado para simplificar a gestão e tornar números do dia a dia mais fáceis de interpretar e usar na tomada de decisão.
+
+7. Qual plano faz mais sentido para a maioria dos negócios?
+Para a maioria das operações que já vendem com frequência e querem mais controle, o plano Pro tende a ser a escolha mais equilibrada entre valor e profundidade.
+
+8. Quando vale a pena escolher o Premium?
+O Premium faz mais sentido para quem quer acompanhar a operação de ponta a ponta, com visão mais ampla de caixa, despesas, relatórios e estrutura do negócio.
+
+9. Posso começar no Grátis e mudar depois?
+Sim. Você pode começar no plano gratuito e evoluir para outro plano conforme sua operação crescer e exigir mais controle.
+
+10. O plano anual oferece vantagem?
+Sim. Para quem pretende usar o app de forma contínua, o plano anual costuma entregar uma relação melhor entre investimento e benefício.
+
+11. O app ajuda a controlar despesas fixas?
+Sim. Nos planos mais completos, você passa a enxergar com mais clareza o impacto das despesas fixas sobre o resultado do negócio.
+
+12. Também consigo acompanhar entradas e saídas?
+Sim. O app permite registrar movimentações e acompanhar o fluxo de caixa com mais clareza no dia a dia.
+
+13. Ele mostra o ponto de equilíbrio?
+Sim. O plano Premium ajuda você a visualizar quanto precisa faturar para cobrir seus custos e operar com mais tranquilidade.
+
+14. Como funciona o cupom promocional?
+Se houver um cupom válido para o plano e o período escolhidos, ele pode ser aplicado na contratação para ajustar o valor da assinatura.
+
+15. O app serve para restaurante, lanchonete, confeitaria e delivery?
+Sim. Ele atende diferentes operações de alimentação que precisam organizar custos, receitas, margem e gestão com mais clareza e consistência.
+
+Rules:
+- keep all text in Portuguese
+- keep the page clean and elegant
+- keep mobile responsiveness correct
+- do not invent new copy
+- use exactly the text above
+
+Return only:
+1. Files changed
+2. Confirmation that the exact copy above was applied
+3. Manual visual check result
