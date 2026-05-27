@@ -186,9 +186,9 @@ export default function Painel() {
         {/* Col 1 — Dark summary */}
         <div className="bg-zinc-900 rounded-2xl p-5 flex flex-col justify-between text-white min-h-[220px]">
           <div>
-            <div className="w-10 h-10 rounded-xl bg-amber-400 flex items-center justify-center mb-3 overflow-hidden shrink-0">
+            <div className="w-10 h-10 rounded-full bg-amber-400 flex items-center justify-center mb-3 overflow-hidden shrink-0">
               {perfil?.logo_url ? (
-                <img src={perfil.logo_url} alt="Logo" className="w-full h-full object-contain" />
+                <img src={perfil.logo_url} alt="Logo" className="w-full h-full object-cover" />
               ) : (
                 <span className="text-zinc-900 font-black text-lg">P</span>
               )}

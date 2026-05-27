@@ -98,5 +98,7 @@ export interface AdminCodigo {
   limiteUsos: number | null;
   usosAtuais: number;
   ativo: boolean;
+  planosAplicaveis: "pro" | "premium" | "ambos";
+  pagamentoAplicavel: "mensal" | "anual" | "ambos";
   createdAt: string;
 }

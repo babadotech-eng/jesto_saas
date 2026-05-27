@@ -114,7 +114,7 @@ export default function Configuracoes() {
       }
 
       const { data: urlData } = supabase.storage.from("logos").getPublicUrl(path);
-      const publicUrl = urlData.publicUrl;
+      const publicUrl = `${urlData.publicUrl}?v=${Date.now()}`;
 
       await updatePerfil.mutateAsync({ logo_url: publicUrl } as Parameters<typeof updatePerfil.mutateAsync>[0]);
       setLogoPreview(publicUrl);
@@ -176,9 +176,9 @@ export default function Configuracoes() {
         </div>
         {loadingPerfil ? <Skeleton className="h-20 w-full" /> : (
           <div className="flex items-center gap-4">
-            <div className="w-20 h-20 rounded-xl border-2 border-dashed border-border bg-muted/30 flex items-center justify-center overflow-hidden shrink-0">
+            <div className="w-20 h-20 rounded-full border-2 border-dashed border-border bg-muted/30 flex items-center justify-center overflow-hidden shrink-0">
               {logoPreview ? (
-                <img src={logoPreview} alt="Logo do negócio" className="w-full h-full object-contain" />
+                <img src={logoPreview} alt="Logo do negócio" className="w-full h-full object-cover" />
               ) : (
                 <ImageIcon size={24} className="text-muted-foreground" />
               )}

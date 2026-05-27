@@ -79,15 +79,19 @@ export default function AdminUsers() {
     staleTime: 30_000,
   });
 
-  const { data: userDetail, isLoading: detailLoading } = useQuery<AdminUserDetail>({
+  const { data: userDetail, isLoading: detailLoading, isError: detailError } = useQuery<AdminUserDetail>({
     queryKey: ["admin", "user-detail", selectedUserId],
     queryFn: async () => {
       const res = await adminFetch(`/api/admin/users/${selectedUserId}`);
-      if (!res.ok) throw new Error("Erro ao buscar detalhes");
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error((body as { error?: string }).error ?? "Erro ao buscar detalhes");
+      }
       return res.json();
     },
     enabled: !!selectedUserId,
     staleTime: 60_000,
+    retry: 1,
   });
 
   const changePlanMutation = useMutation({
@@ -289,6 +293,18 @@ export default function AdminUsers() {
           {detailLoading ? (
             <div className="p-6 space-y-4">
               {Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-8 w-full rounded" />)}
+            </div>
+          ) : detailError ? (
+            <div className="flex flex-col items-center justify-center gap-3 py-20 px-6 text-center">
+              <span className="text-4xl">⚠️</span>
+              <p className="font-semibold text-foreground">Dados não encontrados</p>
+              <p className="text-sm text-muted-foreground">Este usuário pode ter sido excluído ou ainda não possui perfil cadastrado.</p>
+              <button
+                className="mt-2 text-sm text-primary underline underline-offset-2"
+                onClick={() => setSelectedUserId(null)}
+              >
+                Fechar
+              </button>
             </div>
           ) : userDetail ? (
             <div className="flex-1 px-6 py-5 space-y-6 overflow-y-auto">

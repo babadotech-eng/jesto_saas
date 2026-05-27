@@ -7,8 +7,12 @@ const router = Router();
 
 const PLAN_PRICES: Record<string, number> = { gratis: 0, pro: 49, premium: 99 };
 
-router.post("/promo-codes/validar", requireAuth, async (req, res): Promise<void> => {
-  const { codigo, plano } = req.body as { codigo?: string; plano?: string };
+router.post("/promo-codes/validar", async (req, res): Promise<void> => {
+  const { codigo, plano, pagamento } = req.body as {
+    codigo?: string;
+    plano?: string;
+    pagamento?: string;
+  };
 
   if (!codigo || !plano) {
     res.status(400).json({ error: "Campos obrigatórios: codigo, plano" });
@@ -31,15 +35,27 @@ router.post("/promo-codes/validar", requireAuth, async (req, res): Promise<void>
 
     const now = new Date();
     if (new Date(code.dataInicio) > now) {
-      res.status(400).json({ error: "Cupom ainda não está ativo" });
+      res.status(400).json({ error: "Este cupom ainda não está ativo" });
       return;
     }
     if (code.dataExpiracao && new Date(code.dataExpiracao) < now) {
-      res.status(400).json({ error: "Cupom expirado" });
+      res.status(400).json({ error: "Este cupom expirou" });
       return;
     }
     if (code.limiteUsos !== null && code.usosAtuais >= code.limiteUsos) {
-      res.status(400).json({ error: "Cupom esgotado" });
+      res.status(400).json({ error: "Este cupom já foi totalmente utilizado" });
+      return;
+    }
+
+    if (code.planosAplicaveis !== "ambos" && code.planosAplicaveis !== plano) {
+      const planLabel = code.planosAplicaveis === "pro" ? "Pro" : "Premium";
+      res.status(400).json({ error: `Este cupom é válido somente para o plano ${planLabel}` });
+      return;
+    }
+
+    if (pagamento && code.pagamentoAplicavel !== "ambos" && code.pagamentoAplicavel !== pagamento) {
+      const label = code.pagamentoAplicavel === "mensal" ? "mensal" : "anual";
+      res.status(400).json({ error: `Este cupom é válido somente para pagamento ${label}` });
       return;
     }
 
@@ -66,7 +82,7 @@ router.post("/promo-codes/validar", requireAuth, async (req, res): Promise<void>
     });
   } catch (err) {
     req.log.error({ err }, "promo code validate error");
-    res.status(500).json({ error: "Erro interno" });
+    res.status(500).json({ error: "Erro interno ao validar cupom" });
   }
 });
 
@@ -84,7 +100,7 @@ router.post("/promo-codes/aplicar", requireAuth, async (req, res): Promise<void>
     res.json({ ok: true });
   } catch (err) {
     req.log.error({ err }, "promo code apply error");
-    res.status(500).json({ error: "Erro interno" });
+    res.status(500).json({ error: "Erro interno ao aplicar cupom" });
   }
 });
 

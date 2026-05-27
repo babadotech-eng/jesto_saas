@@ -10,6 +10,8 @@ export const promoCodesTable = pgTable("promo_codes", {
   limiteUsos: integer("limite_usos"),
   usosAtuais: integer("usos_atuais").notNull().default(0),
   ativo: boolean("ativo").notNull().default(true),
+  planosAplicaveis: text("planos_aplicaveis", { enum: ["pro", "premium", "ambos"] }).notNull().default("ambos"),
+  pagamentoAplicavel: text("pagamento_aplicavel", { enum: ["mensal", "anual", "ambos"] }).notNull().default("ambos"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

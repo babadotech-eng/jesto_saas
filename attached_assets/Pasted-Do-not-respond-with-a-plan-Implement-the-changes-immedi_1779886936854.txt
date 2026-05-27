@@ -1,0 +1,71 @@
+Do not respond with a plan. Implement the changes immediately.
+Execute only. No plan mode. No long explanation.
+
+Read the current code first, then implement only the fixes below. Do not redesign unrelated parts. Do not change working features outside this scope.
+
+Fix now:
+
+1. Promo Codes
+- Add coupon applicability fields for:
+  - plano: Pro, Premium, ambos
+  - pagamento: Mensal, Anual, ambos
+- Save these rules in the database
+- Enforce them when applying the coupon
+- Show Portuguese validation message if coupon does not match selected plan or billing period
+
+2. Bulk coupons
+- Fix bulk coupon generation end-to-end
+- Manual mode: multiple codes, one per line
+- Auto mode:
+  - palavra-base opcional
+  - quantidade obrigatória
+- If palavra-base exists, generate unique codes from it
+- If empty, generate codes automatically
+- Return and show:
+  - criados
+  - pulados
+  - códigos pulados
+- No silent failure
+
+3. User details drawer
+- Fix the blank side card
+- Clicking user name must load and show full user data
+- Add Portuguese loading, empty, and error states
+- Check backend response keys and frontend field mapping
+
+4. Pricing cards
+- Update pricing cards with the latest usage options
+- Keep Pro vs Premium differences correct
+- Keep Portuguese text
+
+5. Logo bug
+- Fix replace/remove logo not updating
+- New logo must appear immediately
+- Removed logo must disappear immediately
+- Prevent stale cache using new file path or cache-busting query param
+- Apply fix in both settings and dashboard card
+
+6. Circular logo
+- Show uploaded logo as circular automatically
+- Apply in settings preview and dashboard card
+- Use proper crop with object-fit
+
+7. Resend confirmation email
+- Fix resend confirmation email flow
+- Use correct Supabase resend method for signup confirmation
+- Use correct email and redirect URL
+- Show Portuguese success/error messages
+- No silent failure
+
+Rules:
+- Admin access only for michelkhodair@gmail.com
+- UI text in Portuguese
+- Never expose passwords
+- Keep changes minimal and maintainable
+- Execute the fixes directly
+
+After finishing, return only:
+1. Files changed
+2. Schema/database changes
+3. What was fixed
+4. Manual test results

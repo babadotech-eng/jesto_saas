@@ -35,6 +35,8 @@ const EMPTY_FORM = {
   dataInicio: new Date().toISOString().slice(0, 10),
   dataExpiracao: "",
   limiteUsos: "",
+  planosAplicaveis: "ambos" as "pro" | "premium" | "ambos",
+  pagamentoAplicavel: "ambos" as "mensal" | "anual" | "ambos",
 };
 
 const EMPTY_SHARED = {
@@ -43,10 +45,23 @@ const EMPTY_SHARED = {
   dataInicio: new Date().toISOString().slice(0, 10),
   dataExpiracao: "",
   limiteUsos: "",
+  planosAplicaveis: "ambos" as "pro" | "premium" | "ambos",
+  pagamentoAplicavel: "ambos" as "mensal" | "anual" | "ambos",
 };
 
 type BatchMode = "manual" | "auto";
 type BatchResult = { criados: string[]; pulados: string[] };
+
+function planosLabel(v: string) {
+  if (v === "pro") return "Somente Pro";
+  if (v === "premium") return "Somente Premium";
+  return "Pro + Premium";
+}
+function pagamentoLabel(v: string) {
+  if (v === "mensal") return "Somente Mensal";
+  if (v === "anual") return "Somente Anual";
+  return "Mensal + Anual";
+}
 
 function SharedSettings({
   value, onChange,
@@ -104,6 +119,30 @@ function SharedSettings({
           onChange={e => onChange({ ...value, limiteUsos: e.target.value })}
         />
       </div>
+      <div className="space-y-1.5">
+        <Label>Planos Aplicáveis</Label>
+        <select
+          className="w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm"
+          value={value.planosAplicaveis}
+          onChange={e => onChange({ ...value, planosAplicaveis: e.target.value as "pro" | "premium" | "ambos" })}
+        >
+          <option value="ambos">Pro e Premium</option>
+          <option value="pro">Somente Pro</option>
+          <option value="premium">Somente Premium</option>
+        </select>
+      </div>
+      <div className="space-y-1.5">
+        <Label>Período Aplicável</Label>
+        <select
+          className="w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm"
+          value={value.pagamentoAplicavel}
+          onChange={e => onChange({ ...value, pagamentoAplicavel: e.target.value as "mensal" | "anual" | "ambos" })}
+        >
+          <option value="ambos">Mensal e Anual</option>
+          <option value="mensal">Somente Mensal</option>
+          <option value="anual">Somente Anual</option>
+        </select>
+      </div>
     </div>
   );
 }
@@ -143,6 +182,8 @@ export default function AdminCodigos() {
           dataInicio: new Date(form.dataInicio).toISOString(),
           dataExpiracao: form.dataExpiracao ? new Date(form.dataExpiracao).toISOString() : null,
           limiteUsos: form.limiteUsos ? Number(form.limiteUsos) : null,
+          planosAplicaveis: form.planosAplicaveis,
+          pagamentoAplicavel: form.pagamentoAplicavel,
         }),
       });
       if (!res.ok) {
@@ -167,14 +208,20 @@ export default function AdminCodigos() {
         dataInicio: new Date(shared.dataInicio).toISOString(),
         dataExpiracao: shared.dataExpiracao ? new Date(shared.dataExpiracao).toISOString() : null,
         limiteUsos: shared.limiteUsos ? Number(shared.limiteUsos) : null,
+        planosAplicaveis: shared.planosAplicaveis,
+        pagamentoAplicavel: shared.pagamentoAplicavel,
       };
 
       let body: Record<string, unknown>;
       if (batchMode === "manual") {
         const codes = batchCodes.split("\n").map(l => l.trim().toUpperCase()).filter(Boolean);
+        if (codes.length === 0) throw new Error("Cole pelo menos um código.");
+        if (codes.length > 100) throw new Error("Máximo de 100 códigos por lote.");
         body = { ...baseBody, codes };
       } else {
-        body = { ...baseBody, base: batchBase.trim() || undefined, quantidade: Number(batchQtd) };
+        const qty = Number(batchQtd);
+        if (!qty || qty < 1) throw new Error("Informe a quantidade.");
+        body = { ...baseBody, base: batchBase.trim() || undefined, quantidade: qty };
       }
 
       const res = await adminFetch("/api/admin/codigos/lote", {
@@ -183,7 +230,7 @@ export default function AdminCodigos() {
       });
       if (!res.ok) {
         const b = await res.json().catch(() => ({}));
-        throw new Error((b as { error?: string }).error ?? "Erro ao criar cupons");
+        throw new Error((b as { error?: string }).error ?? "Erro ao criar cupons em lote");
       }
       return res.json() as Promise<BatchResult>;
     },
@@ -192,6 +239,8 @@ export default function AdminCodigos() {
       qc.invalidateQueries({ queryKey: ["admin", "codigos"] });
       if (result.criados.length > 0) {
         toast.success(`${result.criados.length} cupom${result.criados.length !== 1 ? "s" : ""} criado${result.criados.length !== 1 ? "s" : ""}!`);
+      } else {
+        toast.info("Nenhum cupom novo criado — todos já existiam.");
       }
     },
     onError: (e: Error) => toast.error(e.message),
@@ -236,14 +285,6 @@ export default function AdminCodigos() {
     setBatchResult(null);
     if (!shared.desconto || Number(shared.desconto) <= 0) {
       toast.error("Informe o desconto.");
-      return;
-    }
-    if (batchMode === "manual" && !batchCodes.trim()) {
-      toast.error("Cole pelo menos um código.");
-      return;
-    }
-    if (batchMode === "auto" && (!batchQtd || Number(batchQtd) < 1)) {
-      toast.error("Informe a quantidade.");
       return;
     }
     batchMutation.mutate();
@@ -332,6 +373,32 @@ export default function AdminCodigos() {
               <Label htmlFor="limiteUsos">Limite de Usos</Label>
               <Input id="limiteUsos" type="number" min="1" step="1" placeholder="Ilimitado" value={form.limiteUsos} onChange={e => setForm(f => ({ ...f, limiteUsos: e.target.value }))} />
             </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="planosAplicaveis">Planos Aplicáveis</Label>
+              <select
+                id="planosAplicaveis"
+                className="w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm"
+                value={form.planosAplicaveis}
+                onChange={e => setForm(f => ({ ...f, planosAplicaveis: e.target.value as "pro" | "premium" | "ambos" }))}
+              >
+                <option value="ambos">Pro e Premium</option>
+                <option value="pro">Somente Pro</option>
+                <option value="premium">Somente Premium</option>
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="pagamentoAplicavel">Período Aplicável</Label>
+              <select
+                id="pagamentoAplicavel"
+                className="w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm"
+                value={form.pagamentoAplicavel}
+                onChange={e => setForm(f => ({ ...f, pagamentoAplicavel: e.target.value as "mensal" | "anual" | "ambos" }))}
+              >
+                <option value="ambos">Mensal e Anual</option>
+                <option value="mensal">Somente Mensal</option>
+                <option value="anual">Somente Anual</option>
+              </select>
+            </div>
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => { setShowForm(false); setForm(EMPTY_FORM); }}>Cancelar</Button>
@@ -381,14 +448,14 @@ export default function AdminCodigos() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label htmlFor="batchBase">Palavra-base / Prefixo</Label>
+                <Label htmlFor="batchBase">Palavra-base / Prefixo <span className="text-muted-foreground font-normal">(opcional)</span></Label>
                 <Input
                   id="batchBase"
                   placeholder="Ex: BURGER, VERAO, HOTDOG"
                   value={batchBase}
                   onChange={e => { setBatchBase(e.target.value.toUpperCase()); setBatchResult(null); }}
                 />
-                <p className="text-xs text-muted-foreground">Deixe em branco para gerar como PREC-XXXX</p>
+                <p className="text-xs text-muted-foreground">Vazio gera como PREC-XXXX</p>
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="batchQtd">Quantidade *</Label>
@@ -398,12 +465,12 @@ export default function AdminCodigos() {
                   value={batchQtd}
                   onChange={e => { setBatchQtd(e.target.value); setBatchResult(null); }}
                 />
-                <p className="text-xs text-muted-foreground">Máximo de 100 por lote</p>
+                <p className="text-xs text-muted-foreground">Máximo 100 por lote</p>
               </div>
               {batchBase && (
                 <div className="sm:col-span-2">
                   <p className="text-xs text-muted-foreground bg-muted/50 px-3 py-2 rounded-md">
-                    Exemplos gerados:{" "}
+                    Exemplos:{" "}
                     <span className="font-mono font-medium">{batchBase}-A3K2</span>,{" "}
                     <span className="font-mono font-medium">{batchBase}-B9PQ</span>,{" "}
                     <span className="font-mono font-medium">{batchBase}-Z4MN</span>...
@@ -415,22 +482,25 @@ export default function AdminCodigos() {
 
           {/* Shared settings */}
           <div className="border-t border-border pt-4 space-y-3">
-            <p className="text-sm font-medium text-foreground">Configurações aplicadas a todos os cupons do lote</p>
+            <p className="text-sm font-medium text-foreground">Configurações aplicadas a todos os cupons</p>
             <SharedSettings value={shared} onChange={setShared} />
           </div>
 
           {/* Result */}
           {batchResult && (
-            <div className={`rounded-lg border px-4 py-3 text-sm space-y-1.5 ${batchResult.criados.length > 0 ? "bg-green-50 border-green-200" : "bg-muted border-border"}`}>
+            <div className={`rounded-lg border px-4 py-3 text-sm space-y-2 ${batchResult.criados.length > 0 ? "bg-green-50 border-green-200" : "bg-muted border-border"}`}>
               <div className="flex items-center gap-2 font-medium">
-                <CheckCircle2 size={15} className="text-green-600 shrink-0" />
+                <CheckCircle2 size={15} className={batchResult.criados.length > 0 ? "text-green-600 shrink-0" : "text-muted-foreground shrink-0"} />
                 <span>
                   {batchResult.criados.length} cupom{batchResult.criados.length !== 1 ? "s" : ""} criado{batchResult.criados.length !== 1 ? "s" : ""} com sucesso
                 </span>
               </div>
+              {batchResult.criados.length > 0 && (
+                <p className="text-xs text-green-700 pl-5 font-mono break-all">{batchResult.criados.join(", ")}</p>
+              )}
               {batchResult.pulados.length > 0 && (
                 <p className="text-muted-foreground text-xs pl-5">
-                  {batchResult.pulados.length} ignorado{batchResult.pulados.length !== 1 ? "s" : ""} por já existirem:{" "}
+                  {batchResult.pulados.length} ignorado{batchResult.pulados.length !== 1 ? "s" : ""} (já existiam):{" "}
                   <span className="font-mono">{batchResult.pulados.join(", ")}</span>
                 </p>
               )}
@@ -461,9 +531,10 @@ export default function AdminCodigos() {
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">Código</th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">Desconto</th>
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground hidden sm:table-cell">Início</th>
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground hidden md:table-cell">Expiração</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground hidden sm:table-cell">Planos</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground hidden md:table-cell">Período</th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground hidden lg:table-cell">Usos</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground hidden lg:table-cell">Expiração</th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">Status</th>
                 <th className="px-4 py-3 text-right font-medium text-muted-foreground">Ações</th>
               </tr>
@@ -481,11 +552,16 @@ export default function AdminCodigos() {
                     <td className="px-4 py-3 font-medium">
                       {code.tipo === "percentual" ? `${Number(code.desconto)}% off` : `R$ ${Number(code.desconto).toFixed(2)} off`}
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">{fmtDate(code.dataInicio)}</td>
-                    <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{fmtDate(code.dataExpiracao)}</td>
+                    <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell text-xs">
+                      {planosLabel(code.planosAplicaveis ?? "ambos")}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground hidden md:table-cell text-xs">
+                      {pagamentoLabel(code.pagamentoAplicavel ?? "ambos")}
+                    </td>
                     <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">
                       {code.usosAtuais}{code.limiteUsos !== null ? ` / ${code.limiteUsos}` : " / ∞"}
                     </td>
+                    <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">{fmtDate(code.dataExpiracao)}</td>
                     <td className="px-4 py-3">
                       <span className={`text-xs font-medium ${st.color}`}>{st.label}</span>
                     </td>
@@ -503,7 +579,7 @@ export default function AdminCodigos() {
                         </Button>
                         <Button
                           variant="ghost" size="icon" className="h-7 w-7"
-                          title="Excluir"
+                          title="Excluir cupom"
                           onClick={() => setDeleteTarget(code)}
                         >
                           <Trash2 size={14} className="text-destructive" />

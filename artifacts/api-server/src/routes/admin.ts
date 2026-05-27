@@ -389,9 +389,10 @@ router.get("/admin/codigos", requireAuth, requireAdmin, async (req, res): Promis
 });
 
 router.post("/admin/codigos", requireAuth, requireAdmin, async (req, res): Promise<void> => {
-  const { codigo, tipo, desconto, dataInicio, dataExpiracao, limiteUsos } = req.body as {
+  const { codigo, tipo, desconto, dataInicio, dataExpiracao, limiteUsos, planosAplicaveis, pagamentoAplicavel } = req.body as {
     codigo?: string; tipo?: string; desconto?: number;
     dataInicio?: string; dataExpiracao?: string | null; limiteUsos?: number | null;
+    planosAplicaveis?: string; pagamentoAplicavel?: string;
   };
 
   if (!codigo || !tipo || !desconto || !dataInicio) {
@@ -407,6 +408,8 @@ router.post("/admin/codigos", requireAuth, requireAdmin, async (req, res): Promi
     res.status(400).json({ error: "Desconto deve ser positivo" });
     return;
   }
+  const planosVal = (["pro", "premium", "ambos"].includes(planosAplicaveis ?? "") ? planosAplicaveis : "ambos") as "pro" | "premium" | "ambos";
+  const pagamentoVal = (["mensal", "anual", "ambos"].includes(pagamentoAplicavel ?? "") ? pagamentoAplicavel : "ambos") as "mensal" | "anual" | "ambos";
 
   try {
     const [inserted] = await db
@@ -418,6 +421,8 @@ router.post("/admin/codigos", requireAuth, requireAdmin, async (req, res): Promi
         dataInicio: new Date(dataInicio),
         dataExpiracao: dataExpiracao ? new Date(dataExpiracao) : null,
         limiteUsos: limiteUsos ? Number(limiteUsos) : null,
+        planosAplicaveis: planosVal,
+        pagamentoAplicavel: pagamentoVal,
       })
       .returning();
     res.status(201).json(inserted);
@@ -435,10 +440,11 @@ router.post("/admin/codigos", requireAuth, requireAdmin, async (req, res): Promi
 // ── MODULE 5: BULK PROMO CODES ────────────────────────────────────────────────
 
 router.post("/admin/codigos/lote", requireAuth, requireAdmin, async (req, res): Promise<void> => {
-  const { codes, base, quantidade, tipo, desconto, dataInicio, dataExpiracao, limiteUsos } = req.body as {
+  const { codes, base, quantidade, tipo, desconto, dataInicio, dataExpiracao, limiteUsos, planosAplicaveis, pagamentoAplicavel } = req.body as {
     codes?: string[]; base?: string; quantidade?: number;
     tipo?: string; desconto?: number; dataInicio?: string;
     dataExpiracao?: string | null; limiteUsos?: number | null;
+    planosAplicaveis?: string; pagamentoAplicavel?: string;
   };
 
   if (!tipo || !desconto || !dataInicio) {
@@ -487,12 +493,17 @@ router.post("/admin/codigos/lote", requireAuth, requireAdmin, async (req, res): 
     return;
   }
 
+  const planosVal = (["pro", "premium", "ambos"].includes(planosAplicaveis ?? "") ? planosAplicaveis : "ambos") as "pro" | "premium" | "ambos";
+  const pagamentoVal = (["mensal", "anual", "ambos"].includes(pagamentoAplicavel ?? "") ? pagamentoAplicavel : "ambos") as "mensal" | "anual" | "ambos";
+
   const values = {
     tipo: tipo as "percentual" | "fixo",
     desconto: String(descontoNum),
     dataInicio: new Date(dataInicio),
     dataExpiracao: dataExpiracao ? new Date(dataExpiracao) : null,
     limiteUsos: limiteUsos ? Number(limiteUsos) : null,
+    planosAplicaveis: planosVal,
+    pagamentoAplicavel: pagamentoVal,
   };
 
   const criados: string[] = [];

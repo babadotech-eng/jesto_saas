@@ -72,7 +72,11 @@ export default function Cadastro() {
 
   const handleResend = async () => {
     setResending(true);
-    const { error } = await supabase.auth.resend({ type: "signup", email });
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: { emailRedirectTo: `${window.location.origin}/painel` },
+    });
     setResending(false);
     if (error) { toast.error("Erro ao reenviar", { description: error.message }); return; }
     toast.success("E-mail reenviado! Verifique sua caixa de entrada.");
