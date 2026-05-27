@@ -99,6 +99,22 @@ router.post("/assinaturas", requireAuth, async (req, res): Promise<void> => {
       couponId = code.id;
       couponDesconto = Number(code.desconto);
       couponTipo = code.tipo;
+
+      const [alreadyUsed] = await db
+        .select({ id: promoCodeUsesTable.id })
+        .from(promoCodeUsesTable)
+        .where(
+          and(
+            eq(promoCodeUsesTable.userId, userId),
+            eq(promoCodeUsesTable.promoCodeId, code.id),
+          ),
+        )
+        .limit(1);
+
+      if (alreadyUsed) {
+        res.status(400).json({ error: "Você já utilizou este cupom" });
+        return;
+      }
     }
 
     const row = await db.transaction(async (tx) => {
