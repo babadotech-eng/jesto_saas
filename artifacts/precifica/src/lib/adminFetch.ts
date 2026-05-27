@@ -38,3 +38,45 @@ export interface AdminUser {
   statusAssinatura: string;
   planoUpdatedAt: string | null;
 }
+
+export interface AdminAssinatura {
+  userId: string;
+  email: string | null;
+  nomeCompleto: string | null;
+  plano: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string | null;
+  validoAte: string | null;
+}
+
+export interface AdminFinanceiro {
+  mrrAtual: number;
+  receitaPorPlano: {
+    pro: { count: number; receita: number };
+    premium: { count: number; receita: number };
+  };
+  mrrMensal: Array<{ mes: string; mesLabel: string; receita: number }>;
+  historico: Array<{
+    userId: string;
+    email: string | null;
+    nomeCompleto: string | null;
+    plano: string;
+    status: string;
+    createdAt: string;
+    valor: number;
+  }>;
+}
+
+export interface AdminCodigo {
+  id: string;
+  codigo: string;
+  tipo: "percentual" | "fixo";
+  desconto: string;
+  dataInicio: string;
+  dataExpiracao: string | null;
+  limiteUsos: number | null;
+  usosAtuais: number;
+  ativo: boolean;
+  createdAt: string;
+}

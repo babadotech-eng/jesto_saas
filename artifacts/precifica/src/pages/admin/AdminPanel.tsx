@@ -1,17 +1,26 @@
 import { useLocation } from "wouter";
-import { LayoutDashboard, Users, LogOut, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Users, CreditCard, TrendingUp, Tag, LogOut, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import AdminOverview from "./AdminOverview";
 import AdminUsers from "./AdminUsers";
+import AdminAssinaturas from "./AdminAssinaturas";
+import AdminFinanceiro from "./AdminFinanceiro";
+import AdminCodigos from "./AdminCodigos";
 
 const NAV_ITEMS = [
-  { id: "visao-geral", label: "Visão Geral", path: "/admin", icon: LayoutDashboard },
-  { id: "usuarios", label: "Usuários", path: "/admin/usuarios", icon: Users },
+  { id: "visao-geral",   label: "Visão Geral",  path: "/admin",              icon: LayoutDashboard },
+  { id: "usuarios",      label: "Usuários",      path: "/admin/usuarios",     icon: Users },
+  { id: "assinaturas",   label: "Assinaturas",   path: "/admin/assinaturas",  icon: CreditCard },
+  { id: "financeiro",    label: "Financeiro",    path: "/admin/financeiro",   icon: TrendingUp },
+  { id: "codigos",       label: "Cupons Promo",  path: "/admin/codigos",      icon: Tag },
 ];
 
 function getActiveTab(location: string): string {
-  if (location === "/admin/usuarios") return "usuarios";
+  if (location === "/admin/usuarios")    return "usuarios";
+  if (location === "/admin/assinaturas") return "assinaturas";
+  if (location === "/admin/financeiro")  return "financeiro";
+  if (location === "/admin/codigos")     return "codigos";
   return "visao-geral";
 }
 
@@ -87,14 +96,17 @@ export default function AdminPanel() {
           <h1 className="font-semibold text-foreground">
             {NAV_ITEMS.find(n => n.id === activeTab)?.label ?? "Admin"}
           </h1>
-          <span className="text-xs text-muted-foreground bg-amber-100 text-amber-700 border border-amber-200 px-2 py-0.5 rounded font-medium">
+          <span className="text-xs bg-amber-100 text-amber-700 border border-amber-200 px-2 py-0.5 rounded font-medium">
             Acesso Administrativo
           </span>
         </header>
 
         {/* Content */}
-        {activeTab === "visao-geral" && <AdminOverview />}
-        {activeTab === "usuarios" && <AdminUsers />}
+        {activeTab === "visao-geral"  && <AdminOverview />}
+        {activeTab === "usuarios"     && <AdminUsers />}
+        {activeTab === "assinaturas"  && <AdminAssinaturas />}
+        {activeTab === "financeiro"   && <AdminFinanceiro />}
+        {activeTab === "codigos"      && <AdminCodigos />}
       </main>
     </div>
   );

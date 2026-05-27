@@ -6,3 +6,4 @@ export * from "./lancamentos";
 export * from "./perfis";
 export * from "./assinaturas";
 export * from "./funcionarios";
+export * from "./promo_codes";

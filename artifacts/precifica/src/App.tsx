@@ -97,6 +97,9 @@ function Router() {
       <Route path="/configuracoes"><ProtectedRoute component={Configuracoes} /></Route>
       <Route path="/admin"><AdminRoute /></Route>
       <Route path="/admin/usuarios"><AdminRoute /></Route>
+      <Route path="/admin/assinaturas"><AdminRoute /></Route>
+      <Route path="/admin/financeiro"><AdminRoute /></Route>
+      <Route path="/admin/codigos"><AdminRoute /></Route>
       <Route component={NotFound} />
     </Switch>
   );
