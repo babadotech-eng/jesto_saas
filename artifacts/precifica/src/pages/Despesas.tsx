@@ -28,7 +28,7 @@ const CATEGORIAS = [
   },
   {
     grupo: "Custos de Produção",
-    itens: ["Mão de obra direta", "Mão de obra terceirizada", "Gás e combustível de cozinha", "Utensílios e pequenos equipamentos", "Manutenção de equipamentos", "Uniformes e EPIs"],
+    itens: ["Mão de obra direta", "Mão de obra terceirizada", "Gás de cozinha", "Utensílios e pequenos equipamentos", "Manutenção de equipamentos", "Uniformes e EPIs"],
   },
   {
     grupo: "Infraestrutura e Utilidades",
