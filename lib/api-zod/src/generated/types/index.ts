@@ -6,11 +6,18 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './adminListPromoCodesParams';
+export * from './adminPromoCode';
+export * from './adminPromoCodeList';
+export * from './adminPromoCodePagamentoAplicavel';
+export * from './adminPromoCodePlanosAplicaveis';
+export * from './adminPromoCodeTipo';
 export * from './alertaMargem';
 export * from './alertaMargemNivel';
 export * from './assinatura';
 export * from './assinaturaInput';
 export * from './assinaturaInputPlano';
+export * from './assinaturaTipoDesconto';
 export * from './codigoValidacaoResult';
 export * from './codigoValidacaoResultTipo';
 export * from './dashboardSummary';

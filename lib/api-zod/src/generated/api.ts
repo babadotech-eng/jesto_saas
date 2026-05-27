@@ -655,7 +655,10 @@ export const GetAssinaturaResponse = zod.object({
   "id": zod.string(),
   "plano": zod.string(),
   "status": zod.string(),
-  "valido_ate": zod.string().nullish()
+  "valido_ate": zod.string().nullish(),
+  "promo_code_id": zod.string().nullish(),
+  "desconto_aplicado": zod.number().nullish(),
+  "tipo_desconto": zod.union([zod.literal('percentual'),zod.literal('fixo'),zod.literal(null)]).nullish()
 })
 
 
@@ -680,6 +683,43 @@ export const ValidarCodigoResponse = zod.object({
 export const CreateAssinaturaBody = zod.object({
   "plano": zod.enum(['gratis', 'pro', 'premium']),
   "cupomCode": zod.string().nullish()
+})
+
+
+/**
+ * @summary List all promo codes with usage stats (admin only, paginated)
+ */
+export const adminListPromoCodesQueryPageDefault = 1;
+
+export const adminListPromoCodesQueryLimitDefault = 20;
+export const adminListPromoCodesQueryLimitMax = 100;
+
+
+
+export const AdminListPromoCodesQueryParams = zod.object({
+  "page": zod.coerce.number().min(1).default(adminListPromoCodesQueryPageDefault),
+  "limit": zod.coerce.number().min(1).max(adminListPromoCodesQueryLimitMax).default(adminListPromoCodesQueryLimitDefault)
+})
+
+export const AdminListPromoCodesResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "codigo": zod.string(),
+  "tipo": zod.enum(['percentual', 'fixo']),
+  "desconto": zod.string(),
+  "dataInicio": zod.string(),
+  "dataExpiracao": zod.string().nullish(),
+  "limiteUsos": zod.number().nullish(),
+  "usosAtuais": zod.number(),
+  "ativo": zod.boolean(),
+  "planosAplicaveis": zod.enum(['pro', 'premium', 'ambos']),
+  "pagamentoAplicavel": zod.enum(['mensal', 'anual', 'ambos']),
+  "createdAt": zod.string()
+})),
+  "total": zod.number(),
+  "page": zod.number(),
+  "limit": zod.number(),
+  "pages": zod.number()
 })
 
 

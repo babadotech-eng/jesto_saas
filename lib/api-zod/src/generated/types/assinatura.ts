@@ -5,6 +5,7 @@
  * Precifica API - Financial management and recipe costing for small food businesses
  * OpenAPI spec version: 0.1.0
  */
+import type { AssinaturaTipoDesconto } from './assinaturaTipoDesconto';
 
 export interface Assinatura {
   id: string;
@@ -12,4 +13,10 @@ export interface Assinatura {
   status: string;
   /** @nullable */
   valido_ate?: string | null;
+  /** @nullable */
+  promo_code_id?: string | null;
+  /** @nullable */
+  desconto_aplicado?: number | null;
+  /** @nullable */
+  tipo_desconto?: AssinaturaTipoDesconto;
 }

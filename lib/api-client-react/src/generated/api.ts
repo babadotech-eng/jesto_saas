@@ -20,6 +20,8 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AdminListPromoCodesParams,
+  AdminPromoCodeList,
   AlertaMargem,
   Assinatura,
   AssinaturaInput,
@@ -2943,4 +2945,88 @@ export const useCreateAssinatura = <TError = ErrorType<ErrorResponse>,
       > => {
       return useMutation(getCreateAssinaturaMutationOptions(options));
     }
+
+export const getAdminListPromoCodesUrl = (params?: AdminListPromoCodesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/admin/promo-codes?${stringifiedParams}` : `/api/admin/promo-codes`
+}
+
+/**
+ * @summary List all promo codes with usage stats (admin only, paginated)
+ */
+export const adminListPromoCodes = async (params?: AdminListPromoCodesParams, options?: RequestInit): Promise<AdminPromoCodeList> => {
+
+  return customFetch<AdminPromoCodeList>(getAdminListPromoCodesUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getAdminListPromoCodesQueryKey = (params?: AdminListPromoCodesParams,) => {
+    return [
+    `/api/admin/promo-codes`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAdminListPromoCodesQueryOptions = <TData = Awaited<ReturnType<typeof adminListPromoCodes>>, TError = ErrorType<ErrorResponse>>(params?: AdminListPromoCodesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof adminListPromoCodes>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAdminListPromoCodesQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof adminListPromoCodes>>> = ({ signal }) => adminListPromoCodes(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof adminListPromoCodes>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type AdminListPromoCodesQueryResult = NonNullable<Awaited<ReturnType<typeof adminListPromoCodes>>>
+export type AdminListPromoCodesQueryError = ErrorType<ErrorResponse>
+
+
+/**
+ * @summary List all promo codes with usage stats (admin only, paginated)
+ */
+
+export function useAdminListPromoCodes<TData = Awaited<ReturnType<typeof adminListPromoCodes>>, TError = ErrorType<ErrorResponse>>(
+ params?: AdminListPromoCodesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof adminListPromoCodes>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getAdminListPromoCodesQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
 

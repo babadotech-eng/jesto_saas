@@ -294,6 +294,13 @@ export default function Configuracoes() {
               {assinatura.valido_ate && (
                 <p className="text-sm text-muted-foreground mt-1">Válido até: {new Date(assinatura.valido_ate).toLocaleDateString("pt-BR")}</p>
               )}
+              {assinatura.desconto_aplicado != null && (
+                <p className="text-sm text-green-600 mt-1">
+                  Desconto aplicado: {assinatura.tipo_desconto === "percentual"
+                    ? `${assinatura.desconto_aplicado}%`
+                    : `R$ ${assinatura.desconto_aplicado.toFixed(2)}`}
+                </p>
+              )}
               {assinatura.plano === "gratis" && (
                 <p className="text-sm text-muted-foreground mt-1">Limite: 1 receita cadastrada</p>
               )}

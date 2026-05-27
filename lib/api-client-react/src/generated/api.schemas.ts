@@ -315,12 +315,29 @@ export interface PontoEquilibrio {
   unidades_necessarias: number;
 }
 
+/**
+ * @nullable
+ */
+export type AssinaturaTipoDesconto = typeof AssinaturaTipoDesconto[keyof typeof AssinaturaTipoDesconto] | null;
+
+
+export const AssinaturaTipoDesconto = {
+  percentual: 'percentual',
+  fixo: 'fixo',
+} as const;
+
 export interface Assinatura {
   id: string;
   plano: string;
   status: string;
   /** @nullable */
   valido_ate?: string | null;
+  /** @nullable */
+  promo_code_id?: string | null;
+  /** @nullable */
+  desconto_aplicado?: number | null;
+  /** @nullable */
+  tipo_desconto?: AssinaturaTipoDesconto;
 }
 
 export type CodigoValidacaoResultTipo = typeof CodigoValidacaoResultTipo[keyof typeof CodigoValidacaoResultTipo];
@@ -357,7 +374,70 @@ export interface ErrorResponse {
   error: string;
 }
 
+export type AdminPromoCodeTipo = typeof AdminPromoCodeTipo[keyof typeof AdminPromoCodeTipo];
+
+
+export const AdminPromoCodeTipo = {
+  percentual: 'percentual',
+  fixo: 'fixo',
+} as const;
+
+export type AdminPromoCodePlanosAplicaveis = typeof AdminPromoCodePlanosAplicaveis[keyof typeof AdminPromoCodePlanosAplicaveis];
+
+
+export const AdminPromoCodePlanosAplicaveis = {
+  pro: 'pro',
+  premium: 'premium',
+  ambos: 'ambos',
+} as const;
+
+export type AdminPromoCodePagamentoAplicavel = typeof AdminPromoCodePagamentoAplicavel[keyof typeof AdminPromoCodePagamentoAplicavel];
+
+
+export const AdminPromoCodePagamentoAplicavel = {
+  mensal: 'mensal',
+  anual: 'anual',
+  ambos: 'ambos',
+} as const;
+
+export interface AdminPromoCode {
+  id: string;
+  codigo: string;
+  tipo: AdminPromoCodeTipo;
+  desconto: string;
+  dataInicio: string;
+  /** @nullable */
+  dataExpiracao?: string | null;
+  /** @nullable */
+  limiteUsos?: number | null;
+  usosAtuais: number;
+  ativo: boolean;
+  planosAplicaveis: AdminPromoCodePlanosAplicaveis;
+  pagamentoAplicavel: AdminPromoCodePagamentoAplicavel;
+  createdAt: string;
+}
+
+export interface AdminPromoCodeList {
+  items: AdminPromoCode[];
+  total: number;
+  page: number;
+  limit: number;
+  pages: number;
+}
+
 export type ValidarCodigoParams = {
 codigo: string;
+};
+
+export type AdminListPromoCodesParams = {
+/**
+ * @minimum 1
+ */
+page?: number;
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
 };
 

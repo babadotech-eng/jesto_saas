@@ -13,16 +13,36 @@ router.get("/assinaturas/current", requireAuth, async (req, res): Promise<void> 
 
     if (rows.length > 0) {
       const row = rows[0];
+
+      let descontoAplicado: number | null = null;
+      let tipoDesconto: string | null = null;
+
+      if (row.promoCodeId) {
+        const [code] = await db
+          .select({ desconto: promoCodesTable.desconto, tipo: promoCodesTable.tipo })
+          .from(promoCodesTable)
+          .where(eq(promoCodesTable.id, row.promoCodeId))
+          .limit(1);
+
+        if (code) {
+          descontoAplicado = Number(code.desconto);
+          tipoDesconto = code.tipo;
+        }
+      }
+
       res.json({
         id: row.id,
         plano: row.plano,
         status: row.status,
         valido_ate: row.validoAte,
+        promo_code_id: row.promoCodeId ?? null,
+        desconto_aplicado: descontoAplicado,
+        tipo_desconto: tipoDesconto,
       });
       return;
     }
 
-    res.json({ id: userId, plano: "gratis", status: "ativo", valido_ate: null });
+    res.json({ id: userId, plano: "gratis", status: "ativo", valido_ate: null, promo_code_id: null, desconto_aplicado: null, tipo_desconto: null });
   } catch (err) {
     req.log.error({ err }, "Error fetching assinatura");
     res.status(500).json({ error: "Erro interno" });
@@ -43,6 +63,8 @@ router.post("/assinaturas", requireAuth, async (req, res): Promise<void> => {
 
   try {
     let couponId: string | null = null;
+    let couponDesconto: number | null = null;
+    let couponTipo: string | null = null;
 
     if (cupomCode && cupomCode.trim()) {
       const codigo = cupomCode.trim().toUpperCase();
@@ -75,17 +97,20 @@ router.post("/assinaturas", requireAuth, async (req, res): Promise<void> => {
       }
 
       couponId = code.id;
+      couponDesconto = Number(code.desconto);
+      couponTipo = code.tipo;
     }
 
     const row = await db.transaction(async (tx) => {
       const [assinatura] = await tx
         .insert(assinaturasTable)
-        .values({ userId, plano: plano as PlanoValido, status: "ativo" })
+        .values({ userId, plano: plano as PlanoValido, status: "ativo", promoCodeId: couponId })
         .onConflictDoUpdate({
           target: assinaturasTable.userId,
           set: {
             plano: plano as PlanoValido,
             status: "ativo",
+            promoCodeId: couponId,
             updatedAt: new Date(),
           },
         })
@@ -126,6 +151,9 @@ router.post("/assinaturas", requireAuth, async (req, res): Promise<void> => {
       plano: row.plano,
       status: row.status,
       valido_ate: row.validoAte,
+      promo_code_id: row.promoCodeId ?? null,
+      desconto_aplicado: couponDesconto,
+      tipo_desconto: couponTipo,
     });
   } catch (err) {
     if (err instanceof Error && err.message === "CUPOM_INVALIDO") {

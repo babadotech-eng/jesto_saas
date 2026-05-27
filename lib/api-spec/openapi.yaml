@@ -1186,6 +1186,13 @@ components:
           type: string
         valido_ate:
           type: ["string", "null"]
+        promo_code_id:
+          type: ["string", "null"]
+        desconto_aplicado:
+          type: ["number", "null"]
+        tipo_desconto:
+          type: ["string", "null"]
+          enum: [percentual, fixo, null]
       required: [id, plano, status]
 
     CodigoValidacaoResult:
