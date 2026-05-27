@@ -1,0 +1,109 @@
+SCOPE LOCK
+- Modify only the public landing page / homepage
+- Do NOT change the internal dashboard, sidebar, admin, auth, pricing logic, subscriptions, coupons, database, backend, or app flows
+- Use the current dashboard only as visual reference and as screenshot/mockup source
+- If anything outside scope needs work, mention it at the end — do not change it
+
+TASK
+Redesign the current public homepage into a premium onepage landing page for Precifica in Brazilian Portuguese.
+Replace the current simple homepage only after the new page is fully ready and validated.
+Do not break the current page until the new one is complete.
+
+VISUAL TARGET
+Get much closer to the attached reference web22.jpg.
+The current result is too beige, too generic SaaS, too template-like, and not close enough to the reference.
+
+DESIGN DIRECTION
+- Warm off-gray earthy background, not beige
+- Strong black typography
+- Black pill buttons
+- Thin subtle borders
+- Very restrained orange accent
+- Editorial, premium, minimal, welcoming
+- Less “SaaS startup”, more “brand people want to belong to”
+
+COLOR RULES
+- Background: #ECEAE5
+- Secondary background: #E6E2DB
+- Surface/card: #F5F4F1
+- Primary text: #1A1A1A
+- Secondary text: #6B6864
+- Border: #D4D0CB
+- Accent orange: #E8712A
+
+IMPORTANT:
+- Orange is only a small accent
+- Do NOT use orange as the main brand color across the page
+- Do NOT use orange buttons
+- Primary buttons must be black with white text
+
+TYPOGRAPHY
+- Keep Satoshi as the main font
+- Use Satoshi heavy/black for the hero title
+- Add Playfair Display Italic only for a few highlighted words in major headings
+- Use Playfair very sparingly
+- Never use Playfair in buttons, nav, cards, pricing details, or UI text
+
+HERO — MOST IMPORTANT
+Rebuild the hero to feel much closer to web22.jpg:
+- Left side: tag, big headline, supporting text, two CTAs
+- Right side: layered composition using the Precifica product screenshot/mockup
+- Add floating metric cards
+- Add one subtle connector line
+- Add one small orange circle accent
+- Add one muted radial/geometric detail if elegant
+- Keep lots of breathing room
+- Strong headline, black buttons, subtle borders
+
+IMAGE RULES
+- Do NOT use generic stock-photo-led design
+- Use the actual Precifica dashboard screenshot(s) as the main visual source
+- Build refined mockups and cropped UI compositions from the real product
+- The landing page should be product-led
+
+COPY RULES
+- Keep the existing Portuguese copy structure and meaning
+- Improve only if needed, preserving elegance and clarity
+- Use elegant, persuasive, premium tone
+- Natural SEO only
+- Avoid buzzwords like: revolucionário, all-in-one, empodere seu negócio, solução definitiva
+
+MOTION
+Add subtle premium motion only:
+- hero fade-up entrance
+- very soft floating motion on hero mockup/cards
+- refined button hover/press states
+- subtle card hover
+- soft section reveal on scroll
+- smooth FAQ accordion
+- respect prefers-reduced-motion
+
+DO NOT
+- Do not create a generic 3-column SaaS icon layout
+- Do not center everything
+- Do not use heavy gradients
+- Do not use glowing blobs
+- Do not use large orange areas
+- Do not make the page loud or playful
+- Do not change dashboard/app logic
+
+PAGE STRUCTURE
+1. Header
+2. Hero
+3. Problema / Valor
+4. Como funciona
+5. Showcase do painel
+6. Tipos de negócio
+7. Benefícios
+8. Planos
+9. FAQ
+10. CTA final
+11. Footer
+
+DELIVERABLE
+Return:
+1. Files changed
+2. Any new assets/mockups added
+3. What screenshots/product visuals were used
+4. Confirmation that dashboard/app logic was not changed
+5. Summary of visual corrections made
