@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { eq, sql } from "drizzle-orm";
-import { db, promoCodesTable } from "@workspace/db";
-import { requireAuth } from "../middlewares/auth";
+import { eq, sql, and } from "drizzle-orm";
+import { db, promoCodesTable, promoCodeUsesTable } from "@workspace/db";
+import { requireAuth, getUserId } from "../middlewares/auth";
 
 const router = Router();
 
@@ -92,11 +92,34 @@ router.post("/promo-codes/aplicar", requireAuth, async (req, res): Promise<void>
     res.status(400).json({ error: "codeId é obrigatório" });
     return;
   }
+
+  const userId = getUserId(req);
+
   try {
-    await db
-      .update(promoCodesTable)
-      .set({ usosAtuais: sql`${promoCodesTable.usosAtuais} + 1` })
-      .where(eq(promoCodesTable.id, codeId));
+    const [existing] = await db
+      .select({ id: promoCodeUsesTable.id })
+      .from(promoCodeUsesTable)
+      .where(
+        and(
+          eq(promoCodeUsesTable.userId, userId),
+          eq(promoCodeUsesTable.promoCodeId, codeId),
+        ),
+      )
+      .limit(1);
+
+    if (existing) {
+      res.status(409).json({ error: "Você já utilizou este cupom" });
+      return;
+    }
+
+    await db.transaction(async (tx) => {
+      await tx.insert(promoCodeUsesTable).values({ userId, promoCodeId: codeId });
+      await tx
+        .update(promoCodesTable)
+        .set({ usosAtuais: sql`${promoCodesTable.usosAtuais} + 1` })
+        .where(eq(promoCodesTable.id, codeId));
+    });
+
     res.json({ ok: true });
   } catch (err) {
     req.log.error({ err }, "promo code apply error");

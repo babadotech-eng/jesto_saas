@@ -7,3 +7,4 @@ export * from "./perfis";
 export * from "./assinaturas";
 export * from "./funcionarios";
 export * from "./promo_codes";
+export * from "./promo_code_uses";
