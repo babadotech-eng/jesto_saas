@@ -1,12 +1,20 @@
 import { Router } from "express";
-import { eq, ilike, sql, desc, and } from "drizzle-orm";
+import { eq, sql, desc, and } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 import type { Request, Response, NextFunction } from "express";
+import { createClient } from "@supabase/supabase-js";
 import { db, perfisTable, assinaturasTable, promoCodesTable } from "@workspace/db";
 import { requireAuth, getUserEmail } from "../middlewares/auth";
 
 const ADMIN_EMAIL = "michelkhodair@gmail.com";
 const PLAN_PRICES: Record<string, number> = { gratis: 0, pro: 49, premium: 99 };
+
+const rawUrl = process.env.VITE_SUPABASE_URL!;
+const supabaseUrl = (() => {
+  try { return new URL(rawUrl).origin; } catch { return rawUrl; }
+})();
+const supabase = createClient(supabaseUrl, process.env.VITE_SUPABASE_ANON_KEY!);
+
 const router = Router();
 
 function requireAdmin(req: Request, res: Response, next: NextFunction): void {
@@ -16,6 +24,13 @@ function requireAdmin(req: Request, res: Response, next: NextFunction): void {
     return;
   }
   next();
+}
+
+function generateSuffix(length = 4): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let r = "";
+  for (let i = 0; i < length; i++) r += chars[Math.floor(Math.random() * chars.length)];
+  return r;
 }
 
 // ── MODULE 1: STATS ──────────────────────────────────────────────────────────
@@ -64,11 +79,7 @@ router.get("/admin/stats", requireAuth, requireAdmin, async (req, res): Promise<
 
     res.json({
       totalUsuarios: totalRow.total,
-      porPlano: {
-        gratis: planMap["gratis"] ?? 0,
-        pro: planMap["pro"] ?? 0,
-        premium: planMap["premium"] ?? 0,
-      },
+      porPlano: { gratis: planMap["gratis"] ?? 0, pro: planMap["pro"] ?? 0, premium: planMap["premium"] ?? 0 },
       assinaturasAtivas: ativasRow.count,
       novosMes: novosMesRow.count,
       atividades,
@@ -79,13 +90,18 @@ router.get("/admin/stats", requireAuth, requireAdmin, async (req, res): Promise<
   }
 });
 
-// ── MODULE 2: USERS ───────────────────────────────────────────────────────────
+// ── MODULE 2: USERS LIST ──────────────────────────────────────────────────────
 
 router.get("/admin/users", requireAuth, requireAdmin, async (req, res): Promise<void> => {
   const search = typeof req.query.search === "string" ? req.query.search.trim() : "";
   try {
     const conditions: SQL[] = [];
-    if (search) conditions.push(ilike(perfisTable.email, `%${search}%`));
+    if (search) {
+      const term = `%${search}%`;
+      conditions.push(
+        sql`(${perfisTable.email} ILIKE ${term} OR ${perfisTable.nomeCompleto} ILIKE ${term})`,
+      );
+    }
 
     const users = await db
       .select({
@@ -110,6 +126,43 @@ router.get("/admin/users", requireAuth, requireAdmin, async (req, res): Promise<
   }
 });
 
+// ── MODULE 2: USER DETAIL ─────────────────────────────────────────────────────
+
+router.get("/admin/users/:userId", requireAuth, requireAdmin, async (req, res): Promise<void> => {
+  const userId = String(req.params.userId);
+  try {
+    const [perfil] = await db
+      .select()
+      .from(perfisTable)
+      .where(eq(perfisTable.userId, userId))
+      .limit(1);
+
+    if (!perfil) {
+      res.status(404).json({ error: "Usuário não encontrado" });
+      return;
+    }
+
+    const [assinatura] = await db
+      .select()
+      .from(assinaturasTable)
+      .where(eq(assinaturasTable.userId, userId))
+      .limit(1);
+
+    res.json({
+      ...perfil,
+      plano: assinatura?.plano ?? "gratis",
+      statusAssinatura: assinatura?.status ?? "ativo",
+      planoUpdatedAt: assinatura?.updatedAt ?? null,
+      validoAte: assinatura?.validoAte ?? null,
+    });
+  } catch (err) {
+    req.log.error({ err }, "admin get user detail error");
+    res.status(500).json({ error: "Erro interno" });
+  }
+});
+
+// ── MODULE 2: CHANGE PLAN ─────────────────────────────────────────────────────
+
 router.put("/admin/users/:userId/plano", requireAuth, requireAdmin, async (req, res): Promise<void> => {
   const userId = String(req.params.userId);
   const { plano } = req.body as { plano?: string };
@@ -118,7 +171,6 @@ router.put("/admin/users/:userId/plano", requireAuth, requireAdmin, async (req, 
     res.status(400).json({ error: "Plano inválido" });
     return;
   }
-
   try {
     await db
       .insert(assinaturasTable)
@@ -134,6 +186,8 @@ router.put("/admin/users/:userId/plano", requireAuth, requireAdmin, async (req, 
   }
 });
 
+// ── MODULE 2: CHANGE STATUS ───────────────────────────────────────────────────
+
 router.put("/admin/users/:userId/status", requireAuth, requireAdmin, async (req, res): Promise<void> => {
   const userId = String(req.params.userId);
   const { status } = req.body as { status?: string };
@@ -142,7 +196,6 @@ router.put("/admin/users/:userId/status", requireAuth, requireAdmin, async (req,
     res.status(400).json({ error: "Status inválido" });
     return;
   }
-
   try {
     await db
       .insert(assinaturasTable)
@@ -157,6 +210,42 @@ router.put("/admin/users/:userId/status", requireAuth, requireAdmin, async (req,
     res.status(500).json({ error: "Erro interno" });
   }
 });
+
+// ── MODULE 2: RESET PASSWORD ──────────────────────────────────────────────────
+
+router.post("/admin/users/:userId/reset-senha", requireAuth, requireAdmin, async (req, res): Promise<void> => {
+  const userId = String(req.params.userId);
+  const { redirectTo } = req.body as { redirectTo?: string };
+
+  try {
+    const [perfil] = await db
+      .select({ email: perfisTable.email })
+      .from(perfisTable)
+      .where(eq(perfisTable.userId, userId))
+      .limit(1);
+
+    if (!perfil?.email) {
+      res.status(404).json({ error: "E-mail do usuário não encontrado" });
+      return;
+    }
+
+    const resetOptions = redirectTo ? { redirectTo } : {};
+    const { error } = await supabase.auth.resetPasswordForEmail(perfil.email, resetOptions);
+
+    if (error) {
+      req.log.error({ error }, "supabase resetPasswordForEmail error");
+      res.status(500).json({ error: "Erro ao enviar e-mail de redefinição" });
+      return;
+    }
+
+    res.json({ ok: true, email: perfil.email });
+  } catch (err) {
+    req.log.error({ err }, "admin reset password error");
+    res.status(500).json({ error: "Erro interno" });
+  }
+});
+
+// ── MODULE 2: DELETE USER ─────────────────────────────────────────────────────
 
 router.delete("/admin/users/:userId", requireAuth, requireAdmin, async (req, res): Promise<void> => {
   const userId = String(req.params.userId);
@@ -218,12 +307,7 @@ router.get("/admin/financeiro", requireAuth, requireAdmin, async (req, res): Pro
         count: sql<number>`COUNT(*)::int`,
       })
       .from(assinaturasTable)
-      .where(
-        and(
-          eq(assinaturasTable.status, "ativo"),
-          sql`${assinaturasTable.plano} != 'gratis'`,
-        ),
-      )
+      .where(and(eq(assinaturasTable.status, "ativo"), sql`${assinaturasTable.plano} != 'gratis'`))
       .groupBy(assinaturasTable.plano);
 
     const planMap: Record<string, number> = {};
@@ -244,12 +328,10 @@ router.get("/admin/financeiro", requireAuth, requireAdmin, async (req, res): Pro
         receita: sql<number>`SUM(CASE WHEN ${assinaturasTable.plano} = 'pro' THEN 49 WHEN ${assinaturasTable.plano} = 'premium' THEN 99 ELSE 0 END)::int`,
       })
       .from(assinaturasTable)
-      .where(
-        and(
-          sql`${assinaturasTable.plano} != 'gratis'`,
-          sql`${assinaturasTable.createdAt} >= ${doze.toISOString()}`,
-        ),
-      )
+      .where(and(
+        sql`${assinaturasTable.plano} != 'gratis'`,
+        sql`${assinaturasTable.createdAt} >= ${doze.toISOString()}`,
+      ))
       .groupBy(sql`date_trunc('month', ${assinaturasTable.createdAt})`)
       .orderBy(sql`date_trunc('month', ${assinaturasTable.createdAt})`);
 
@@ -260,8 +342,7 @@ router.get("/admin/financeiro", requireAuth, requireAdmin, async (req, res): Pro
       const d = new Date();
       d.setMonth(d.getMonth() - i);
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-      const label = `${MESES[d.getMonth()]}/${String(d.getFullYear()).slice(2)}`;
-      mrrMensal.push({ mes: key, mesLabel: label, receita: mrrByMonth.get(key) ?? 0 });
+      mrrMensal.push({ mes: key, mesLabel: `${MESES[d.getMonth()]}/${String(d.getFullYear()).slice(2)}`, receita: mrrByMonth.get(key) ?? 0 });
     }
 
     const historico = await db
@@ -299,10 +380,7 @@ router.get("/admin/financeiro", requireAuth, requireAdmin, async (req, res): Pro
 
 router.get("/admin/codigos", requireAuth, requireAdmin, async (req, res): Promise<void> => {
   try {
-    const codes = await db
-      .select()
-      .from(promoCodesTable)
-      .orderBy(desc(promoCodesTable.createdAt));
+    const codes = await db.select().from(promoCodesTable).orderBy(desc(promoCodesTable.createdAt));
     res.json(codes);
   } catch (err) {
     req.log.error({ err }, "admin list codigos error");
@@ -312,12 +390,8 @@ router.get("/admin/codigos", requireAuth, requireAdmin, async (req, res): Promis
 
 router.post("/admin/codigos", requireAuth, requireAdmin, async (req, res): Promise<void> => {
   const { codigo, tipo, desconto, dataInicio, dataExpiracao, limiteUsos } = req.body as {
-    codigo?: string;
-    tipo?: string;
-    desconto?: number;
-    dataInicio?: string;
-    dataExpiracao?: string | null;
-    limiteUsos?: number | null;
+    codigo?: string; tipo?: string; desconto?: number;
+    dataInicio?: string; dataExpiracao?: string | null; limiteUsos?: number | null;
   };
 
   if (!codigo || !tipo || !desconto || !dataInicio) {
@@ -358,6 +432,88 @@ router.post("/admin/codigos", requireAuth, requireAdmin, async (req, res): Promi
   }
 });
 
+// ── MODULE 5: BULK PROMO CODES ────────────────────────────────────────────────
+
+router.post("/admin/codigos/lote", requireAuth, requireAdmin, async (req, res): Promise<void> => {
+  const { codes, base, quantidade, tipo, desconto, dataInicio, dataExpiracao, limiteUsos } = req.body as {
+    codes?: string[]; base?: string; quantidade?: number;
+    tipo?: string; desconto?: number; dataInicio?: string;
+    dataExpiracao?: string | null; limiteUsos?: number | null;
+  };
+
+  if (!tipo || !desconto || !dataInicio) {
+    res.status(400).json({ error: "Campos obrigatórios: tipo, desconto, dataInicio" });
+    return;
+  }
+  if (!["percentual", "fixo"].includes(tipo)) {
+    res.status(400).json({ error: "Tipo inválido" });
+    return;
+  }
+  const descontoNum = Number(desconto);
+  if (isNaN(descontoNum) || descontoNum <= 0) {
+    res.status(400).json({ error: "Desconto inválido" });
+    return;
+  }
+
+  let targetCodes: string[] = [];
+
+  if (Array.isArray(codes) && codes.length > 0) {
+    targetCodes = [...new Set(
+      codes.map((c: string) => String(c).trim().toUpperCase().replace(/\s+/g, "")).filter(Boolean),
+    )];
+  } else if (quantidade && Number(quantidade) > 0) {
+    const qty = Math.min(Number(quantidade), 100);
+    const prefix = base
+      ? String(base).trim().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12)
+      : "PREC";
+    const generated = new Set<string>();
+    let attempts = 0;
+    while (generated.size < qty && attempts < qty * 10) {
+      attempts++;
+      generated.add(`${prefix}-${generateSuffix(4)}`);
+    }
+    targetCodes = Array.from(generated);
+  } else {
+    res.status(400).json({ error: "Forneça 'codes' (modo manual) ou 'quantidade' (modo auto-gerar)" });
+    return;
+  }
+
+  if (targetCodes.length === 0) {
+    res.status(400).json({ error: "Nenhum código válido fornecido" });
+    return;
+  }
+  if (targetCodes.length > 100) {
+    res.status(400).json({ error: "Máximo de 100 códigos por lote" });
+    return;
+  }
+
+  const values = {
+    tipo: tipo as "percentual" | "fixo",
+    desconto: String(descontoNum),
+    dataInicio: new Date(dataInicio),
+    dataExpiracao: dataExpiracao ? new Date(dataExpiracao) : null,
+    limiteUsos: limiteUsos ? Number(limiteUsos) : null,
+  };
+
+  const criados: string[] = [];
+  const pulados: string[] = [];
+
+  for (const codigo of targetCodes) {
+    try {
+      await db.insert(promoCodesTable).values({ ...values, codigo });
+      criados.push(codigo);
+    } catch (err: unknown) {
+      pulados.push(codigo);
+      const pg = err as { code?: string };
+      if (pg?.code !== "23505") {
+        req.log.warn({ err, codigo }, "batch promo insert skipped");
+      }
+    }
+  }
+
+  res.json({ criados, pulados });
+});
+
 router.put("/admin/codigos/:id/ativo", requireAuth, requireAdmin, async (req, res): Promise<void> => {
   const id = String(req.params.id);
   const { ativo } = req.body as { ativo?: boolean };
@@ -366,7 +522,6 @@ router.put("/admin/codigos/:id/ativo", requireAuth, requireAdmin, async (req, re
     res.status(400).json({ error: "Campo 'ativo' deve ser boolean" });
     return;
   }
-
   try {
     await db.update(promoCodesTable).set({ ativo }).where(eq(promoCodesTable.id, id));
     res.json({ ok: true });

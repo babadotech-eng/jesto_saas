@@ -1,0 +1,76 @@
+Use the admin-entered word as a prefix and append a short unique suffix only when needed to avoid duplicates.
+Read the current admin implementation first. Change only the admin panel items below and do not touch unrelated parts of the app.
+
+Update these admin features:
+
+1. Gerenciar usuários
+- Add search by user name in addition to search by email
+- Keep both searches working cleanly
+
+2. Abrir dados do usuário
+- In the user management table, when clicking the user name, open that user's configuration/details view
+- Show the user profile/configuration data in a clean admin detail panel or page
+- Keep all labels in Portuguese
+
+3. Senha do usuário
+- Never show the user's password anywhere in the admin
+- Do not store, expose, reveal, or attempt to decrypt passwords
+- Replace any idea of "delete password" with a secure admin action:
+  "Redefinir senha"
+- This action must trigger a secure Supabase-compatible password reset flow
+- The user must create a new password through the reset flow
+- If necessary, invalidate active sessions so the reset is enforced safely
+- Do not build any insecure custom password exposure logic
+- Keep this safe, minimal, and production-appropriate
+
+4. Cupons Promo — criação em lote
+Add bulk coupon creation support in the Promo Codes admin tab.
+
+Support both modes:
+
+A) Manual batch input
+- Allow pasting multiple coupon codes, one per line
+- Reuse the same coupon settings for all pasted codes:
+  - discount type
+  - discount amount
+  - start date
+  - expiration date
+  - max uses
+
+B) Auto-generate batch
+- Add a field where admin can enter a base word, prefix, or number for coupon generation
+- Add a field for how many coupons should be generated using that base word/prefix
+- If a base word/prefix is provided, generate unique coupon codes starting from that word
+- Example patterns:
+  - PROMO-8X4K
+  - BURGER-01
+  - HOTDOG-2026-A1B2
+- If no base word/prefix is provided, generate coupon names automatically
+- Generated codes must always be unique
+- Keep the generated names simple, readable, and not too long
+
+Reuse the same coupon settings for the generated batch:
+- discount type
+- discount amount
+- start date
+- expiration date
+- max uses
+
+Validation rules:
+- Prevent duplicate promo codes from being created
+- Show which codes were skipped if duplicates already exist
+- Keep all labels and messages in Portuguese
+
+Rules:
+- Keep admin access protected only for michelkhodair@gmail.com
+- Keep UI text in Portuguese
+- Do not redesign the whole admin panel
+- Keep changes minimal and maintainable
+- Use the safest possible password reset approach; never expose passwords
+
+When finished, return:
+1. Files changed
+2. What was added in Gerenciar usuários
+3. How the secure password reset now works
+4. How bulk promo code creation works
+5. Manual tests I should run

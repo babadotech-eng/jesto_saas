@@ -23,6 +23,7 @@ import Configuracoes from "@/pages/Configuracoes";
 import Funcionarios from "@/pages/Funcionarios";
 import Onboarding from "@/pages/Onboarding";
 import AdminPanel from "@/pages/admin/AdminPanel";
+import RedefinirSenha from "@/pages/RedefinirSenha";
 import { usePerfil } from "@/hooks/usePerfil";
 
 const queryClient = new QueryClient({
@@ -95,6 +96,7 @@ function Router() {
       <Route path="/relatorios"><ProtectedRoute component={Relatorios} /></Route>
       <Route path="/funcionarios"><ProtectedRoute component={Funcionarios} /></Route>
       <Route path="/configuracoes"><ProtectedRoute component={Configuracoes} /></Route>
+      <Route path="/redefinir-senha"><PublicRoute component={RedefinirSenha} /></Route>
       <Route path="/admin"><AdminRoute /></Route>
       <Route path="/admin/usuarios"><AdminRoute /></Route>
       <Route path="/admin/assinaturas"><AdminRoute /></Route>

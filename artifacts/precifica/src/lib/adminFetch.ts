@@ -39,6 +39,26 @@ export interface AdminUser {
   planoUpdatedAt: string | null;
 }
 
+export interface AdminUserDetail {
+  userId: string;
+  id: string;
+  email: string | null;
+  nomeCompleto: string | null;
+  nomeNegocio: string | null;
+  tipoNegocio: string | null;
+  volumeMensal: string | null;
+  cidadeEstado: string | null;
+  whatsapp: string | null;
+  origem: string | null;
+  logoUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+  plano: string;
+  statusAssinatura: string;
+  planoUpdatedAt: string | null;
+  validoAte: string | null;
+}
+
 export interface AdminAssinatura {
   userId: string;
   email: string | null;
