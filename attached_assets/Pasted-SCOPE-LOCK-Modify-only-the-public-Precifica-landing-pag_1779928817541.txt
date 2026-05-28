@@ -1,0 +1,111 @@
+SCOPE LOCK
+Modify only the public Precifica landing page/homepage.
+Do NOT change dashboard/app logic, auth, backend, database, admin, pricing logic, subscription logic, coupons, or internal SaaS screens.
+Refine the current landing page only. Do not redesign everything from scratch.
+
+GOAL
+Keep the current improved version, but apply the refinements below.
+The final result must have sophisticated design and simple language.
+Use the attached references as mandatory direction:
+- web22.jpg = main visual/style/composition reference
+- topo.jpg = right-side top button reference
+- cheff.jpg = chef image reference for the hero
+
+COPY RULES
+- Do NOT use the word “clareza”
+- Do NOT use vague phrases like “entenda a margem do seu negócio”
+- Use simple, practical Portuguese for ordinary food business owners
+- Prefer concrete language about preço, custo, lucro, ficha técnica, gastos, desperdício, resultado no fim do mês
+- Keep the page premium in design, but simple and direct in wording
+
+TYPOGRAPHY
+- Keep Satoshi as the main font
+- Use Playfair Display only on highlighted words in headings where emphasis is needed
+- If any highlighted title words are still missing Playfair, add it
+- Highlighted words should use the project orange color
+- Keep the rest of the title in Satoshi
+- Increase font sizes slightly in key sections
+- Strengthen hierarchy between eyebrow, title, subtitle and body text
+- Keep the hero title simpler, stronger, and less floreado
+
+TEXT CHANGES
+- Change “Ver como funciona” to “Veja como funciona”
+- Change “Começar grátis” to “Comece grátis”
+
+CARD CHANGES
+- In “Custo real do prato”, add: R$ 34,90
+- In “Ponto de equilíbrio”, add: R$ 25,2 k
+- Replace any “P. de Equilíbrio” abbreviation with the full text: “Ponto de equilíbrio”
+
+COMO FUNCIONA
+- The dashboard/product mockup should appear only in this section, not in the hero
+- Add a simple supporting message about easier spreadsheet import/fill via Excel
+- Example direction: “Facilitamos o preenchimento via Excel”
+- Keep it natural and easy to understand
+
+FAQ
+- Align the “Dúvidas frequentes” title to the left, following the same alignment logic as the other section titles
+
+HERO IMAGE
+- Replace the currently generated chef image with the attached cheff.jpg as the visual base/reference
+- Use the woman from cheff.jpg as the main hero person
+- Keep the hero image square if it works best
+- She should look satisfied, confident, and pleased
+- Her gaze should be directed toward the notebook/laptop screen
+- Keep the same premium, warm, editorial composition logic as the previous hero direction
+- Refine the crop/composition so it feels intentional and premium, not pasted in
+
+MANDATORY HERO / PAGE ELEMENTS — DO NOT SKIP
+These are REQUIRED. Do not finish without visibly implementing them.
+
+1. OUTER BORDER
+- Add a visible thick warm-gray outer border/frame around the page
+- It must pass through the header and continue down the sides
+- It must be clearly visible, not subtle to the point of disappearing
+
+2. RIGHT-SIDE TOP BUTTON
+- Add a fixed black vertical “TOP” / “Topo” button on the right side
+- Rounded corners like the provided reference
+- Must remain visible and functional
+- Must scroll smoothly to the top when clicked
+
+3. SMOOTH ANCHOR SCROLL
+- Top navigation links must smoothly scroll to their sections
+
+4. HERO GRAPHIC ELEMENTS
+- Add thin connector lines around the hero composition
+- Add at least 2 arrow details
+- Add at least 1 subtle radial/geometric ornament
+- Add at least 2 floating information elements/cards around the hero image
+- These elements must be clearly visible, not almost invisible
+
+5. METRIC-TO-NOTEBOOK CONNECTION
+- Add visible connectors/arrows from a number such as percentage, gramatura, cost or profit toward the notebook/laptop area
+- This must feel integrated into the hero composition
+
+6. REFERENCE-STYLE COMPOSITION
+- The hero must not be only text on the left and image on the right
+- It must have layered composition like the original reference
+- Add surrounding visual support elements so it feels art-directed and closer to web22.jpg
+
+IMPORTANT
+- Do not remove the good refinements already made
+- Do not make the page louder
+- Do not overuse orange
+- Do not use generic SaaS icon-grid styling
+- Do not skip the required hero/page elements
+
+FAILURE CONDITION
+If the final result does not visibly contain the thick outer border, black side top button, connector lines, arrows, radial ornament, floating hero elements, and smooth anchor scroll, then the task is NOT complete.
+
+RETURN WHEN DONE
+1. What was refined
+2. New hero title
+3. Where Playfair was added
+4. How the thick border was implemented
+5. How the black side top button was implemented
+6. What graphic elements were added
+7. What card values/texts were corrected
+8. What was added in “Como funciona”
+9. Confirmation that internal app/dashboard logic was not changed
+10. Explicit confirmation that all required hero/page elements were added
