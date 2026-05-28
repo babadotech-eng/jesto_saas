@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "H_weDcEvCb1LK5S9FIfN2"
+uri = "file://attached_assets/chef_hero.png"
+type = "image"
+title = "black female chef hero"

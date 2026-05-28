@@ -1,0 +1,97 @@
+SCOPE LOCK
+- Modify only the public landing page/homepage
+- Do NOT change dashboard, app logic, pricing logic, coupons, auth, backend, database, admin, or internal SaaS areas
+- Use the current app/dashboard only as visual material for the landing page where requested
+- If anything outside scope needs work, mention it at the end and do not change it
+
+TASK
+Refine the current Precifica landing page without redesigning from scratch.
+Keep what is already good and improve only the points below.
+The final result must have sophisticated design and simple language.
+
+STYLE GOAL
+Get closer to the attached references:
+- web22.jpg = main visual/style reference
+- topo.jpg = side “back to top” reference
+
+The page must feel:
+- premium
+- editorial
+- warm
+- elegant
+- simple to understand
+- less like a generic SaaS template
+
+COPY RULES
+- Do NOT use the word “clareza”
+- Do NOT use vague phrases like “entenda a margem do seu negócio”
+- Use simple, practical Portuguese for ordinary food business owners
+- Prefer concrete language:
+  - preço certo
+  - custo
+  - lucro
+  - ficha técnica
+  - gastos
+  - desperdício
+  - saber se está ganhando ou perdendo
+- Keep the design sophisticated, but the language simple and direct
+
+TYPOGRAPHY
+- Increase font sizes slightly in key sections
+- Strengthen hierarchy between label, title, subtitle and body text
+- Keep Satoshi as the main font
+- Use Playfair Display Italic only very sparingly for a few highlighted words
+- Make the hero title simpler, stronger, less floreado, and easier to understand
+
+LAYOUT / VISUAL REFINEMENTS
+- Add the thin outer border/frame like web22.jpg, passing through the header and down the page sides
+- Refine text alignment to feel more editorial and intentional
+- Add subtle reference-inspired elements:
+  - thin connector lines
+  - arrow details
+  - small graphic accents
+  - subtle radial/geometric ornament if elegant
+- Add refined arrows/connectors from a percentage, gramatura, cost or margin number toward the notebook/hero visual
+- Keep these elements subtle and premium, never excessive
+
+HERO
+- Improve the hero composition to feel more art-directed and closer to web22.jpg
+- Remove the current dashboard/product mockup from the hero
+- Use in the hero a premium visual of a beautiful Black female chef smiling and looking at a notebook/laptop, front-facing, framed from the chest up, with a slight low-angle camera feel
+- Make it warm, elegant, welcoming, and premium
+- Use the dashboard/product mockup only in the “Como funciona” section
+
+INTERACTIONS
+- Add smooth scroll when clicking top menu anchors [web:1296]
+- Add a fixed right-side “TOP” / back-to-top button inspired by topo.jpg, with smooth scroll to top [web:1299]
+- Keep subtle premium motion only:
+  - soft reveal
+  - calm hover states
+  - elegant transitions
+  - no exaggerated animation
+
+IMPORTANT
+- Do not make the page louder
+- Do not overuse orange
+- Do not use generic SaaS icon-grid styling
+- Do not rewrite everything
+- Refine the current version carefully
+
+FINAL CHECK
+Before finishing, validate:
+- stronger typography
+- simpler and better hero title
+- border implemented
+- top button implemented
+- smooth anchor scroll working
+- language simpler and more concrete
+- hero closer to the reference
+- mockup only in “Como funciona”
+- internal app/dashboard logic unchanged
+
+RETURN:
+1. What was refined
+2. New hero title
+3. How border/top button/anchor scroll were implemented
+4. What graphic elements were added
+5. Confirmation that internal app logic was not changed
