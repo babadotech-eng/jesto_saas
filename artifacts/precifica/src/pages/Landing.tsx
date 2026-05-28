@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { BarChart3, Check, TrendingUp, BookOpen, Wallet, LayoutDashboard, UtensilsCrossed, Coffee, ShoppingBag, Sandwich, ArrowRight, FileSpreadsheet } from "lucide-react";
 import dashboardImg from "@assets/Captura_de_tela_27-5-2026_182552_d4272d6d-2b36-4ab1-adf1-6048_1779919697917.jpeg";
-import chefImg from "@assets/cheff_1779928813310.png";
+import chefImg from "@assets/file_00000000bfc471f58b48209158bd14c0_1779979641753.png";
 
 /* ── palette ── */
 const C = {
@@ -79,12 +79,23 @@ const FAQ = [
 const btnBlack   = "inline-flex items-center justify-center gap-2 h-11 px-7 rounded-full bg-[#1A1A1A] text-white text-sm font-semibold transition-all hover:bg-[#2d2d2d] active:scale-[0.97]";
 const btnOutline = "inline-flex items-center justify-center gap-2 h-11 px-7 rounded-full text-sm font-semibold transition-all active:scale-[0.97]";
 
-/* ── Playfair italic + orange ── */
+/* ── Playfair italic — black on light, white/soft on dark ── */
 const It = ({ children, dark }: { children: React.ReactNode; dark?: boolean }) => (
-  <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 400, color: dark ? "rgba(255,255,255,0.7)" : C.accent }}>
+  <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 400, color: dark ? "rgba(255,255,255,0.88)" : C.text }}>
     {children}
   </span>
 );
+
+/* ── eyebrow ── */
+const Eyebrow = ({ label, dark }: { label: string; dark?: boolean }) => (
+  <p style={{ fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.24em", color: dark ? "rgba(255,255,255,0.4)" : C.muted, marginBottom: "1.25rem" }}>{label}</p>
+);
+
+/* ── section title sizes ── */
+const T = {
+  hero:    "clamp(2.6rem, 5.5vw, 4.3rem)",
+  section: "clamp(2rem, 4.5vw, 3.4rem)",
+};
 
 /* ═══════════════════════════════════════════════════════════ */
 export default function Landing() {
@@ -96,11 +107,11 @@ export default function Landing() {
   return (
     <div style={{ background: C.bg, color: C.text, fontFamily: "'Satoshi', sans-serif", position: "relative" }}>
 
-      {/* ── Outer page border frame — thick visible rails ── */}
+      {/* ── Border rails ── */}
       <div style={{ position: "fixed", top: 0, left: 14, bottom: 0, width: 2, background: C.border, zIndex: 60, pointerEvents: "none" }} />
       <div style={{ position: "fixed", top: 0, right: 14, bottom: 0, width: 2, background: C.border, zIndex: 60, pointerEvents: "none" }} />
 
-      {/* ── Back-to-top — black pill, topo.jpg style ── */}
+      {/* ── Back-to-top ── */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         aria-label="Voltar ao topo"
@@ -156,73 +167,46 @@ export default function Landing() {
       )}
 
       <main>
-        {/* ══ HERO ════════════════════════════════════════════════ */}
+        {/* ══ 1. HERO ═════════════════════════════════════════════ */}
         <section id="inicio" className="relative overflow-hidden"
           style={{ background: C.bg, minHeight: "92vh", display: "flex", alignItems: "center" }}>
 
-          {/* Radial ornament — larger, more visible */}
-          <div style={{
-            position: "absolute", top: "50%", right: -40, transform: "translateY(-50%)",
-            width: 560, height: 560, borderRadius: "50%", pointerEvents: "none",
-            background: "radial-gradient(circle, rgba(232,113,42,0.09) 0%, rgba(232,113,42,0.03) 45%, transparent 70%)",
-          }} />
-          {/* Second ornament — top left */}
-          <div style={{
-            position: "absolute", top: -80, left: -80, width: 320, height: 320,
-            borderRadius: "50%", pointerEvents: "none",
-            background: "radial-gradient(circle, rgba(212,208,203,0.35) 0%, transparent 65%)",
-          }} />
-
-          {/* Horizontal rule across hero */}
-          <div style={{
-            position: "absolute", left: 0, right: 0, top: "50%",
-            height: 1, background: `linear-gradient(to right, transparent 5%, ${C.border} 30%, ${C.border} 70%, transparent 95%)`,
-            opacity: 0.4, pointerEvents: "none",
-          }} />
+          {/* Radial ornaments */}
+          <div style={{ position: "absolute", top: "50%", right: -40, transform: "translateY(-50%)", width: 560, height: 560, borderRadius: "50%", pointerEvents: "none", background: "radial-gradient(circle, rgba(232,113,42,0.08) 0%, rgba(232,113,42,0.02) 45%, transparent 70%)" }} />
+          <div style={{ position: "absolute", top: -80, left: -80, width: 320, height: 320, borderRadius: "50%", pointerEvents: "none", background: "radial-gradient(circle, rgba(212,208,203,0.35) 0%, transparent 65%)" }} />
+          <div style={{ position: "absolute", left: 0, right: 0, top: "50%", height: 1, background: `linear-gradient(to right, transparent 5%, ${C.border} 30%, ${C.border} 70%, transparent 95%)`, opacity: 0.35, pointerEvents: "none" }} />
 
           <div className="relative w-full max-w-6xl mx-auto px-10 md:px-14 py-20 md:py-24 grid md:grid-cols-[1fr_1fr] gap-10 md:gap-14 items-center">
 
-            {/* ── LEFT ── */}
+            {/* LEFT */}
             <div>
               <div className="flex items-center gap-3 mb-8">
                 <span style={{ width: 28, height: 1, background: C.muted }} />
-                <span style={{ fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.22em", color: C.muted }}>
-                  Para negócios de alimentação
-                </span>
+                <span style={{ fontSize: "0.65rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.24em", color: C.muted }}>Para negócios de alimentação</span>
               </div>
 
-              <h1 style={{ fontSize: "clamp(2.5rem, 5.2vw, 3.9rem)", fontWeight: 900, lineHeight: 1.02, letterSpacing: "-0.025em", color: C.text, marginBottom: "1.4rem" }}>
-                Saiba o preço<br/>
-                certo. Venda<br/>
-                com <It>lucro real.</It>
+              <h1 style={{ fontSize: T.hero, fontWeight: 900, lineHeight: 1.02, letterSpacing: "-0.03em", color: C.text, marginBottom: "1.5rem" }}>
+                Saiba o preço<br/>certo. Venda<br/>com <It>lucro real.</It>
               </h1>
 
-              <p style={{ fontSize: "clamp(0.95rem, 1.4vw, 1.05rem)", lineHeight: 1.8, color: C.muted, maxWidth: 400, marginBottom: "2.25rem" }}>
-                Descubra quanto custa produzir cada prato, monte fichas técnicas, controle os gastos e saiba se o negócio está dando lucro ou não.
+              <p style={{ fontSize: "clamp(0.97rem, 1.5vw, 1.08rem)", lineHeight: 1.8, color: C.muted, maxWidth: 420, marginBottom: "2.5rem" }}>
+                Descubra quanto custa cada prato, organize fichas técnicas, controle gastos e entenda se o seu negócio está dando lucro de verdade.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 mb-9">
-                <Link href="/cadastro" className={btnBlack}>
-                  Comece grátis <ArrowRight size={14} />
-                </Link>
-                <a href="#como-funciona" className={btnOutline}
-                  style={{ color: C.text, border: `1.5px solid ${C.border}` }}>
-                  Veja como funciona
-                </a>
+                <Link href="/cadastro" className={btnBlack}>Comece grátis <ArrowRight size={14} /></Link>
+                <a href="#como-funciona" className={btnOutline} style={{ color: C.text, border: `1.5px solid ${C.border}` }}>Veja como funciona</a>
               </div>
 
               <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
                 {["Grátis para começar","Sem cartão obrigatório","Cancele quando quiser"].map(l => (
                   <span key={l} className="flex items-center gap-1.5" style={{ fontSize: "0.75rem", fontWeight: 500, color: C.muted }}>
-                    <span className="w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0" style={{ background: C.accent }}>
-                      <Check size={8} className="text-white" />
-                    </span>
+                    <span className="w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0" style={{ background: C.accent }}><Check size={8} className="text-white" /></span>
                     {l}
                   </span>
                 ))}
               </div>
 
-              {/* Connector arrow going toward the right/image */}
               <div style={{ position: "relative", marginTop: "2.5rem", height: 1, maxWidth: 220 }}>
                 <div style={{ width: "100%", height: 1, background: `linear-gradient(to right, ${C.border}, transparent)` }} />
                 <svg style={{ position: "absolute", right: 0, top: -4, overflow: "visible" }} width="8" height="8" viewBox="0 0 8 8">
@@ -231,98 +215,49 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* ── RIGHT — layered chef composition ── */}
+            {/* RIGHT — chef composition */}
             <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+              <div style={{ position: "absolute", top: 0, right: 10, width: 40, height: 40, borderRadius: "50%", background: C.accent, zIndex: 3, pointerEvents: "none" }} />
+              <div style={{ position: "absolute", left: -4, top: "15%", bottom: "15%", width: 1, background: `linear-gradient(to bottom, transparent, ${C.border} 30%, ${C.border} 70%, transparent)`, pointerEvents: "none", zIndex: 1 }} />
+              <div style={{ position: "absolute", top: "12%", left: "8%", right: "8%", height: 1, background: `linear-gradient(to right, transparent, ${C.border} 20%, ${C.border} 80%, transparent)`, pointerEvents: "none", zIndex: 1 }} />
 
-              {/* Orange circle accent */}
-              <div style={{
-                position: "absolute", top: 0, right: 10, width: 40, height: 40,
-                borderRadius: "50%", background: C.accent, zIndex: 3, pointerEvents: "none",
-              }} />
-
-              {/* Thin vertical connector left of image */}
-              <div style={{
-                position: "absolute", left: -4, top: "15%", bottom: "15%", width: 1,
-                background: `linear-gradient(to bottom, transparent, ${C.border} 30%, ${C.border} 70%, transparent)`,
-                pointerEvents: "none", zIndex: 1,
-              }} />
-
-              {/* Thin horizontal connector above image */}
-              <div style={{
-                position: "absolute", top: "12%", left: "8%", right: "8%", height: 1,
-                background: `linear-gradient(to right, transparent, ${C.border} 20%, ${C.border} 80%, transparent)`,
-                pointerEvents: "none", zIndex: 1,
-              }} />
-
-              {/* Chef image — square crop */}
-              <div style={{
-                position: "relative", width: "100%", maxWidth: 460,
-                borderRadius: 20, overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,0.14)",
-                border: `2px solid ${C.border}`, aspectRatio: "1/1", zIndex: 2,
-              }}>
-                <img src={chefImg} alt="Chef consultando custos e ficha técnica" draggable={false}
+              {/* Chef image */}
+              <div style={{ position: "relative", width: "100%", maxWidth: 460, borderRadius: 20, overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,0.14)", border: `2px solid ${C.border}`, aspectRatio: "1/1", zIndex: 2 }}>
+                <img src={chefImg} alt="Chef conferindo custos e fichas técnicas no Precifica" draggable={false}
                   style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", display: "block" }} />
-                {/* Bottom fade */}
-                <div style={{
-                  position: "absolute", inset: 0, pointerEvents: "none",
-                  background: "linear-gradient(to top, rgba(26,26,26,0.22) 0%, transparent 55%)",
-                }} />
+                <div style={{ position: "absolute", inset: 0, pointerEvents: "none", background: "linear-gradient(to top, rgba(26,26,26,0.18) 0%, transparent 55%)" }} />
               </div>
 
-              {/* ── Floating card: Margem real ── */}
-              <div style={{
-                position: "absolute", zIndex: 4, left: -20,
-                top: "24%", transform: "translateY(-50%)",
-                background: C.surface, border: `1.5px solid ${C.border}`,
-                borderRadius: 16, padding: "14px 18px", minWidth: 148,
-                boxShadow: "0 8px 32px rgba(0,0,0,0.10)",
-              }}>
+              {/* Floating: Margem real */}
+              <div style={{ position: "absolute", zIndex: 4, left: -20, top: "24%", transform: "translateY(-50%)", background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 16, padding: "14px 18px", minWidth: 148, boxShadow: "0 8px 32px rgba(0,0,0,0.10)" }}>
                 <p style={{ fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.18em", color: C.muted, marginBottom: 4 }}>Margem real</p>
                 <p style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, color: C.text }}>38%</p>
                 <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 6 }}>
-                  <div style={{ height: 3, width: 44, borderRadius: 99, background: C.bg2, overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: "38%", background: C.accent, borderRadius: 99 }} />
-                  </div>
+                  <div style={{ height: 3, width: 44, borderRadius: 99, background: C.bg2, overflow: "hidden" }}><div style={{ height: "100%", width: "38%", background: C.accent, borderRadius: 99 }} /></div>
                   <span style={{ fontSize: 9, color: C.muted }}>da receita</span>
                 </div>
-                {/* Arrow pointing right toward image */}
                 <svg style={{ position: "absolute", right: -16, top: "50%", transform: "translateY(-50%)", overflow: "visible" }} width="16" height="10" viewBox="0 0 16 10">
                   <path d="M0 5H13M9 1.5L13 5L9 8.5" stroke={C.border} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                 </svg>
               </div>
 
-              {/* ── Floating card: Custo do prato ── */}
-              <div style={{
-                position: "absolute", zIndex: 4, right: -16,
-                bottom: "20%", transform: "translateY(50%)",
-                background: "#1A1A1A", borderRadius: 16, padding: "14px 18px",
-                minWidth: 164, boxShadow: "0 8px 32px rgba(0,0,0,0.22)",
-              }}>
+              {/* Floating: Custo do prato */}
+              <div style={{ position: "absolute", zIndex: 4, right: -16, bottom: "20%", transform: "translateY(50%)", background: "#1A1A1A", borderRadius: 16, padding: "14px 18px", minWidth: 164, boxShadow: "0 8px 32px rgba(0,0,0,0.22)" }}>
                 <p style={{ fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.18em", color: "rgba(255,255,255,0.38)", marginBottom: 4 }}>Custo do prato</p>
                 <p style={{ fontSize: "1.65rem", fontWeight: 900, lineHeight: 1, color: "#fff" }}>R$ 34,90</p>
-                <p style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 6, fontSize: 11, color: "#34D399" }}>
-                  <TrendingUp size={10} /> Ficha técnica
-                </p>
-                {/* Arrow pointing left toward image */}
+                <p style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 6, fontSize: 11, color: "#34D399" }}><TrendingUp size={10} /> Ficha técnica</p>
                 <svg style={{ position: "absolute", left: -16, top: "50%", transform: "translateY(-50%)", overflow: "visible" }} width="16" height="10" viewBox="0 0 16 10">
-                  <path d="M16 5H3M7 1.5L3 5L7 8.5" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                  <path d="M16 5H3M7 1.5L3 5L7 8.5" stroke="rgba(255,255,255,0.22)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                 </svg>
               </div>
 
-              {/* ── Floating badge: Ficha técnica ── */}
-              <div style={{
-                position: "absolute", zIndex: 4, left: "12%", bottom: -14,
-                background: C.bg2, border: `1.5px solid ${C.border}`,
-                borderRadius: 99, padding: "7px 16px",
-                display: "flex", alignItems: "center", gap: 8,
-                boxShadow: "0 4px 16px rgba(0,0,0,0.07)",
-              }}>
+              {/* Floating badge */}
+              <div style={{ position: "absolute", zIndex: 4, left: "12%", bottom: -14, background: C.bg2, border: `1.5px solid ${C.border}`, borderRadius: 99, padding: "7px 16px", display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.07)" }}>
                 <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.accent, flexShrink: 0 }} />
                 <span style={{ fontSize: "0.75rem", fontWeight: 600, color: C.text }}>Ficha técnica criada</span>
                 <span style={{ fontSize: "0.75rem", fontWeight: 700, color: C.accent }}>✓</span>
               </div>
 
-              {/* Dashed connector line from margin card area downward */}
               <svg style={{ position: "absolute", left: 16, top: "28%", overflow: "visible", pointerEvents: "none", zIndex: 5 }} width="2" height="60">
                 <line x1="1" y1="0" x2="1" y2="60" stroke={C.border} strokeWidth="1" strokeDasharray="4 4"/>
                 <polygon points="-2,56 1,60 4,56" fill={C.border} />
@@ -331,29 +266,29 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ══ PROBLEMA / VALOR ════════════════════════════════════ */}
-        <section style={{ background: C.bg2 }} className="py-24 md:py-32 px-10 md:px-14">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+        {/* ══ 2. O PROBLEMA REAL ══════════════════════════════════ */}
+        <section style={{ background: C.bg2 }} className="py-28 md:py-36 px-10 md:px-14">
+          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-start">
             <Reveal>
-              <p style={{ fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.22em", color: C.accent, marginBottom: "1.25rem" }}>O problema real</p>
-              <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 900, lineHeight: 1.08, color: C.text, marginBottom: "1.5rem" }}>
-                Muita gente vende<br/>todos os dias sem saber<br/>
-                se está <It>ganhando ou perdendo.</It>
+              <Eyebrow label="O problema real" />
+              <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: C.text, marginBottom: "2rem" }}>
+                Muita gente vende<br/>todos os dias sem<br/>saber se está <It>ganhando<br/>ou perdendo.</It>
               </h2>
-              <p style={{ fontSize: "0.975rem", lineHeight: 1.8, color: C.muted, marginBottom: "1.1rem" }}>
-                Quando o custo dos insumos, as despesas do mês e o preço de venda ficam espalhados, a operação segue no improviso. O caixa entra, mas o lucro real continua escondido.
+              <p style={{ fontSize: "1rem", lineHeight: 1.82, color: C.muted, marginBottom: "1.1rem" }}>
+                Quando os custos dos insumos, as despesas do mês e o preço de venda ficam espalhados, a operação segue no improviso. O caixa entra, mas o lucro real continua escondido.
               </p>
-              <p style={{ fontSize: "0.975rem", lineHeight: 1.8, color: C.muted }}>
-                O Precifica reúne tudo em um só lugar: fichas técnicas, custos, despesas fixas e precificação. Você vê o que entra, o que sai e se está valendo a pena.
+              <p style={{ fontSize: "1rem", lineHeight: 1.82, color: C.muted }}>
+                O Precifica reúne tudo em um só lugar: fichas técnicas, custos, despesas fixas e precificação. Você vê o que entra, o que sai e o que realmente sobra.
               </p>
             </Reveal>
+
             <Reveal delay={100}>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 pt-2 md:pt-8">
                 {[
-                  { label: "Custo real por prato",    value: "R$ 34,90",  sub: "Via ficha técnica",     dark: false },
-                  { label: "Margem de contribuição",  value: "38%",       sub: "Acima da meta",         dark: true  },
-                  { label: "Despesas fixas no mês",   value: "R$ 5.029",  sub: "Registradas no painel", dark: false },
-                  { label: "Ponto de equilíbrio",     value: "R$ 25,2k",  sub: "Meta mensal",           dark: false },
+                  { label: "Custo real por prato",   value: "R$ 34,90",  sub: "Via ficha técnica",     dark: false },
+                  { label: "Margem de contribuição", value: "38%",       sub: "Acima da meta",         dark: true  },
+                  { label: "Despesas fixas no mês",  value: "R$ 5.029",  sub: "Registradas no painel", dark: false },
+                  { label: "Ponto de equilíbrio",    value: "R$ 25,2k",  sub: "Meta mensal",           dark: false },
                 ].map(c => (
                   <div key={c.label} className="rounded-2xl p-5 transition-all hover:shadow-md"
                     style={{ background: c.dark ? "#1A1A1A" : C.surface, border: `1px solid ${c.dark ? "transparent" : C.border}` }}>
@@ -367,31 +302,32 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ══ COMO FUNCIONA ═══════════════════════════════════════ */}
-        <section id="como-funciona" style={{ background: C.bg }} className="py-24 md:py-32 px-10 md:px-14">
+        {/* ══ 3. COMO FUNCIONA ════════════════════════════════════ */}
+        <section id="como-funciona" style={{ background: C.bg }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-6xl mx-auto">
             <Reveal>
-              <p style={{ fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.22em", color: C.muted, marginBottom: "1rem" }}>Como funciona</p>
-              <div className="flex flex-col md:flex-row md:items-end gap-4 mb-14">
-                <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 900, lineHeight: 1.08, color: C.text, maxWidth: 480 }}>
-                  Tudo o que você precisa em um fluxo simples
-                </h2>
-                <div className="flex items-center gap-2.5 mb-1 md:mb-0 md:ml-8 shrink-0 px-4 py-2 rounded-full"
-                  style={{ background: C.bg2, border: `1px solid ${C.border}`, whiteSpace: "nowrap" }}>
-                  <FileSpreadsheet size={13} style={{ color: C.accent }} />
-                  <span style={{ fontSize: "0.78rem", fontWeight: 600, color: C.muted }}>Importação facilitada via Excel</span>
-                </div>
+              <Eyebrow label="Como funciona" />
+              <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: C.text, marginBottom: "1.25rem", maxWidth: 580 }}>
+                Tudo o que você precisa,<br/>em um fluxo <It>simples.</It>
+              </h2>
+              <p style={{ fontSize: "1rem", lineHeight: 1.8, color: C.muted, maxWidth: 500, marginBottom: "3.5rem" }}>
+                Do cadastro à margem final, o Precifica organiza a rotina financeira do seu negócio em etapas claras.
+              </p>
+              <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full mb-12"
+                style={{ background: C.bg2, border: `1px solid ${C.border}` }}>
+                <FileSpreadsheet size={13} style={{ color: C.accent }} />
+                <span style={{ fontSize: "0.78rem", fontWeight: 600, color: C.muted }}>Importação facilitada via Excel</span>
               </div>
             </Reveal>
 
             <div className="grid md:grid-cols-2 gap-4 mb-16">
               {[
-                { n: "01", icon: <LayoutDashboard size={17} />, title: "Cadastre produtos e insumos",   text: "Registre o que você vende e os ingredientes usados. Pare de depender de anotações espalhadas e cálculos manuais. Você pode importar dados diretamente de uma planilha Excel para agilizar o preenchimento." },
-                { n: "02", icon: <BookOpen size={17} />,        title: "Monte fichas técnicas",         text: "Defina ingredientes, gramatura, rendimento e custo de preparo para saber exatamente quanto cada prato custa para produzir." },
-                { n: "03", icon: <Wallet size={17} />,          title: "Registre gastos e lançamentos", text: "Acompanhe saídas, entradas e custos fixos do mês com mais organização e sem improvisação." },
-                { n: "04", icon: <TrendingUp size={17} />,      title: "Veja margem e resultado",       text: "Acompanhe os números mais importantes do negócio e ajuste preço, reduza desperdício ou aumente lucro com mais base." },
+                { n: "01", icon: <LayoutDashboard size={17} />, title: "Cadastre produtos e insumos",   text: "Registre o que você vende e o que usa na produção. Organize ingredientes, unidades e valores para começar com uma base confiável." },
+                { n: "02", icon: <BookOpen size={17} />,        title: "Monte fichas técnicas",         text: "Defina ingredientes, quantidades, rendimento e custo por receita. Tenha mais consistência para precificar cada item." },
+                { n: "03", icon: <Wallet size={17} />,          title: "Registre gastos e lançamentos", text: "Acompanhe despesas, entradas e saídas do dia a dia sem depender de anotações soltas ou contas feitas na pressa." },
+                { n: "04", icon: <TrendingUp size={17} />,      title: "Veja margem e resultado",       text: "Entenda o que dá retorno, onde estão os excessos e quais ajustes fazem mais sentido para aumentar o lucro." },
               ].map((s, i) => (
-                <Reveal key={s.n} delay={i * 60}>
+                <Reveal key={s.n} delay={i * 60} className="h-full">
                   <div className="rounded-2xl p-7 h-full transition-all hover:shadow-md cursor-default"
                     style={{ background: C.surface, border: `1px solid ${C.border}` }}>
                     <div className="flex items-start gap-5">
@@ -409,7 +345,7 @@ export default function Landing() {
 
             {/* Dashboard mockup */}
             <Reveal delay={80}>
-              <p style={{ fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.22em", color: C.muted, marginBottom: "0.75rem" }}>O painel na prática</p>
+              <Eyebrow label="O painel na prática" />
               <div className="rounded-2xl overflow-hidden shadow-xl" style={{ border: `1.5px solid ${C.border}` }}>
                 <div className="flex items-center gap-1.5 px-4 h-9" style={{ background: C.bg2, borderBottom: `1px solid ${C.border}` }}>
                   <span className="w-2.5 h-2.5 rounded-full bg-red-400" /><span className="w-2.5 h-2.5 rounded-full bg-yellow-400" /><span className="w-2.5 h-2.5 rounded-full bg-green-400" />
@@ -421,32 +357,38 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ══ PAINEL DARK ═════════════════════════════════════════ */}
-        <section id="painel" style={{ background: "#1A1A1A" }} className="py-24 md:py-32 px-10 md:px-14">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+        {/* ══ 4. O PAINEL (dark) ══════════════════════════════════ */}
+        <section id="painel" style={{ background: "#1A1A1A" }} className="py-28 md:py-36 px-10 md:px-14">
+          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-start">
             <Reveal>
-              <p style={{ fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.22em", color: C.accent, marginBottom: "1rem" }}>O painel</p>
-              <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 900, lineHeight: 1.08, color: "#fff", marginBottom: "1.25rem" }}>
-                Todos os números<br/>do negócio em<br/><It dark>um só lugar</It>
+              <Eyebrow label="O painel na prática" dark />
+              <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: "#fff", marginBottom: "1.5rem" }}>
+                Todos os números<br/>do seu negócio,<br/>em um só <It dark>lugar.</It>
               </h2>
-              <p style={{ fontSize: "0.975rem", lineHeight: 1.8, color: "rgba(255,255,255,0.5)", marginBottom: "2rem" }}>
-                Receita, custos, margem média, ponto de equilíbrio, despesas fixas, lançamentos recentes e desempenho dos produtos — tudo reunido e atualizado automaticamente.
+              <p style={{ fontSize: "1rem", lineHeight: 1.82, color: "rgba(255,255,255,0.5)", marginBottom: "2rem" }}>
+                Receita, custos, margem, ponto de equilíbrio, despesas e produtos mais rentáveis. O painel mostra o que importa para você entender o negócio com rapidez e agir com mais segurança.
               </p>
               <div className="space-y-3">
-                {["Receita e custo por período","Margem média do portfólio","Ponto de equilíbrio mensal","Ranking de produtos por lucro","Alertas de margem abaixo do ideal"].map(f => (
+                {["Receita e custo por período","Margem média dos produtos","Ponto de equilíbrio mensal","Ranking de produtos por lucro","Alertas de margem abaixo do ideal"].map(f => (
                   <div key={f} className="flex items-center gap-3 text-sm text-white">
                     <Check size={13} style={{ color: C.accent, flexShrink: 0 }} /> {f}
                   </div>
                 ))}
               </div>
             </Reveal>
+
             <Reveal delay={80}>
-              <div className="grid grid-cols-2 gap-3">
-                {[["Receita","Entradas por período"],["Margem Média","Saúde do portfólio"],["Ponto de equilíbrio","Meta de faturamento"],["Top Produtos","Ranking de desempenho"]].map(([t,s]) => (
+              <div className="grid grid-cols-2 gap-3 pt-2 md:pt-10">
+                {[
+                  { t: "Receita",          s: "Veja quanto entrou no período e acompanhe a evolução do faturamento." },
+                  { t: "Margem Média",     s: "Entenda se os preços atuais estão sustentando um lucro saudável." },
+                  { t: "Ponto de Equilíbrio", s: "Saiba quanto o negócio precisa faturar para cobrir os custos do mês." },
+                  { t: "Top Produtos",     s: "Descubra quais itens contribuem mais para o lucro e merecem atenção." },
+                ].map(({ t, s }) => (
                   <div key={t} className="rounded-2xl p-5 transition-all hover:bg-white/[0.06]"
                     style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                    <p style={{ fontSize: "0.875rem", fontWeight: 700, color: "#fff", marginBottom: 4 }}>{t}</p>
-                    <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)" }}>{s}</p>
+                    <p style={{ fontSize: "0.875rem", fontWeight: 700, color: "#fff", marginBottom: 6 }}>{t}</p>
+                    <p style={{ fontSize: "0.78rem", lineHeight: 1.6, color: "rgba(255,255,255,0.35)" }}>{s}</p>
                   </div>
                 ))}
               </div>
@@ -454,29 +396,34 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ══ TIPOS DE NEGÓCIO ════════════════════════════════════ */}
-        <section style={{ background: C.bg }} className="py-24 md:py-32 px-10 md:px-14">
+        {/* ══ 5. PARA O SEU NEGÓCIO ═══════════════════════════════ */}
+        <section style={{ background: C.bg }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-6xl mx-auto">
             <Reveal>
-              <p style={{ fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.22em", color: C.muted, marginBottom: "1rem" }}>Para o seu negócio</p>
-              <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 900, lineHeight: 1.08, color: C.text, marginBottom: "3.5rem", maxWidth: 500 }}>
-                Feito para quem trabalha com alimentação
+              <Eyebrow label="Para o seu negócio" />
+              <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: C.text, marginBottom: "1.25rem", maxWidth: 520 }}>
+                Feito para o seu tipo<br/>de <It>negócio.</It>
               </h2>
+              <p style={{ fontSize: "1rem", lineHeight: 1.8, color: C.muted, maxWidth: 460, marginBottom: "3.5rem" }}>
+                Funciona na rotina de quem precisa controlar custo, produção e preço com mais consistência.
+              </p>
             </Reveal>
-            <div className="grid md:grid-cols-2 gap-4">
+
+            {/* Equal-height cards — grid stretch + h-full on each card */}
+            <div className="grid md:grid-cols-2 gap-4 items-stretch">
               {[
-                { icon: <UtensilsCrossed size={17} />, title: "Restaurantes",  text: "Entenda o custo dos pratos, controle os gastos e ajuste preços sem perder competitividade." },
-                { icon: <ShoppingBag size={17} />,     title: "Marmitarias",   text: "Organize produção, fichas técnicas e rendimento para precificar com mais consistência." },
-                { icon: <Coffee size={17} />,          title: "Confeitarias",  text: "Controle ingredientes, gramatura e custos de produção para não vender abaixo do necessário." },
-                { icon: <Sandwich size={17} />,        title: "Lanchonetes",   text: "Acompanhe custos de insumos e combos com mais precisão para vender melhor e parar de perder no detalhe." },
+                { icon: <UtensilsCrossed size={17} />, title: "Restaurantes",  text: "Entenda o custo real dos pratos, controle gastos da operação e ajuste preços sem perder competitividade." },
+                { icon: <ShoppingBag size={17} />,     title: "Marmitarias",   text: "Organize produção, fichas técnicas e rendimento para precificar com mais consistência no dia a dia." },
+                { icon: <Coffee size={17} />,          title: "Confeitarias",  text: "Controle ingredientes, gramatura e custo por receita para vender com segurança e margem mais previsível." },
+                { icon: <Sandwich size={17} />,        title: "Lanchonetes",   text: "Acompanhe custos, combos e itens mais vendidos para melhorar preço e resultado sem perder agilidade." },
               ].map((b, i) => (
-                <Reveal key={b.title} delay={i * 60}>
-                  <div className="rounded-2xl p-7 flex gap-5 items-start transition-all hover:shadow-md cursor-default"
+                <Reveal key={b.title} delay={i * 60} className="flex">
+                  <div className="rounded-2xl p-7 flex gap-5 items-start transition-all hover:shadow-md cursor-default w-full"
                     style={{ background: C.surface, border: `1px solid ${C.border}` }}>
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: C.bg2, color: C.accent }}>{b.icon}</div>
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5" style={{ background: C.bg2, color: C.accent }}>{b.icon}</div>
                     <div>
-                      <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 6 }}>{b.title}</h3>
-                      <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: C.muted }}>{b.text}</p>
+                      <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 8 }}>{b.title}</h3>
+                      <p style={{ fontSize: "0.875rem", lineHeight: 1.72, color: C.muted }}>{b.text}</p>
                     </div>
                   </div>
                 </Reveal>
@@ -486,19 +433,19 @@ export default function Landing() {
         </section>
 
         {/* ══ BENEFÍCIOS ══════════════════════════════════════════ */}
-        <section style={{ background: C.bg2 }} className="py-24 md:py-32 px-10 md:px-14">
+        <section style={{ background: C.bg2 }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-6xl mx-auto">
             <Reveal>
-              <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 900, lineHeight: 1.08, color: C.text, marginBottom: "3.5rem", maxWidth: 420 }}>
-                Mais organização para <It>decidir melhor</It>
+              <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: C.text, marginBottom: "3.5rem", maxWidth: 440 }}>
+                Mais organização<br/>para <It>decidir melhor</It>
               </h2>
             </Reveal>
             <div className="grid md:grid-cols-2 gap-x-20 gap-y-10 max-w-3xl">
               {[
-                { title: "Menos planilhas confusas",        text: "Centralize informações em uma plataforma mais simples e fácil de acompanhar." },
-                { title: "Preço formado com base real",     text: "Saiba quanto custa produzir e forme o preço com mais segurança, sem chute e sem prejuízo escondido." },
-                { title: "Margem visível por produto",      text: "Veja qual produto está gerando mais lucro e qual está pesando no custo — com dados, não com suposição." },
-                { title: "Menos desperdício de tempo",      text: "Ganhe tempo na rotina com uma base de dados organizada e pare de refazer cálculos toda semana." },
+                { title: "Menos planilhas confusas",     text: "Centralize informações em uma plataforma mais simples e fácil de acompanhar." },
+                { title: "Preço formado com base real",  text: "Saiba quanto custa produzir e forme o preço com mais segurança, sem chute e sem prejuízo escondido." },
+                { title: "Margem visível por produto",   text: "Veja qual produto está gerando mais lucro e qual está pesando no custo — com dados, não com suposição." },
+                { title: "Menos desperdício de tempo",   text: "Ganhe tempo na rotina com uma base de dados organizada e pare de refazer cálculos toda semana." },
               ].map((b, i) => (
                 <Reveal key={b.title} delay={i * 70}>
                   <div className="flex gap-4 items-start">
@@ -515,14 +462,14 @@ export default function Landing() {
         </section>
 
         {/* ══ PLANOS ══════════════════════════════════════════════ */}
-        <section id="precos" style={{ background: C.bg }} className="py-24 md:py-32 px-10 md:px-14">
+        <section id="precos" style={{ background: C.bg }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-6xl mx-auto">
             <Reveal>
-              <p style={{ fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.22em", color: C.muted, marginBottom: "1rem" }}>Planos</p>
-              <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 900, lineHeight: 1.08, color: C.text, marginBottom: "0.75rem", maxWidth: 520 }}>
-                Comece grátis. Evolua no seu ritmo.
+              <Eyebrow label="Planos" />
+              <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: C.text, marginBottom: "0.75rem", maxWidth: 520 }}>
+                Comece grátis.<br/>Evolua no seu ritmo.
               </h2>
-              <p style={{ fontSize: "0.975rem", color: C.muted, maxWidth: 440, marginBottom: "2.5rem" }}>
+              <p style={{ fontSize: "1rem", color: C.muted, maxWidth: 440, marginBottom: "2.75rem" }}>
                 Teste a plataforma sem compromisso e avance para um plano pago quando precisar de mais controle.
               </p>
               <div className="inline-flex items-center p-1 rounded-full mb-10" style={{ background: C.bg2, border: `1px solid ${C.border}` }}>
@@ -547,7 +494,6 @@ export default function Landing() {
                   ))}</div>
                 </div>
               </Reveal>
-
               <Reveal delay={80}>
                 <div className="rounded-2xl p-7 relative md:-mt-5 shadow-xl" style={{ background: "#1A1A1A", border: `2px solid ${C.accent}` }}>
                   <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", fontSize: "0.68rem", fontWeight: 700, padding: "3px 14px", borderRadius: 99, background: C.accent, color: "#fff", whiteSpace: "nowrap" }}>Mais popular</div>
@@ -560,7 +506,6 @@ export default function Landing() {
                   ))}</div>
                 </div>
               </Reveal>
-
               <Reveal delay={160}>
                 <div className="rounded-2xl p-7" style={{ background: C.surface, border: `1px solid ${C.border}` }}>
                   <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: C.text, marginBottom: 4 }}>Premium</h3>
@@ -577,11 +522,11 @@ export default function Landing() {
         </section>
 
         {/* ══ FAQ ═════════════════════════════════════════════════ */}
-        <section id="duvidas" style={{ background: C.bg2 }} className="py-24 md:py-32 px-10 md:px-14">
+        <section id="duvidas" style={{ background: C.bg2 }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-2xl">
             <Reveal>
-              <p style={{ fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.22em", color: C.muted, marginBottom: "1rem" }}>Dúvidas</p>
-              <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 900, color: C.text, marginBottom: "2.5rem" }}>
+              <Eyebrow label="Dúvidas" />
+              <h2 style={{ fontSize: T.section, fontWeight: 900, letterSpacing: "-0.02em", color: C.text, marginBottom: "2.75rem" }}>
                 Dúvidas frequentes
               </h2>
             </Reveal>
@@ -599,24 +544,27 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ══ CTA FINAL ═══════════════════════════════════════════ */}
-        <section style={{ background: "#1A1A1A" }} className="py-24 md:py-32 px-10 md:px-14">
+        {/* ══ 6. CTA FINAL ════════════════════════════════════════ */}
+        <section style={{ background: "#1A1A1A" }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-2xl mx-auto text-center">
             <Reveal>
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-8" style={{ background: C.accent }}>
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-10" style={{ background: C.accent }}>
                 <BarChart3 size={20} className="text-white" />
               </div>
-              <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 900, color: "#fff", marginBottom: "1.25rem", lineHeight: 1.08 }}>
-                Comece a saber se o seu negócio<br/>está dando <It dark>lucro de verdade</It>
+              <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: "#fff", marginBottom: "1.5rem" }}>
+                Saiba o lucro real e<br/>comece a <It dark>ganhar dinheiro<br/>de verdade.</It>
               </h2>
-              <p style={{ fontSize: "0.975rem", lineHeight: 1.8, color: "rgba(255,255,255,0.5)", marginBottom: "2.25rem" }}>
-                Organize custos, controle gastos e forme preço com base real — não com chute. Grátis para começar.
+              <p style={{ fontSize: "1rem", lineHeight: 1.82, color: "rgba(255,255,255,0.5)", marginBottom: "2.5rem" }}>
+                Organize custos, controle gastos e forme preços com base no que sobra no negócio — não no chute. Grátis para começar.
               </p>
               <Link href="/cadastro">
-                <button style={{ height: 48, padding: "0 36px", borderRadius: 999, background: "#fff", color: "#1A1A1A", fontWeight: 700, fontSize: "0.9rem", display: "inline-flex", alignItems: "center", gap: 8, cursor: "pointer", border: "none", transition: "opacity 0.2s" }}>
+                <button style={{ height: 50, padding: "0 40px", borderRadius: 999, background: "#fff", color: "#1A1A1A", fontWeight: 700, fontSize: "0.95rem", display: "inline-flex", alignItems: "center", gap: 8, cursor: "pointer", border: "none", transition: "opacity 0.2s" }}>
                   Comece grátis <ArrowRight size={15} />
                 </button>
               </Link>
+              <p style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.28)", marginTop: "1.25rem" }}>
+                Sem cartão de crédito. Cancele quando quiser.
+              </p>
             </Reveal>
           </div>
         </section>
@@ -635,9 +583,7 @@ export default function Landing() {
             <a href="#duvidas" className="hover:text-white transition-colors">Dúvidas</a>
             <Link href="/login" className="hover:text-white transition-colors">Entrar</Link>
           </div>
-          <p style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.2)" }}>
-            © {new Date().getFullYear()} Precifica. Todos os direitos reservados.
-          </p>
+          <p style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.2)" }}>© {new Date().getFullYear()} Precifica. Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>
