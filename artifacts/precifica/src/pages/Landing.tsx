@@ -312,7 +312,7 @@ export default function Landing() {
             <Reveal>
               <Eyebrow label="Como funciona" />
               <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: C.text, marginBottom: "1.25rem", maxWidth: 580 }}>
-                Tudo o que você precisa.<br/>em um <It>fluxo simples.</It>
+                Tudo o que você<br/>precisa, em um<br/><It>fluxo simples.</It>
               </h2>
               <p style={{ fontSize: "1rem", lineHeight: 1.8, color: C.muted, maxWidth: 500, marginBottom: "3.5rem" }}>
                 Do cadastro à margem final, o Precifica organiza<br/>a rotina financeira do seu negócio em etapas claras.
@@ -609,7 +609,7 @@ export default function Landing() {
             </Reveal>
 
             {/* [20] Grid: align-items stretch; popular card gets extra top/bottom padding */}
-            <div className="grid md:grid-cols-3 gap-5 items-stretch">
+            <div className="grid md:grid-cols-3 gap-5 items-end">
               <Reveal className="flex">
                 <div className="rounded-2xl p-7 flex flex-col w-full" style={{ background: C.surface, border: `1px solid ${C.border}` }}>
                   <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: C.text, marginBottom: 4 }}>Grátis</h3>

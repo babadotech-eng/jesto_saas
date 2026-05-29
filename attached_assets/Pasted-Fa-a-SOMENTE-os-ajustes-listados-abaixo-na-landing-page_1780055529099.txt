@@ -1,0 +1,93 @@
+Faça SOMENTE os ajustes listados abaixo na landing page atual.
+Não mude layout, cores, espaçamentos, seções, estrutura, componentes ou textos além do que está especificado aqui.
+Não reescreva nada por conta própria.
+Não melhore nada fora desta lista.
+Apenas aplique exatamente estes ajustes.
+
+REGRAS GERAIS
+- Mudar para a font Playfair Display somente as palavras/frases em itálico indicadas abaixo.
+- Respeitar exatamente as quebras de linha pedidas.
+- Não alterar mais nada fora do que está descrito.
+- Onde eu pedir para excluir, apenas exclua.
+- Onde eu pedir para criar, crie somente o que foi solicitado.
+
+==================================================
+AJUSTES DE TEXTO E DIAGRAMAÇÃO
+==================================================
+
+1) BLOCO / CARD / SEÇÃO COM ESTE TEXTO
+
+Trocar de:
+
+Tudo o que você
+precisa,
+em um fluxo simples.
+
+Para:
+
+Tudo o que você
+precisa, em um
+fluxo simples.
+
+- Aplicar Playfair Display somente em:
+fluxo simples.
+
+--------------------------------------------------
+
+2) BLOCO / CARD / SEÇÃO COM ESTE TEXTO
+
+Trocar de:
+
+Mais organização
+para decidir
+melhor.
+
+Para (em apenas duas linhas):
+
+Mais organização
+para decidir melhor.
+
+- Aplicar Playfair Display somente em: para decidir melhor.
+--------------------------------------------------
+
+
+3) SUBTEXTO DO BLOCO PREÇO
+
+Trocar de:
+
+Teste a plataforma sem compromisso
+e avance para um plano pago quando precisar de mais
+controle.
+
+Para (apenas em duas linhas):
+
+Teste a plataforma sem compromisso
+e avance para um plano pago quando precisar de mais controle.
+
+--------------------------------------------------
+
+4) CARDS DE PREÇO
+
+- Todos os cards de preço devem estar alinhados na parte inferior.
+- Somente o card “Mais popular” deve ser levemente mais alto como destaque nA parte superior.
+- Todo o conteúdo dentro dos cards devem estar alinhados de cima para baixo harmoniosamente.
+- Não mudar mais nada nessa seção além disso.
+
+--------------------------------------------------
+
+5) CTA FINAL
+
+- Manter o texto Comece grátis dentro do botão
+
+
+==================================================
+RESTRIÇÃO FINAL
+==================================================
+
+Faça apenas o que foi listado acima.
+Não ajuste nenhuma outra seção.
+Não reescreva textos fora destes trechos.
+Não altere estilos fora do necessário para cumprir estas mudanças.
+No final, me responda apenas com:
+- lista dos trechos alterados
+- confirmação de que nada além disso foi modificado
