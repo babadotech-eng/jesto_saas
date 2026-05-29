@@ -63,7 +63,7 @@ function useScrolled(threshold = 400) {
 }
 
 /* ── pricing ── */
-const PRICES = { pro: { m: 19.90, a: 199.00 }, premium: { m: 39.90, a: 399.00 } };
+const PRICES = { pro: { m: 24.90, a: 249.00 }, premium: { m: 49.90, a: 499.00 } };
 function fmt(v: number) { return v.toLocaleString("pt-BR", { minimumFractionDigits: 2 }); }
 
 /* ── FAQ ── */
@@ -629,7 +629,7 @@ export default function Landing() {
                   <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.45)", marginBottom: "1.5rem" }}>Para quem precisa de mais controle na operação e na precificação.</p>
                   <div style={{ marginBottom: "1.5rem" }}><span style={{ fontSize: "2.4rem", fontWeight: 900, color: "#fff" }}>R$ {fmt(anual ? PRICES.pro.a : PRICES.pro.m)}</span><span style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.4)", marginLeft: 4 }}>{anual ? "/ano" : "/mês"}</span></div>
                   <Link href="/planos"><button className="w-full h-11 rounded-full font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.97] mb-7 text-white" style={{ background: C.accent }}>Assinar Pro</button></Link>
-                  <div className="space-y-3">{["Produtos ilimitados","Fichas técnicas ilimitadas","Insumos ilimitados","Cálculo de margem real","Dashboard de custos","Alertas de margem baixa"].map(f => (
+                  <div className="space-y-3">{["Produtos ilimitados","Fichas técnicas ilimitadas","Insumos ilimitados","Cálculo de margem real","Cálculo de custo e CMV","Dashboard de custos","Alertas de margem baixa"].map(f => (
                     <div key={f} className="flex items-center gap-2.5 text-sm text-white"><Check size={13} style={{ color: C.accent, flexShrink: 0 }} /> {f}</div>
                   ))}</div>
                 </div>

@@ -1,0 +1,127 @@
+Faça SOMENTE os ajustes na seção de preços descritos abaixo.
+Não mexa em layout, tipografia, espaçamento, cores, estrutura, ordem dos cards, botões, toggle, FAQ, hero, outras seções ou qualquer outro elemento da landing page.
+Não redesenhe nada.
+Não reescreva nada fora da seção de preços.
+Não altere nenhum detalhe visual além do que for estritamente necessário para atualizar os conteúdos dos cards.
+
+OBJETIVO
+Atualizar apenas os valores e o conteúdo dos cards de preço, deixando a escada de valor mais clara entre Grátis, Pro e Premium.
+
+REGRA PRINCIPAL
+- A seção de preços deve continuar exatamente com a mesma estrutura visual atual.
+- O card Pro deve continuar como “Mais popular”.
+- Alterar apenas:
+  1. preços
+  2. descrições curtas dos planos
+  3. lista de benefícios dos cards
+- Não alterar mais nada.
+
+==================================================
+SEÇÃO DE PREÇOS
+==================================================
+
+MANTER ESTES 3 CARDS:
+- Grátis
+- Pro
+- Premium
+
+--------------------------------------------------
+1) PREÇOS
+--------------------------------------------------
+
+Atualizar para estes valores:
+
+GRÁTIS
+- R$ 0 /mês
+
+PRO
+- R$ 24,90 /mês
+- R$ 249,00 /ano
+
+PREMIUM
+- R$ 49,90 /mês
+- R$ 499,00 /ano
+
+REGRA DO ANUAL
+- O valor anual deve representar 2 meses grátis
+- Apenas ajustar os números mostrados
+- Não alterar a lógica visual atual do seletor mensal/anual, caso já exista
+- Se houver texto de apoio do anual, ele pode indicar “2 meses grátis”, mas somente se já houver espaço apropriado dentro da própria seção de preços, sem criar novos blocos
+
+--------------------------------------------------
+2) DESCRIÇÕES CURTAS DOS PLANOS
+--------------------------------------------------
+
+Atualizar para estes textos:
+
+GRÁTIS
+Para começar e entender se o produto faz sentido para você.
+
+PRO
+Para quem precisa de mais controle na operação e na precificação.
+
+PREMIUM
+Para uma gestão mais completa, com visão mais estratégica do negócio.
+
+--------------------------------------------------
+3) BENEFÍCIOS DOS CARDS
+--------------------------------------------------
+
+Atualizar para esta escada de benefícios:
+
+GRÁTIS
+- Até 5 produtos
+- Até 10 fichas técnicas
+- Até 30 insumos
+- Cálculo de custo e CMV
+
+PRO
+- Produtos ilimitados
+- Fichas técnicas ilimitadas
+- Insumos ilimitados
+- Cálculo de margem real
+- Cálculo de custo e CMV
+- Dashboard de custos
+- Alertas de margem baixa
+
+PREMIUM
+- Tudo do plano Pro
+- Gestão de despesas fixas
+- Fluxo de caixa
+- Ponto de equilíbrio
+- Relatórios avançados
+- Controle de funcionários
+
+--------------------------------------------------
+4) REGRAS IMPORTANTES
+--------------------------------------------------
+
+- Não mudar o título da seção de preços
+- Não mudar os botões
+- Não mudar a posição dos cards
+- Não mudar o destaque visual do card Pro
+- Não mudar ícones, cores, bordas ou sombras
+- Não mudar espaçamentos, paddings ou margens
+- Não alterar nenhuma outra seção da página
+- Não resumir, não expandir e não reinterpretar os textos acima
+- Aplicar exatamente os textos e valores fornecidos
+
+--------------------------------------------------
+5) VALIDAÇÃO FINAL
+--------------------------------------------------
+
+Antes de finalizar, conferir:
+- Pro mensal = R$ 24,90
+- Pro anual = R$ 249,00
+- Premium mensal = R$ 49,90
+- Premium anual = R$ 499,00
+- Grátis permanece em R$ 0/mês
+- O card Pro continua marcado como “Mais popular”
+- Apenas a seção de preços foi alterada
+- Nenhum outro trecho da landing page foi modificado
+
+Ao terminar, responda apenas com:
+- preços finais por plano
+- descrições finais por plano
+- benefícios finais por plano
+- confirmação de que nada além da seção de preços foi alterado
