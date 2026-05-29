@@ -523,7 +523,7 @@ export default function Landing() {
         <section style={{ background: C.bg2 }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-6xl mx-auto">
             <Reveal>
-              <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: C.text, marginBottom: "3.5rem", maxWidth: 440 }}>
+              <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: C.text, marginBottom: "3.5rem", maxWidth: 640 }}>
                 Mais organização<br/><It>para decidir melhor.</It>
               </h2>
             </Reveal>
@@ -611,37 +611,37 @@ export default function Landing() {
             {/* [20] Grid: align-items stretch; popular card gets extra top/bottom padding */}
             <div className="grid md:grid-cols-3 gap-5 items-end">
               <Reveal className="flex">
-                <div className="rounded-2xl p-7 flex flex-col w-full" style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+                <div className="rounded-2xl p-7 flex flex-col w-full" style={{ background: C.surface, border: `1px solid ${C.border}`, minHeight: 520 }}>
                   <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: C.text, marginBottom: 4 }}>Grátis</h3>
                   <p style={{ fontSize: "0.85rem", color: C.muted, marginBottom: "1.5rem" }}>Para começar e entender se o produto faz sentido para você.</p>
                   <div style={{ marginBottom: "1.5rem" }}><span style={{ fontSize: "2.4rem", fontWeight: 900, color: C.text }}>R$ 0</span><span style={{ fontSize: "0.85rem", color: C.muted, marginLeft: 4 }}>/mês</span></div>
                   <Link href="/cadastro"><button className="w-full h-11 rounded-full font-semibold text-sm transition-all hover:bg-[#1A1A1A] hover:text-white border mb-7" style={{ borderColor: C.border, color: C.text }}>Comece grátis</button></Link>
-                  <div className="space-y-3 mt-auto">{["Até 5 produtos","Até 10 fichas técnicas","Até 30 insumos","Cálculo de custo e CMV"].map(f => (
+                  <div className="space-y-3">{["Até 5 produtos","Até 10 fichas técnicas","Até 30 insumos","Cálculo de custo e CMV"].map(f => (
                     <div key={f} className="flex items-center gap-2.5 text-sm" style={{ color: C.text }}><Check size={13} style={{ color: C.accent, flexShrink: 0 }} /> {f}</div>
                   ))}</div>
                 </div>
               </Reveal>
 
               <Reveal delay={80} className="flex">
-                <div className="rounded-2xl px-7 py-10 flex flex-col relative w-full shadow-xl" style={{ background: "#1A1A1A", border: `2px solid ${C.accent}` }}>
+                <div className="rounded-2xl px-7 py-10 flex flex-col relative w-full shadow-xl" style={{ background: "#1A1A1A", border: `2px solid ${C.accent}`, minHeight: 560 }}>
                   <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", fontSize: "0.68rem", fontWeight: 700, padding: "3px 14px", borderRadius: 99, background: C.accent, color: "#fff", whiteSpace: "nowrap" }}>Mais popular</div>
                   <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#fff", marginBottom: 4 }}>Pro</h3>
                   <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.45)", marginBottom: "1.5rem" }}>Para quem precisa de mais controle na operação e na precificação.</p>
                   <div style={{ marginBottom: "1.5rem" }}><span style={{ fontSize: "2.4rem", fontWeight: 900, color: "#fff" }}>R$ {fmt(anual ? PRICES.pro.a : PRICES.pro.m)}</span><span style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.4)", marginLeft: 4 }}>{anual ? "/ano" : "/mês"}</span></div>
                   <Link href="/planos"><button className="w-full h-11 rounded-full font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.97] mb-7 text-white" style={{ background: C.accent }}>Assinar Pro</button></Link>
-                  <div className="space-y-3 mt-auto">{["Produtos ilimitados","Fichas técnicas ilimitadas","Insumos ilimitados","Cálculo de margem real","Dashboard de custos","Alertas de margem baixa"].map(f => (
+                  <div className="space-y-3">{["Produtos ilimitados","Fichas técnicas ilimitadas","Insumos ilimitados","Cálculo de margem real","Dashboard de custos","Alertas de margem baixa"].map(f => (
                     <div key={f} className="flex items-center gap-2.5 text-sm text-white"><Check size={13} style={{ color: C.accent, flexShrink: 0 }} /> {f}</div>
                   ))}</div>
                 </div>
               </Reveal>
 
               <Reveal delay={160} className="flex">
-                <div className="rounded-2xl p-7 flex flex-col w-full" style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+                <div className="rounded-2xl p-7 flex flex-col w-full" style={{ background: C.surface, border: `1px solid ${C.border}`, minHeight: 520 }}>
                   <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: C.text, marginBottom: 4 }}>Premium</h3>
                   <p style={{ fontSize: "0.85rem", color: C.muted, marginBottom: "1.5rem" }}>Para uma gestão mais completa, com visão mais estratégica do negócio.</p>
                   <div style={{ marginBottom: "1.5rem" }}><span style={{ fontSize: "2.4rem", fontWeight: 900, color: C.text }}>R$ {fmt(anual ? PRICES.premium.a : PRICES.premium.m)}</span><span style={{ fontSize: "0.85rem", color: C.muted, marginLeft: 4 }}>{anual ? "/ano" : "/mês"}</span></div>
                   <Link href="/planos"><button className={btnBlack + " w-full mb-7"}>Assinar Premium</button></Link>
-                  <div className="space-y-3 mt-auto">{["Tudo do plano Pro","Gestão de despesas fixas","Fluxo de caixa","Ponto de equilíbrio","Relatórios avançados","Controle de funcionários"].map(f => (
+                  <div className="space-y-3">{["Tudo do plano Pro","Gestão de despesas fixas","Fluxo de caixa","Ponto de equilíbrio","Relatórios avançados","Controle de funcionários"].map(f => (
                     <div key={f} className="flex items-center gap-2.5 text-sm" style={{ color: C.text }}><Check size={13} style={{ color: C.accent, flexShrink: 0 }} /> {f}</div>
                   ))}</div>
                 </div>
