@@ -73,6 +73,11 @@ const FAQ = [
   { q: "Posso testar grátis?",                      a: "Sim. Você pode começar no plano grátis e conhecer tudo antes de decidir avançar para um plano pago." },
   { q: "Funciona no celular?",                      a: "Sim. A plataforma funciona bem em diferentes dispositivos, facilitando o acesso mesmo na correria do dia a dia." },
   { q: "Posso cancelar quando quiser?",             a: "Sim. Você gerencia sua assinatura de forma simples, sem burocracia." },
+  { q: "Preciso instalar algum aplicativo?",        a: "Não. O Precifica funciona direto no navegador, sem necessidade de instalação. Basta acessar com login e senha em qualquer dispositivo." },
+  { q: "Meus dados ficam salvos com segurança?",    a: "Sim. Todas as informações são armazenadas de forma segura na nuvem, com acesso exclusivo pela sua conta." },
+  { q: "Posso usar para mais de um negócio?",       a: "Hoje cada conta está associada a um negócio. Se você precisar gerenciar mais de um, entre em contato e podemos avaliar sua situação." },
+  { q: "Como funciona o cálculo de margem?",        a: "O Precifica considera o custo dos insumos via ficha técnica, despesas fixas rateadas e o preço de venda. Com isso, você vê a margem real de cada produto." },
+  { q: "Como faço para importar meus dados?",       a: "Você pode cadastrar produtos e insumos manualmente ou usar a importação facilitada via Excel disponível na plataforma." },
 ];
 
 /* ── buttons ── */
@@ -171,7 +176,6 @@ export default function Landing() {
         <section id="inicio" className="relative overflow-hidden"
           style={{ background: C.bg, minHeight: "92vh", display: "flex", alignItems: "center" }}>
 
-          {/* Radial ornaments */}
           <div style={{ position: "absolute", top: "50%", right: -40, transform: "translateY(-50%)", width: 560, height: 560, borderRadius: "50%", pointerEvents: "none", background: "radial-gradient(circle, rgba(232,113,42,0.08) 0%, rgba(232,113,42,0.02) 45%, transparent 70%)" }} />
           <div style={{ position: "absolute", top: -80, left: -80, width: 320, height: 320, borderRadius: "50%", pointerEvents: "none", background: "radial-gradient(circle, rgba(212,208,203,0.35) 0%, transparent 65%)" }} />
           <div style={{ position: "absolute", left: 0, right: 0, top: "50%", height: 1, background: `linear-gradient(to right, transparent 5%, ${C.border} 30%, ${C.border} 70%, transparent 95%)`, opacity: 0.35, pointerEvents: "none" }} />
@@ -215,20 +219,18 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* RIGHT — chef composition */}
+            {/* RIGHT */}
             <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
               <div style={{ position: "absolute", top: 0, right: 10, width: 40, height: 40, borderRadius: "50%", background: C.accent, zIndex: 3, pointerEvents: "none" }} />
               <div style={{ position: "absolute", left: -4, top: "15%", bottom: "15%", width: 1, background: `linear-gradient(to bottom, transparent, ${C.border} 30%, ${C.border} 70%, transparent)`, pointerEvents: "none", zIndex: 1 }} />
               <div style={{ position: "absolute", top: "12%", left: "8%", right: "8%", height: 1, background: `linear-gradient(to right, transparent, ${C.border} 20%, ${C.border} 80%, transparent)`, pointerEvents: "none", zIndex: 1 }} />
 
-              {/* Chef image */}
               <div style={{ position: "relative", width: "100%", maxWidth: 460, borderRadius: 20, overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,0.14)", border: `2px solid ${C.border}`, aspectRatio: "1/1", zIndex: 2 }}>
                 <img src={chefImg} alt="Chef conferindo custos e fichas técnicas no Precifica" draggable={false}
                   style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", display: "block" }} />
                 <div style={{ position: "absolute", inset: 0, pointerEvents: "none", background: "linear-gradient(to top, rgba(26,26,26,0.18) 0%, transparent 55%)" }} />
               </div>
 
-              {/* Floating: Margem real */}
               <div style={{ position: "absolute", zIndex: 4, left: -20, top: "24%", transform: "translateY(-50%)", background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 16, padding: "14px 18px", minWidth: 148, boxShadow: "0 8px 32px rgba(0,0,0,0.10)" }}>
                 <p style={{ fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.18em", color: C.muted, marginBottom: 4 }}>Margem real</p>
                 <p style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, color: C.text }}>38%</p>
@@ -241,7 +243,6 @@ export default function Landing() {
                 </svg>
               </div>
 
-              {/* Floating: Custo do prato */}
               <div style={{ position: "absolute", zIndex: 4, right: -16, bottom: "20%", transform: "translateY(50%)", background: "#1A1A1A", borderRadius: 16, padding: "14px 18px", minWidth: 164, boxShadow: "0 8px 32px rgba(0,0,0,0.22)" }}>
                 <p style={{ fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.18em", color: "rgba(255,255,255,0.38)", marginBottom: 4 }}>Custo do prato</p>
                 <p style={{ fontSize: "1.65rem", fontWeight: 900, lineHeight: 1, color: "#fff" }}>R$ 34,90</p>
@@ -251,7 +252,6 @@ export default function Landing() {
                 </svg>
               </div>
 
-              {/* Floating badge */}
               <div style={{ position: "absolute", zIndex: 4, left: "12%", bottom: -14, background: C.bg2, border: `1.5px solid ${C.border}`, borderRadius: 99, padding: "7px 16px", display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.07)" }}>
                 <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.accent, flexShrink: 0 }} />
                 <span style={{ fontSize: "0.75rem", fontWeight: 600, color: C.text }}>Ficha técnica criada</span>
@@ -267,12 +267,13 @@ export default function Landing() {
         </section>
 
         {/* ══ 2. O PROBLEMA REAL ══════════════════════════════════ */}
+        {/* [1] Title line breaks updated; [1] Playfair on "ganhando ou perdendo." */}
         <section style={{ background: C.bg2 }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-start">
             <Reveal>
               <Eyebrow label="O problema real" />
               <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: C.text, marginBottom: "2rem" }}>
-                Muita gente vende<br/>todos os dias sem<br/>saber se está <It>ganhando<br/>ou perdendo.</It>
+                Muita gente vende<br/>todos os dias<br/>sem saber se está <It>ganhando ou perdendo.</It>
               </h2>
               <p style={{ fontSize: "1rem", lineHeight: 1.82, color: C.muted, marginBottom: "1.1rem" }}>
                 Quando os custos dos insumos, as despesas do mês e o preço de venda ficam espalhados, a operação segue no improviso. O caixa entra, mas o lucro real continua escondido.
@@ -303,15 +304,18 @@ export default function Landing() {
         </section>
 
         {/* ══ 3. COMO FUNCIONA ════════════════════════════════════ */}
+        {/* [2] Title updated: comma→period, Playfair on "fluxo simples." */}
+        {/* [3] Support text line break after "organiza" */}
+        {/* [4][5][6] Card text line breaks */}
         <section id="como-funciona" style={{ background: C.bg }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-6xl mx-auto">
             <Reveal>
               <Eyebrow label="Como funciona" />
               <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: C.text, marginBottom: "1.25rem", maxWidth: 580 }}>
-                Tudo o que você precisa,<br/>em um fluxo <It>simples.</It>
+                Tudo o que você precisa.<br/>em um <It>fluxo simples.</It>
               </h2>
               <p style={{ fontSize: "1rem", lineHeight: 1.8, color: C.muted, maxWidth: 500, marginBottom: "3.5rem" }}>
-                Do cadastro à margem final, o Precifica organiza a rotina financeira do seu negócio em etapas claras.
+                Do cadastro à margem final, o Precifica organiza<br/>a rotina financeira do seu negócio em etapas claras.
               </p>
               <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full mb-12"
                 style={{ background: C.bg2, border: `1px solid ${C.border}` }}>
@@ -321,26 +325,73 @@ export default function Landing() {
             </Reveal>
 
             <div className="grid md:grid-cols-2 gap-4 mb-16">
-              {[
-                { n: "01", icon: <LayoutDashboard size={17} />, title: "Cadastre produtos e insumos",   text: "Registre o que você vende e o que usa na produção. Organize ingredientes, unidades e valores para começar com uma base confiável." },
-                { n: "02", icon: <BookOpen size={17} />,        title: "Monte fichas técnicas",         text: "Defina ingredientes, quantidades, rendimento e custo por receita. Tenha mais consistência para precificar cada item." },
-                { n: "03", icon: <Wallet size={17} />,          title: "Registre gastos e lançamentos", text: "Acompanhe despesas, entradas e saídas do dia a dia sem depender de anotações soltas ou contas feitas na pressa." },
-                { n: "04", icon: <TrendingUp size={17} />,      title: "Veja margem e resultado",       text: "Entenda o que dá retorno, onde estão os excessos e quais ajustes fazem mais sentido para aumentar o lucro." },
-              ].map((s, i) => (
-                <Reveal key={s.n} delay={i * 60} className="h-full">
-                  <div className="rounded-2xl p-7 h-full transition-all hover:shadow-md cursor-default"
-                    style={{ background: C.surface, border: `1px solid ${C.border}` }}>
-                    <div className="flex items-start gap-5">
-                      <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: C.border, userSelect: "none" }}>{s.n}</span>
-                      <div>
-                        <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: C.bg2, color: C.accent }}>{s.icon}</div>
-                        <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 6 }}>{s.title}</h3>
-                        <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: C.muted }}>{s.text}</p>
-                      </div>
+              {/* Card 01 */}
+              <Reveal delay={0} className="h-full">
+                <div className="rounded-2xl p-7 h-full transition-all hover:shadow-md cursor-default"
+                  style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+                  <div className="flex items-start gap-5">
+                    <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: C.border, userSelect: "none" }}>01</span>
+                    <div>
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: C.bg2, color: C.accent }}><LayoutDashboard size={17} /></div>
+                      <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 6 }}>Cadastre produtos e insumos</h3>
+                      <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: C.muted }}>
+                        Registre o que você vende e o que usa na produção. Organize ingredientes, unidades e valores para começar com uma base confiável.
+                      </p>
                     </div>
                   </div>
-                </Reveal>
-              ))}
+                </div>
+              </Reveal>
+
+              {/* Card 02 — [4] line break */}
+              <Reveal delay={60} className="h-full">
+                <div className="rounded-2xl p-7 h-full transition-all hover:shadow-md cursor-default"
+                  style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+                  <div className="flex items-start gap-5">
+                    <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: C.border, userSelect: "none" }}>02</span>
+                    <div>
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: C.bg2, color: C.accent }}><BookOpen size={17} /></div>
+                      <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 6 }}>Monte fichas técnicas</h3>
+                      <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: C.muted }}>
+                        Defina ingredientes, quantidades, rendimento e custo por receita.<br/>Tenha mais consistência para precificar cada item.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </Reveal>
+
+              {/* Card 03 — [5] line break */}
+              <Reveal delay={120} className="h-full">
+                <div className="rounded-2xl p-7 h-full transition-all hover:shadow-md cursor-default"
+                  style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+                  <div className="flex items-start gap-5">
+                    <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: C.border, userSelect: "none" }}>03</span>
+                    <div>
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: C.bg2, color: C.accent }}><Wallet size={17} /></div>
+                      <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 6 }}>Registre gastos e lançamentos</h3>
+                      <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: C.muted }}>
+                        Acompanhe despesas, entradas e saídas do dia a dia<br/>sem depender de anotações soltas ou contas feitas na pressa.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </Reveal>
+
+              {/* Card 04 — [6] line break */}
+              <Reveal delay={180} className="h-full">
+                <div className="rounded-2xl p-7 h-full transition-all hover:shadow-md cursor-default"
+                  style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+                  <div className="flex items-start gap-5">
+                    <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: C.border, userSelect: "none" }}>04</span>
+                    <div>
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: C.bg2, color: C.accent }}><TrendingUp size={17} /></div>
+                      <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 6 }}>Veja margem e resultado</h3>
+                      <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: C.muted }}>
+                        Entenda o que dá retorno, onde estão os excessos<br/>e quais ajustes fazem mais sentido para aumentar o lucro.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </Reveal>
             </div>
 
             {/* Dashboard mockup */}
@@ -358,32 +409,26 @@ export default function Landing() {
         </section>
 
         {/* ══ 4. O PAINEL (dark) ══════════════════════════════════ */}
+        {/* [7] Title: Playfair on "em um só lugar." — bullets removed */}
         <section id="painel" style={{ background: "#1A1A1A" }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-start">
             <Reveal>
               <Eyebrow label="O painel na prática" dark />
               <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: "#fff", marginBottom: "1.5rem" }}>
-                Todos os números<br/>do seu negócio,<br/>em um só <It dark>lugar.</It>
+                Todos os números<br/>do seu negócio,<br/><It dark>em um só lugar.</It>
               </h2>
-              <p style={{ fontSize: "1rem", lineHeight: 1.82, color: "rgba(255,255,255,0.5)", marginBottom: "2rem" }}>
+              <p style={{ fontSize: "1rem", lineHeight: 1.82, color: "rgba(255,255,255,0.5)" }}>
                 Receita, custos, margem, ponto de equilíbrio, despesas e produtos mais rentáveis. O painel mostra o que importa para você entender o negócio com rapidez e agir com mais segurança.
               </p>
-              <div className="space-y-3">
-                {["Receita e custo por período","Margem média dos produtos","Ponto de equilíbrio mensal","Ranking de produtos por lucro","Alertas de margem abaixo do ideal"].map(f => (
-                  <div key={f} className="flex items-center gap-3 text-sm text-white">
-                    <Check size={13} style={{ color: C.accent, flexShrink: 0 }} /> {f}
-                  </div>
-                ))}
-              </div>
             </Reveal>
 
             <Reveal delay={80}>
               <div className="grid grid-cols-2 gap-3 pt-2 md:pt-10">
                 {[
-                  { t: "Receita",          s: "Veja quanto entrou no período e acompanhe a evolução do faturamento." },
-                  { t: "Margem Média",     s: "Entenda se os preços atuais estão sustentando um lucro saudável." },
+                  { t: "Receita",             s: "Veja quanto entrou no período e acompanhe a evolução do faturamento." },
+                  { t: "Margem Média",        s: "Entenda se os preços atuais estão sustentando um lucro saudável." },
                   { t: "Ponto de Equilíbrio", s: "Saiba quanto o negócio precisa faturar para cobrir os custos do mês." },
-                  { t: "Top Produtos",     s: "Descubra quais itens contribuem mais para o lucro e merecem atenção." },
+                  { t: "Top Produtos",        s: "Descubra quais itens contribuem mais para o lucro e merecem atenção." },
                 ].map(({ t, s }) => (
                   <div key={t} className="rounded-2xl p-5 transition-all hover:bg-white/[0.06]"
                     style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
@@ -397,80 +442,161 @@ export default function Landing() {
         </section>
 
         {/* ══ 5. PARA O SEU NEGÓCIO ═══════════════════════════════ */}
+        {/* [8] Title line break, Playfair on "tipo de negócio." */}
+        {/* [9] Support text line break */}
+        {/* [10][11][12][13] Card text line breaks */}
         <section style={{ background: C.bg }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-6xl mx-auto">
             <Reveal>
               <Eyebrow label="Para o seu negócio" />
               <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: C.text, marginBottom: "1.25rem", maxWidth: 520 }}>
-                Feito para o seu tipo<br/>de <It>negócio.</It>
+                Feito para o seu<br/><It>tipo de negócio.</It>
               </h2>
               <p style={{ fontSize: "1rem", lineHeight: 1.8, color: C.muted, maxWidth: 460, marginBottom: "3.5rem" }}>
-                Funciona na rotina de quem precisa controlar custo, produção e preço com mais consistência.
+                Funciona na rotina de quem precisa controlar custo,<br/>produção e preço com mais consistência.
               </p>
             </Reveal>
 
-            {/* Equal-height cards — grid stretch + h-full on each card */}
             <div className="grid md:grid-cols-2 gap-4 items-stretch">
-              {[
-                { icon: <UtensilsCrossed size={17} />, title: "Restaurantes",  text: "Entenda o custo real dos pratos, controle gastos da operação e ajuste preços sem perder competitividade." },
-                { icon: <ShoppingBag size={17} />,     title: "Marmitarias",   text: "Organize produção, fichas técnicas e rendimento para precificar com mais consistência no dia a dia." },
-                { icon: <Coffee size={17} />,          title: "Confeitarias",  text: "Controle ingredientes, gramatura e custo por receita para vender com segurança e margem mais previsível." },
-                { icon: <Sandwich size={17} />,        title: "Lanchonetes",   text: "Acompanhe custos, combos e itens mais vendidos para melhorar preço e resultado sem perder agilidade." },
-              ].map((b, i) => (
-                <Reveal key={b.title} delay={i * 60} className="flex">
-                  <div className="rounded-2xl p-7 flex gap-5 items-start transition-all hover:shadow-md cursor-default w-full"
-                    style={{ background: C.surface, border: `1px solid ${C.border}` }}>
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5" style={{ background: C.bg2, color: C.accent }}>{b.icon}</div>
-                    <div>
-                      <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 8 }}>{b.title}</h3>
-                      <p style={{ fontSize: "0.875rem", lineHeight: 1.72, color: C.muted }}>{b.text}</p>
-                    </div>
+              {/* [10] Restaurantes */}
+              <Reveal delay={0} className="flex">
+                <div className="rounded-2xl p-7 flex gap-5 items-start transition-all hover:shadow-md cursor-default w-full"
+                  style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5" style={{ background: C.bg2, color: C.accent }}><UtensilsCrossed size={17} /></div>
+                  <div>
+                    <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 8 }}>Restaurantes</h3>
+                    <p style={{ fontSize: "0.875rem", lineHeight: 1.72, color: C.muted }}>
+                      Entenda o custo real dos pratos, controle gastos da operação<br/>e ajuste preços sem perder competitividade.
+                    </p>
                   </div>
-                </Reveal>
-              ))}
+                </div>
+              </Reveal>
+
+              {/* [11] Marmitarias */}
+              <Reveal delay={60} className="flex">
+                <div className="rounded-2xl p-7 flex gap-5 items-start transition-all hover:shadow-md cursor-default w-full"
+                  style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5" style={{ background: C.bg2, color: C.accent }}><ShoppingBag size={17} /></div>
+                  <div>
+                    <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 8 }}>Marmitarias</h3>
+                    <p style={{ fontSize: "0.875rem", lineHeight: 1.72, color: C.muted }}>
+                      Organize produção, fichas técnicas e rendimento<br/>para precificar com mais consistência no dia a dia.
+                    </p>
+                  </div>
+                </div>
+              </Reveal>
+
+              {/* [12] Confeitarias */}
+              <Reveal delay={120} className="flex">
+                <div className="rounded-2xl p-7 flex gap-5 items-start transition-all hover:shadow-md cursor-default w-full"
+                  style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5" style={{ background: C.bg2, color: C.accent }}><Coffee size={17} /></div>
+                  <div>
+                    <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 8 }}>Confeitarias</h3>
+                    <p style={{ fontSize: "0.875rem", lineHeight: 1.72, color: C.muted }}>
+                      Controle ingredientes, gramatura e custo por receita<br/>para vender com segurança e margem mais previsível.
+                    </p>
+                  </div>
+                </div>
+              </Reveal>
+
+              {/* [13] Lanchonetes */}
+              <Reveal delay={180} className="flex">
+                <div className="rounded-2xl p-7 flex gap-5 items-start transition-all hover:shadow-md cursor-default w-full"
+                  style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5" style={{ background: C.bg2, color: C.accent }}><Sandwich size={17} /></div>
+                  <div>
+                    <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 8 }}>Lanchonetes</h3>
+                    <p style={{ fontSize: "0.875rem", lineHeight: 1.72, color: C.muted }}>
+                      Acompanhe custos, combos e itens mais vendidos<br/>para melhorar preço e resultado sem perder agilidade.
+                    </p>
+                  </div>
+                </div>
+              </Reveal>
             </div>
           </div>
         </section>
 
         {/* ══ BENEFÍCIOS ══════════════════════════════════════════ */}
+        {/* [14] Title: add period, Playfair on "para decidir melhor." */}
+        {/* [15][16][17] Text line breaks */}
         <section style={{ background: C.bg2 }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-6xl mx-auto">
             <Reveal>
               <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: C.text, marginBottom: "3.5rem", maxWidth: 440 }}>
-                Mais organização<br/>para <It>decidir melhor</It>
+                Mais organização<br/><It>para decidir melhor.</It>
               </h2>
             </Reveal>
             <div className="grid md:grid-cols-2 gap-x-20 gap-y-10 max-w-3xl">
-              {[
-                { title: "Menos planilhas confusas",     text: "Centralize informações em uma plataforma mais simples e fácil de acompanhar." },
-                { title: "Preço formado com base real",  text: "Saiba quanto custa produzir e forme o preço com mais segurança, sem chute e sem prejuízo escondido." },
-                { title: "Margem visível por produto",   text: "Veja qual produto está gerando mais lucro e qual está pesando no custo — com dados, não com suposição." },
-                { title: "Menos desperdício de tempo",   text: "Ganhe tempo na rotina com uma base de dados organizada e pare de refazer cálculos toda semana." },
-              ].map((b, i) => (
-                <Reveal key={b.title} delay={i * 70}>
-                  <div className="flex gap-4 items-start">
-                    <span style={{ width: 3, height: 28, borderRadius: 99, background: C.accent, display: "block", flexShrink: 0, marginTop: 4 }} />
-                    <div>
-                      <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 6 }}>{b.title}</h3>
-                      <p style={{ fontSize: "0.875rem", lineHeight: 1.75, color: C.muted }}>{b.text}</p>
-                    </div>
+
+              {/* [15] line break */}
+              <Reveal delay={0}>
+                <div className="flex gap-4 items-start">
+                  <span style={{ width: 3, height: 28, borderRadius: 99, background: C.accent, display: "block", flexShrink: 0, marginTop: 4 }} />
+                  <div>
+                    <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 6 }}>Menos planilhas confusas</h3>
+                    <p style={{ fontSize: "0.875rem", lineHeight: 1.75, color: C.muted }}>
+                      Centralize informações<br/>em uma plataforma mais simples e fácil de acompanhar.
+                    </p>
                   </div>
-                </Reveal>
-              ))}
+                </div>
+              </Reveal>
+
+              {/* [16] line break */}
+              <Reveal delay={70}>
+                <div className="flex gap-4 items-start">
+                  <span style={{ width: 3, height: 28, borderRadius: 99, background: C.accent, display: "block", flexShrink: 0, marginTop: 4 }} />
+                  <div>
+                    <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 6 }}>Preço formado com base real</h3>
+                    <p style={{ fontSize: "0.875rem", lineHeight: 1.75, color: C.muted }}>
+                      Saiba quanto custa produzir<br/>e forme o preço com mais segurança,<br/>sem chute e sem prejuízo escondido.
+                    </p>
+                  </div>
+                </div>
+              </Reveal>
+
+              {/* [17] line break */}
+              <Reveal delay={140}>
+                <div className="flex gap-4 items-start">
+                  <span style={{ width: 3, height: 28, borderRadius: 99, background: C.accent, display: "block", flexShrink: 0, marginTop: 4 }} />
+                  <div>
+                    <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 6 }}>Margem visível por produto</h3>
+                    <p style={{ fontSize: "0.875rem", lineHeight: 1.75, color: C.muted }}>
+                      Veja qual produto está gerando mais lucro<br/>e qual está pesando no custo — com dados,<br/>não com suposição.
+                    </p>
+                  </div>
+                </div>
+              </Reveal>
+
+              <Reveal delay={210}>
+                <div className="flex gap-4 items-start">
+                  <span style={{ width: 3, height: 28, borderRadius: 99, background: C.accent, display: "block", flexShrink: 0, marginTop: 4 }} />
+                  <div>
+                    <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 6 }}>Menos desperdício de tempo</h3>
+                    <p style={{ fontSize: "0.875rem", lineHeight: 1.75, color: C.muted }}>
+                      Ganhe tempo na rotina com uma base de dados organizada e pare de refazer cálculos toda semana.
+                    </p>
+                  </div>
+                </div>
+              </Reveal>
+
             </div>
           </div>
         </section>
 
         {/* ══ PLANOS ══════════════════════════════════════════════ */}
+        {/* [18] Title: Playfair on "Evolua no seu ritmo." */}
+        {/* [19] Support text line break */}
+        {/* [20] All base cards same height; popular card slightly taller */}
         <section id="precos" style={{ background: C.bg }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-6xl mx-auto">
             <Reveal>
               <Eyebrow label="Planos" />
               <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: C.text, marginBottom: "0.75rem", maxWidth: 520 }}>
-                Comece grátis.<br/>Evolua no seu ritmo.
+                Comece grátis.<br/><It>Evolua no seu ritmo.</It>
               </h2>
               <p style={{ fontSize: "1rem", color: C.muted, maxWidth: 440, marginBottom: "2.75rem" }}>
-                Teste a plataforma sem compromisso e avance para um plano pago quando precisar de mais controle.
+                Teste a plataforma sem compromisso<br/>e avance para um plano pago quando precisar de mais controle.
               </p>
               <div className="inline-flex items-center p-1 rounded-full mb-10" style={{ background: C.bg2, border: `1px solid ${C.border}` }}>
                 <button onClick={() => setAnual(false)} className="px-5 py-2 rounded-full text-sm font-semibold transition-all"
@@ -482,37 +608,40 @@ export default function Landing() {
               </div>
             </Reveal>
 
-            <div className="grid md:grid-cols-3 gap-5 items-start">
-              <Reveal>
-                <div className="rounded-2xl p-7" style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+            {/* [20] Grid: align-items stretch; popular card gets extra top/bottom padding */}
+            <div className="grid md:grid-cols-3 gap-5 items-stretch">
+              <Reveal className="flex">
+                <div className="rounded-2xl p-7 flex flex-col w-full" style={{ background: C.surface, border: `1px solid ${C.border}` }}>
                   <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: C.text, marginBottom: 4 }}>Grátis</h3>
                   <p style={{ fontSize: "0.85rem", color: C.muted, marginBottom: "1.5rem" }}>Para começar e entender se o produto faz sentido para você.</p>
                   <div style={{ marginBottom: "1.5rem" }}><span style={{ fontSize: "2.4rem", fontWeight: 900, color: C.text }}>R$ 0</span><span style={{ fontSize: "0.85rem", color: C.muted, marginLeft: 4 }}>/mês</span></div>
                   <Link href="/cadastro"><button className="w-full h-11 rounded-full font-semibold text-sm transition-all hover:bg-[#1A1A1A] hover:text-white border mb-7" style={{ borderColor: C.border, color: C.text }}>Comece grátis</button></Link>
-                  <div className="space-y-3">{["Até 5 produtos","Até 10 fichas técnicas","Até 30 insumos","Cálculo de custo e CMV"].map(f => (
+                  <div className="space-y-3 mt-auto">{["Até 5 produtos","Até 10 fichas técnicas","Até 30 insumos","Cálculo de custo e CMV"].map(f => (
                     <div key={f} className="flex items-center gap-2.5 text-sm" style={{ color: C.text }}><Check size={13} style={{ color: C.accent, flexShrink: 0 }} /> {f}</div>
                   ))}</div>
                 </div>
               </Reveal>
-              <Reveal delay={80}>
-                <div className="rounded-2xl p-7 relative md:-mt-5 shadow-xl" style={{ background: "#1A1A1A", border: `2px solid ${C.accent}` }}>
+
+              <Reveal delay={80} className="flex">
+                <div className="rounded-2xl px-7 py-10 flex flex-col relative w-full shadow-xl" style={{ background: "#1A1A1A", border: `2px solid ${C.accent}` }}>
                   <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", fontSize: "0.68rem", fontWeight: 700, padding: "3px 14px", borderRadius: 99, background: C.accent, color: "#fff", whiteSpace: "nowrap" }}>Mais popular</div>
                   <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#fff", marginBottom: 4 }}>Pro</h3>
                   <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.45)", marginBottom: "1.5rem" }}>Para quem precisa de mais controle na operação e na precificação.</p>
                   <div style={{ marginBottom: "1.5rem" }}><span style={{ fontSize: "2.4rem", fontWeight: 900, color: "#fff" }}>R$ {fmt(anual ? PRICES.pro.a : PRICES.pro.m)}</span><span style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.4)", marginLeft: 4 }}>{anual ? "/ano" : "/mês"}</span></div>
                   <Link href="/planos"><button className="w-full h-11 rounded-full font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.97] mb-7 text-white" style={{ background: C.accent }}>Assinar Pro</button></Link>
-                  <div className="space-y-3">{["Produtos ilimitados","Fichas técnicas ilimitadas","Insumos ilimitados","Cálculo de margem real","Dashboard de custos","Alertas de margem baixa"].map(f => (
+                  <div className="space-y-3 mt-auto">{["Produtos ilimitados","Fichas técnicas ilimitadas","Insumos ilimitados","Cálculo de margem real","Dashboard de custos","Alertas de margem baixa"].map(f => (
                     <div key={f} className="flex items-center gap-2.5 text-sm text-white"><Check size={13} style={{ color: C.accent, flexShrink: 0 }} /> {f}</div>
                   ))}</div>
                 </div>
               </Reveal>
-              <Reveal delay={160}>
-                <div className="rounded-2xl p-7" style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+
+              <Reveal delay={160} className="flex">
+                <div className="rounded-2xl p-7 flex flex-col w-full" style={{ background: C.surface, border: `1px solid ${C.border}` }}>
                   <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: C.text, marginBottom: 4 }}>Premium</h3>
                   <p style={{ fontSize: "0.85rem", color: C.muted, marginBottom: "1.5rem" }}>Para uma gestão mais completa, com visão mais estratégica do negócio.</p>
                   <div style={{ marginBottom: "1.5rem" }}><span style={{ fontSize: "2.4rem", fontWeight: 900, color: C.text }}>R$ {fmt(anual ? PRICES.premium.a : PRICES.premium.m)}</span><span style={{ fontSize: "0.85rem", color: C.muted, marginLeft: 4 }}>{anual ? "/ano" : "/mês"}</span></div>
                   <Link href="/planos"><button className={btnBlack + " w-full mb-7"}>Assinar Premium</button></Link>
-                  <div className="space-y-3">{["Tudo do plano Pro","Gestão de despesas fixas","Fluxo de caixa","Ponto de equilíbrio","Relatórios avançados","Controle de funcionários"].map(f => (
+                  <div className="space-y-3 mt-auto">{["Tudo do plano Pro","Gestão de despesas fixas","Fluxo de caixa","Ponto de equilíbrio","Relatórios avançados","Controle de funcionários"].map(f => (
                     <div key={f} className="flex items-center gap-2.5 text-sm" style={{ color: C.text }}><Check size={13} style={{ color: C.accent, flexShrink: 0 }} /> {f}</div>
                   ))}</div>
                 </div>
@@ -522,8 +651,9 @@ export default function Landing() {
         </section>
 
         {/* ══ FAQ ═════════════════════════════════════════════════ */}
+        {/* [21] +5 accordions; title left-aligned; accordion block centered */}
         <section id="duvidas" style={{ background: C.bg2 }} className="py-28 md:py-36 px-10 md:px-14">
-          <div className="max-w-2xl">
+          <div className="max-w-6xl mx-auto">
             <Reveal>
               <Eyebrow label="Dúvidas" />
               <h2 style={{ fontSize: T.section, fontWeight: 900, letterSpacing: "-0.02em", color: C.text, marginBottom: "2.75rem" }}>
@@ -531,20 +661,24 @@ export default function Landing() {
               </h2>
             </Reveal>
             <Reveal delay={60}>
-              <Accordion type="single" collapsible className="space-y-2">
-                {FAQ.map((item, i) => (
-                  <AccordionItem key={i} value={`f${i}`} className="rounded-xl px-5 overflow-hidden"
-                    style={{ background: C.surface, border: `1px solid ${C.border}` }}>
-                    <AccordionTrigger className="text-sm font-semibold text-left py-4 hover:no-underline" style={{ color: C.text }}>{item.q}</AccordionTrigger>
-                    <AccordionContent className="text-sm pb-4 leading-relaxed" style={{ color: C.muted }}>{item.a}</AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
+              <div className="max-w-2xl mx-auto">
+                <Accordion type="single" collapsible className="space-y-2">
+                  {FAQ.map((item, i) => (
+                    <AccordionItem key={i} value={`f${i}`} className="rounded-xl px-5 overflow-hidden"
+                      style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+                      <AccordionTrigger className="text-sm font-semibold text-left py-4 hover:no-underline" style={{ color: C.text }}>{item.q}</AccordionTrigger>
+                      <AccordionContent className="text-sm pb-4 leading-relaxed" style={{ color: C.muted }}>{item.a}</AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </div>
             </Reveal>
           </div>
         </section>
 
         {/* ══ 6. CTA FINAL ════════════════════════════════════════ */}
+        {/* [22] Title line breaks, Playfair on "dinheiro de verdade." */}
+        {/* [23] Subtitle updated, "Grátis para começar." removed */}
         <section style={{ background: "#1A1A1A" }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-2xl mx-auto text-center">
             <Reveal>
@@ -552,10 +686,10 @@ export default function Landing() {
                 <BarChart3 size={20} className="text-white" />
               </div>
               <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: "#fff", marginBottom: "1.5rem" }}>
-                Saiba o lucro real e<br/>comece a <It dark>ganhar dinheiro<br/>de verdade.</It>
+                Saiba o lucro real<br/>e comece a ganhar<br/><It dark>dinheiro de verdade.</It>
               </h2>
               <p style={{ fontSize: "1rem", lineHeight: 1.82, color: "rgba(255,255,255,0.5)", marginBottom: "2.5rem" }}>
-                Organize custos, controle gastos e forme preços com base no que sobra no negócio — não no chute. Grátis para começar.
+                Organize custos, controle gastos e forme preços<br/>com base no que sobra no negócio — não no chute.
               </p>
               <Link href="/cadastro">
                 <button style={{ height: 50, padding: "0 40px", borderRadius: 999, background: "#fff", color: "#1A1A1A", fontWeight: 700, fontSize: "0.95rem", display: "inline-flex", alignItems: "center", gap: 8, cursor: "pointer", border: "none", transition: "opacity 0.2s" }}>

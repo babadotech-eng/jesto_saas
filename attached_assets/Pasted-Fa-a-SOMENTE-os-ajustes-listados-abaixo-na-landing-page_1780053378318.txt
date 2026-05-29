@@ -1,0 +1,370 @@
+Faça SOMENTE os ajustes listados abaixo na landing page atual.
+Não mude layout, cores, espaçamentos, seções, estrutura, componentes ou textos além do que está especificado aqui.
+Não reescreva nada por conta própria.
+Não melhore nada fora desta lista.
+Apenas aplique exatamente estes ajustes.
+
+REGRAS GERAIS
+- Mudar para a font Playfair Display somente as palavras/frases em itálico indicadas abaixo.
+- Respeitar exatamente as quebras de linha pedidas.
+- Não alterar mais nada fora do que está descrito.
+- Onde eu pedir para excluir, apenas exclua.
+- Onde eu pedir para criar, crie somente o que foi solicitado.
+
+==================================================
+AJUSTES DE TEXTO E DIAGRAMAÇÃO
+==================================================
+
+1) SEÇÃO “O PROBLEMA REAL”
+
+Trocar de:
+
+Muita gente vende
+todos os dias sem
+saber se está
+ganhando
+ou perdendo.
+
+Para:
+
+Muita gente vende
+todos os dias
+sem saber se está
+ganhando ou perdendo.
+
+- Aplicar Playfair Display somente em:
+ganhando ou perdendo.
+
+--------------------------------------------------
+
+2) SEÇÃO “COMO FUNCIONA” - TÍTULO
+
+Trocar de:
+
+Tudo o que você
+precisa,
+em um fluxo simples.
+
+Para:
+
+Tudo o que você precisa.
+em um fluxo simples.
+
+- Aplicar Playfair Display somente em:
+fluxo simples.
+
+--------------------------------------------------
+
+3) TEXTO DE APOIO DA SEÇÃO “COMO FUNCIONA”
+
+Trocar de:
+
+Do cadastro à margem final, o Precifica organiza a rotina financeira do
+seu negócio em etapas claras.
+
+Para:
+
+Do cadastro à margem final, o Precifica organiza
+a rotina financeira do seu negócio em etapas claras.
+
+--------------------------------------------------
+
+4) CARD “MONTE FICHAS TÉCNICAS”
+
+Trocar de:
+
+Defina ingredientes, quantidades, rendimento e custo por receita. Tenha
+mais consistência para precificar cada item.
+
+Para:
+
+Defina ingredientes, quantidades, rendimento e custo por receita.
+Tenha mais consistência para precificar cada item.
+
+--------------------------------------------------
+
+5) CARD “REGISTRE GASTOS E LANÇAMENTOS”
+
+Trocar de:
+
+Acompanhe despesas, entradas e saídas do dia a dia sem depender de
+anotações soltas ou contas feitas na pressa.
+
+Para:
+
+Acompanhe despesas, entradas e saídas do dia a dia
+sem depender de anotações soltas ou contas feitas na pressa.
+
+--------------------------------------------------
+
+6) CARD “VEJA MARGEM E RESULTADO”
+
+Trocar de:
+
+Entenda o que dá retorno, onde estão os excessos e quais ajustes fazem
+mais sentido para aumentar o lucro.
+
+Para:
+
+Entenda o que dá retorno, onde estão os excessos
+e quais ajustes fazem mais sentido para aumentar o lucro.
+
+--------------------------------------------------
+
+7) SEÇÃO “O PAINEL NA PRÁTICA”
+
+Manter o título assim:
+
+Todos os números
+do seu negócio,
+em um só lugar.
+
+- Aplicar Playfair Display somente em:
+em um só lugar.
+
+- Excluir totalmente estes tópicos:
+Receita e custo por período
+Margem média dos produtos
+Ponto de equilíbrio mensal
+Ranking de produtos por lucro
+Alertas de margem abaixo do ideal
+
+--------------------------------------------------
+
+8) SEÇÃO “PARA O SEU NEGÓCIO” - TÍTULO
+
+Trocar de:
+
+Feito para o seu tipo
+de negócio.
+
+Para:
+
+Feito para o seu
+tipo de negócio.
+
+- Aplicar Playfair Display somente em:
+tipo de negócio.
+
+--------------------------------------------------
+
+9) TEXTO DE APOIO DA SEÇÃO “PARA O SEU NEGÓCIO”
+
+Trocar de:
+
+Funciona na rotina de quem precisa controlar custo, produção e
+preço com mais consistência.
+
+Para:
+
+Funciona na rotina de quem precisa controlar custo,
+produção e preço com mais consistência.
+
+--------------------------------------------------
+
+10) CARD “RESTAURANTES”
+
+Trocar de:
+
+Entenda o custo real dos pratos, controle gastos da operação e ajuste
+preços sem perder competitividade.
+
+Para:
+
+Entenda o custo real dos pratos, controle gastos da operação
+e ajuste preços sem perder competitividade.
+
+--------------------------------------------------
+
+11) CARD “MARMITARIAS”
+
+Trocar de:
+
+Organize produção, fichas técnicas e rendimento para precificar com
+mais consistência no dia a dia.
+
+Para:
+
+Organize produção, fichas técnicas e rendimento
+para precificar com mais consistência no dia a dia.
+
+--------------------------------------------------
+
+12) CARD “CONFEITARIAS”
+
+Trocar de:
+
+Controle ingredientes, gramatura e custo por receita para vender com 
+segurança e margem mais previsível.
+
+Para:
+
+Controle ingredientes, gramatura e custo por receita
+para vender com segurança e margem mais previsível.
+
+--------------------------------------------------
+
+13) CARD “LANCHONETES”
+
+Trocar de:
+
+Acompanhe custos, combos e itens mais vendidos para melhorar preço e
+resultado sem perder agilidade.
+
+Para:
+
+Acompanhe custos, combos e itens mais vendidos
+para melhorar preço e resultado sem perder agilidade.
+
+--------------------------------------------------
+
+14) BLOCO / CARD / SEÇÃO COM ESTE TEXTO
+
+Trocar de:
+
+Mais organização
+para decidir melhor
+
+Para:
+
+Mais organização
+para decidir melhor.
+
+- Aplicar Playfair Display somente em: para decidir melhor.
+--------------------------------------------------
+
+15) SUBTEXTO DESSE MESMO BLOCO
+
+Trocar de:
+
+Centralize informações em uma plataforma mais
+simples e fácil de acompanhar.
+
+Para:
+
+Centralize informações
+em uma plataforma mais simples e fácil de acompanhar.
+
+--------------------------------------------------
+
+16) OUTRO BLOCO / CARD
+
+Trocar de:
+
+Saiba quanto custa produzir e forme o preço com
+mais segurança, sem chute e sem prejuízo
+escondido.
+
+Para:
+
+Saiba quanto custa produzir
+e forme o preço com mais segurança,
+sem chute e sem prejuízo escondido.
+
+--------------------------------------------------
+
+17) OUTRO BLOCO / CARD
+
+Trocar de:
+
+Veja qual produto está gerando mais lucro e qual
+está pesando no custo — com dados, não com
+suposição.
+
+Para:
+
+Veja qual produto está gerando mais lucro
+e qual está pesando no custo — com dados,
+não com suposição.
+
+- Manter exatamente assim, inclusive a pontuação.
+
+--------------------------------------------------
+
+18) BLOCO CTA / PLANO / CHAMADA
+
+Manter assim:
+
+Comece grátis.
+Evolua no seu ritmo.
+
+- Aplicar Playfair Display somente em: Evolua no seu ritmo.
+
+--------------------------------------------------
+
+19) SUBTEXTO DESSE BLOCO
+
+Trocar de:
+
+Teste a plataforma sem compromisso e avance para um plano
+pago quando precisar de mais controle.
+
+Para:
+
+Teste a plataforma sem compromisso
+e avance para um plano pago quando precisar de mais controle.
+
+--------------------------------------------------
+
+20) CARDS DE PREÇO
+
+- Todos os cards de preço devem ter o mesmo tamanho/altura.
+- Somente o card “Mais popular” deve ser levemente mais alto como destaque.
+- Não mudar mais nada nessa seção além disso.
+
+==================================================
+DÚVIDAS FREQUENTES
+==================================================
+
+21) FAQ / ACORDEONS
+
+- Criar mais 5 acordeons com perguntas e respostas.
+- O título da seção deve ficar alinhado à esquerda.
+- O bloco de acordeons deve ficar centralizado no meio.
+- Não alterar o restante da seção além disso.
+
+==================================================
+CTA FINAL
+==================================================
+
+22) TÍTULO FINAL
+
+Trocar de:
+
+Saiba o lucro real e
+comece a ganhar dinheiro
+de verdade.
+
+Para:
+
+Saiba o lucro real
+e comece a ganhar
+dinheiro de verdade.
+
+- Aplicar Playfair Display somente em: dinheiro de verdade.
+
+--------------------------------------------------
+
+23) SUBTÍTULO FINAL
+
+Trocar de:
+
+Organize custos, controle gastos e forme preços com base no que sobra no negócio — não no
+chute. Grátis para começar.
+
+Para:
+
+Organize custos, controle gastos e forme preços
+com base no que sobra no negócio — não no chute.
+
+==================================================
+RESTRIÇÃO FINAL
+==================================================
+
+Faça apenas o que foi listado acima.
+Não ajuste nenhuma outra seção.
+Não reescreva textos fora destes trechos.
+Não altere estilos fora do necessário para cumprir estas mudanças.
+No final, me responda apenas com:
+- lista dos trechos alterados
+- confirmação de que nada além disso foi modificado
