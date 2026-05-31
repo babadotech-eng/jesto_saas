@@ -86,65 +86,68 @@
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
 
-  /* ── Inner-pages warm palette ──────────────────────────── */
-  /* bg: #F0E8DB clearly warm cream — cards pop white against this */
-  --background: 33 38% 90%;
-  /* text: #2C2A33 warm dark */
-  --foreground: 258 8% 18%;
+  /* ══ Inner-pages palette — plum/purple accent, near-white bg ══ */
 
-  /* border: #E9E3DB warm gray */
-  --border: 30 14% 88%;
+  /* --app-bg: #FCFAF7 → HSL 35 44% 98%  (almost white, barely warm) */
+  --background: 35 44% 98%;
+  /* --text-primary: #2B2733 → HSL 260 13% 18% */
+  --foreground: 260 13% 18%;
 
-  /* card: white */
+  /* --border: #EEE7E1 → HSL 28 28% 91% */
+  --border: 28 28% 91%;
+
+  /* card: white; card-border: #F4EEEA → HSL 20 32% 95% */
   --card: 0 0% 100%;
-  --card-foreground: 258 8% 18%;
-  /* card-border: #F1ECE6 */
-  --card-border: 30 18% 93%;
+  --card-foreground: 260 13% 18%;
+  --card-border: 20 32% 95%;
 
-  /* sidebar vars kept for shadcn Sidebar fallback; Layout uses hardcoded inline styles */
-  --sidebar: 253 18% 14%;
-  --sidebar-foreground: 36 20% 96%;
-  --sidebar-border: 253 18% 10%;
-  /* brand purple active */
-  --sidebar-primary: 272 40% 53%;
+  /* sidebar: #1B1925 → HSL 255 18% 13% */
+  --sidebar: 255 18% 13%;
+  --sidebar-foreground: 0 0% 88%;
+  --sidebar-border: 255 18% 9%;
+  /* brand plum active: #7A4FB2 → HSL 266 39% 50% */
+  --sidebar-primary: 266 39% 50%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 253 18% 19%;
-  --sidebar-accent-foreground: 36 20% 96%;
-  --sidebar-ring: 272 40% 53%;
+  --sidebar-accent: 255 18% 19%;
+  --sidebar-accent-foreground: 0 0% 88%;
+  --sidebar-ring: 266 39% 50%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 258 8% 18%;
-  --popover-border: 30 14% 88%;
+  --popover-foreground: 260 13% 18%;
+  --popover-border: 28 28% 91%;
 
-  /* CTA orange: #FF7A45 */
+  /* CTA coral: #FF7A45 → HSL 16 100% 63% */
   --primary: 16 100% 63%;
   --primary-foreground: 0 0% 100%;
 
-  /* surface-muted: #F3EFE9 */
-  --secondary: 36 18% 93%;
-  --secondary-foreground: 258 8% 18%;
+  /* --surface-soft: #FEFCFA → near white muted surface */
+  --secondary: 35 33% 98%;
+  --secondary-foreground: 260 13% 18%;
 
-  /* muted: #F3EFE9 */
-  --muted: 36 18% 93%;
-  /* muted text: #7E7A86 */
-  --muted-foreground: 270 4% 51%;
+  --muted: 35 33% 97%;
+  /* --text-secondary: #7B7486 → HSL 263 7% 49% */
+  --muted-foreground: 263 7% 49%;
 
-  /* accent: brand-primary-soft #EFE6FB */
-  --accent: 272 40% 93%;
-  --accent-foreground: 272 40% 35%;
+  /* --brand-primary-soft: #EEE5FA → HSL 264 67% 94% */
+  --accent: 264 67% 94%;
+  /* --brand-primary: #7A4FB2 → HSL 266 39% 50% */
+  --accent-foreground: 266 39% 50%;
 
-  --destructive: 355 78% 68%;
+  /* --danger: #EE8893 → HSL 354 75% 73% */
+  --destructive: 354 75% 73%;
   --destructive-foreground: 0 0% 100%;
 
-  /* input border: #E9E3DB */
-  --input: 30 14% 88%;
-  /* focus ring: brand purple */
-  --ring: 272 40% 53%;
+  /* input border = border */
+  --input: 28 28% 91%;
+  /* focus ring: brand plum #7A4FB2 */
+  --ring: 266 39% 50%;
 
-  --chart-1: 272 40% 53%;
-  --chart-2: 258 8% 18%;
-  --chart-3: 142 53% 40%;
-  --chart-4: 355 78% 60%;
+  /* charts */
+  --chart-1: 266 39% 50%;
+  --chart-2: 260 13% 18%;
+  /* success green: #2F9E5B → HSL 144 54% 40% */
+  --chart-3: 144 54% 40%;
+  --chart-4: 354 75% 60%;
   --chart-5: 16 100% 63%;
 
   --app-font-sans: 'Satoshi', sans-serif;

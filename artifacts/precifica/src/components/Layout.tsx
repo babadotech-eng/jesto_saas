@@ -54,7 +54,7 @@ export default function Layout({ children }: { children: ReactNode }) {
               <Link key={item.name} href={item.href}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
                 style={{
-                  background: active ? "#6E4B97" : "transparent",
+                  background: active ? "#7A4FB2" : "transparent",
                   color:      active ? "#FFFFFF"  : "#D9D2E3",
                   fontWeight: active ? 600         : 400,
                 }}>
