@@ -1,0 +1,237 @@
+We are migrating the current Precifica dashboard to a new visual design.
+
+CURRENT STATE (what exists in the codebase now):
+- Dark navy sidebar with yellow logo
+- KPIs as horizontal progress bar pills
+- Main card: dark with user avatar, compact numbers in red/green
+- Bar chart (weekly flow)
+- Small donut (6% faturado)
+- Simple health card with margin percentage
+- "Lançamentos Recentes" list
+- Simple expenses list without icons
+- "TOP PRODUTOS" dark card
+
+TARGET STATE (what we want to build):
+- Elegant plum/purple sidebar
+- KPIs as cards with colored circle icons, large numbers, % vs last month
+- Main card: "Resultado do mês" with atmospheric plum background, lighthouse silhouette, advisory block, and CTA button
+- Smooth line/area chart (7-day revenue)
+- Large donut chart (ponto de equilíbrio, 72% reached)
+- Health card with "Saudável" banner + 3 status rows
+- "Transações recentes" list with icons and colored values
+- Monthly fixed expenses with icons
+- "Produtos mais vendidos" dark card with progress bars
+
+---
+
+STEP 1 — COLOR SYSTEM
+Update the entire color palette:
+
+CSS variables or theme file:
+--color-sidebar-bg: #1a1625
+--color-sidebar-active: #2d2540
+--color-sidebar-text: #c4b8d8
+--color-sidebar-text-active: #ffffff
+--color-accent-primary: #7c5cbf
+--color-accent-light: #a37ee8
+--color-accent-plum: #4a3570
+--color-bg: #f4f3f7
+--color-surface: #ffffff
+--color-surface-dark: #1e1a2e
+--color-text-primary: #1a1625
+--color-text-muted: #7a748a
+--color-positive: #22c55e
+--color-negative: #ef4444
+--color-warning: #f59e0b
+--color-border: #e8e4f0
+
+Apply these tokens across all components.
+
+---
+
+STEP 2 — SIDEBAR
+Remove:
+- yellow logo mark
+- deep navy background
+- current active state style
+
+Build:
+- background: var(--color-sidebar-bg) — deep plum-purple
+- logo "Precifica" with a small geometric P mark in soft white or light purple
+- navigation items with icons (keep same routes): Dashboard, Produtos, Ingredientes, Receitas, Despesas, Transações, Funcionários, Relatórios, Configurações
+- active item: background var(--color-sidebar-active), text white, left border accent in var(--color-accent-light)
+- "Dica do dia" block at bottom: keep concept, update style to match plum theme with a small lightbulb icon, muted text, and "Saiba mais →" link
+- "Sair" at very bottom
+
+---
+
+STEP 3 — TOP HEADER
+Remove:
+- horizontal progress bar KPI pills
+- "Produtos / Fichas / Insumos" counter in top right
+
+Build:
+- greeting: "Bom dia, Michel 👋" large, with subtitle "Aqui está o resumo do seu negócio hoje."
+- 4 KPI cards in a row on the right side of the header:
+  - Receita do mês: R$ 28.540,00 / ↑ 8,6% vs mês anterior / green arrow / teal/green circle icon
+  - Custos do mês: R$ 22.350,00 / ↑ 5,3% vs mês anterior / red arrow / red shopping cart icon
+  - Margem média: 21,7% / ↑ 2,4 p.p. vs mês anterior / green arrow / orange trend icon
+  - Resultado do mês: -R$ 3.810,00 / ↓ -12,1% vs mês anterior / red arrow / purple wallet icon
+- each KPI card: white background, subtle border, icon in colored circle (40x40px), large bold number, small % label below
+
+---
+
+STEP 4 — REMOVE these components entirely:
+- Bar chart (weekly flow with amber bars)
+- Horizontal KPI progress pills component
+- Small 6% donut component
+- Avatar card with red result number
+- "TOP PRODUTOS" dark card (will be replaced)
+- "Lançamentos Recentes" simple list (will be replaced)
+
+---
+
+STEP 5 — "RESULTADO DO MÊS" MAIN CARD
+Build new card (replaces the dark avatar card):
+- position: top-left of main content area, tall card spanning full height of chart row
+- background: soft plum gradient, dark atmospheric feel
+  - use: linear-gradient(135deg, #2d2048 0%, #3d2d5c 60%, #4a3570 100%)
+- add a very subtle lighthouse SVG silhouette in the bottom-right
+  - lighthouse should be abstract, minimal, almost like a shadow
+  - opacity: 0.15 to 0.20
+  - do not make it illustrative or detailed
+- content layout (top to bottom):
+  - small label: "Resultado do mês" — muted white, text-sm
+  - main number: "-R$ 3.810,00" — large bold white text (text-3xl or text-4xl)
+  - chip below number: "↓ -12,1% vs mês anterior" — small pill with subtle dark background
+  - horizontal divider line (low opacity white)
+  - advisory block: small circle icon (person/alert) + two lines of text: "Revise seus custos" / "para melhorar o resultado."
+  - CTA button: "Ver onde melhorar" — solid plum button, white text, rounded
+
+---
+
+STEP 6 — SMOOTH LINE CHART ("Receita dos últimos 7 dias")
+Remove the bar chart and install a smooth line/area chart:
+
+Library: use recharts (already installed) or chart.js
+Chart type: LineChart with area fill below the line
+
+Config:
+- x-axis: 7 days (18/mai to 24/mai)
+- y-axis: R$ 0 to R$ 8 mil
+- line: smooth curve (type="monotone"), color var(--color-accent-primary) or #7c5cbf
+- area fill: same color at 15% opacity
+- data points: small dots on each date
+- active tooltip: show date + value on hover in a small floating card
+- grid: subtle horizontal lines only
+- dropdown selector top-right: "Últimos 7 dias ▾"
+- card: white background, "Receita dos últimos 7 dias" title with info icon
+
+Data (use as mock):
+[
+  { date: "18/mai", value: 3200 },
+  { date: "19/mai", value: 2800 },
+  { date: "20/mai", value: 4100 },
+  { date: "21/mai", value: 3600 },
+  { date: "22/mai", value: 3900 },
+  { date: "23/mai", value: 6320 },
+  { date: "24/mai", value: 5800 }
+]
+
+---
+
+STEP 7 — LARGE DONUT CHART ("Ponto de equilíbrio")
+Remove the small 6% donut and build a new larger one:
+
+Library: recharts PieChart or RadialBarChart
+
+Config:
+- large donut ring, centered in card
+- track: light gray ring (full 100%)
+- progress ring: plum/purple (#7c5cbf), showing 72%
+- center text: "72%" large bold + "atingido" small below
+- small warning dot on the ring at approximately 70% position (amber color)
+- below the donut: "Faltam R$ 7.120,00 para alcançar o ponto de equilíbrio este mês."
+- "Ver detalhes →" link at bottom
+- card: white background, "Ponto de equilíbrio" title with info icon
+
+---
+
+STEP 8 — "SAÚDE DO NEGÓCIO" CARD
+Remove the current margin health card and build:
+
+Layout:
+- card header: "Saúde do negócio" title + info icon
+- green banner block at top: heart icon in green circle + "Saudável" bold + "Seu negócio está no caminho certo!" small text — background: very light green (#f0fdf4), border: light green
+- 3 status rows below:
+  - ✅ green check — "3 Saudável"
+  - ⚠️ amber warning — "2 Atenção"
+  - 🔴 red alert — "1 Urgente"
+- "Ver todos os indicadores →" link at bottom
+- card: white background
+
+---
+
+STEP 9 — "TRANSAÇÕES RECENTES"
+Remove the current lançamentos list and build:
+
+Layout (5 rows):
+- Venda - Balcão | Receita | 24/mai · 10:42 | +R$ 320,00 (green) | green cart icon
+- Venda - iFood | Receita | 24/mai · 09:15 | +R$ 185,60 (green) | green iFood icon
+- Compra - Frango | Insumos | 24/mai · 08:30 | -R$ 154,80 (red) | red basket icon
+- Aluguel | Despesa fixa | 24/mai · 07:45 | -R$ 1.200,00 (red) | red home icon
+- Energia elétrica | Despesa fixa | 23/mai · 18:22 | -R$ 320,00 (red) | red bolt icon
+
+Each row: icon (40px colored circle) + name bold + type label muted + date muted | value colored right-aligned
+"Ver todas as transações →" link at bottom
+Card: white background
+
+---
+
+STEP 10 — "DESPESAS FIXAS MENSAIS"
+Remove the current simple list and build:
+
+Layout (6 rows + total):
+- 🏠 Aluguel — R$ 1.200,00
+- 👥 Salários — R$ 4.800,00
+- ⚡ Energia elétrica — R$ 320,00
+- 📶 Internet — R$ 120,00
+- 📋 Contador — R$ 250,00
+- ⚙️ Outras despesas — R$ 310,00
+- Total — R$ 7.000,00 (bold, bottom row with divider above)
+
+Each row: icon on left + label + value right-aligned
+Card: white background, "Despesas fixas mensais" title
+
+---
+
+STEP 11 — "PRODUTOS MAIS VENDIDOS"
+Remove the TOP PRODUTOS dark card and build:
+
+Layout:
+- dark card background: var(--color-surface-dark) #1e1a2e
+- title: "Produtos mais vendidos" white
+- 5 rows numbered 1–5:
+  1. Marmitex Tradicional — 312 un. — plum progress bar (wide)
+  2. Coxinha — 285 un. — plum progress bar
+  3. Brigadeiro Gourmet — 210 un. — plum progress bar
+  4. Refrigerante Lata — 198 un. — plum progress bar
+  5. Bolo no Pote — 162 un. — plum progress bar (narrow)
+- each row: number (muted) + name (white) + units (muted right) + progress bar below name (plum fill, gray track)
+- "Ver todos os produtos →" link at bottom in muted purple
+
+---
+
+FINAL CHECKS
+After all changes confirm:
+- sidebar is plum/purple, not navy
+- KPI header cards are working with icons and % comparisons
+- "Resultado do mês" card has plum gradient and lighthouse SVG silhouette
+- line/area chart is rendering with smooth curve and correct data
+- large donut shows 72% in plum
+- health card has green banner + 3 status rows
+- transactions list has 5 rows with colored icons and values
+- fixed expenses list has 6 rows with icons and total
+- products card is dark with plum progress bars
+- all colors use the new token system
+- layout is responsive and doesn't break on smaller screens
