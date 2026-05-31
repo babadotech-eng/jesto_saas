@@ -19,22 +19,37 @@ import {
   ShoppingBag, Heart, AlertTriangle, AlertCircle,
 } from "lucide-react";
 
-/* ── palette ─────────────────────────────────────────────────── */
-const PC = {
-  primary:     "#7c5cbf",
-  light:       "#a37ee8",
-  dark:        "#1e1a2e",
-  bg:          "#f4f3f7",
-  surface:     "#ffffff",
-  textPrimary: "#1a1625",
-  textMuted:   "#7a748a",
-  positive:    "#22c55e",
-  negative:    "#ef4444",
-  warning:     "#f59e0b",
-  border:      "#e8e4f0",
+/* ── exact design tokens ──────────────────────────────────── */
+const T = {
+  bgPage:         "#F5F2ED",
+  bgCard:         "#FFFFFF",
+  bgDark:         "#1A1D2E",
+  bgResultTop:    "#D9D0E3",
+  bgResultMid:    "#CFC4DC",
+  bgResultBot:    "#B8A9CA",
+  borderSoft:     "#E9E2DA",
+  textPrimary:    "#1F2230",
+  textSecondary:  "#6F6B78",
+  textMuted:      "#8D8794",
+  plumPrimary:    "#4D2F70",
+  plumSecondary:  "#6E4B97",
+  plumSoft:       "#8D74B3",
+  plumMist:       "#D8CEE5",
+  success:        "#3F8F63",
+  successSoft:    "#EAF7EF",
+  danger:         "#C95C5C",
+  dangerSoft:     "#FBEAEA",
+  warning:        "#F2B544",
+  warningMid:     "#FFF4DE",
+  iconGreen:      "#5AAE7F",
+  iconRed:        "#E2775E",
+  iconOrange:     "#F2B544",
+  iconPurple:     "#8C6BC2",
+  shadow:         "0 6px 24px rgba(25,24,33,0.05)",
+  shadowSoft:     "0 4px 14px rgba(25,24,33,0.04)",
 };
 
-/* ── formatters ──────────────────────────────────────────────── */
+/* ── formatters ───────────────────────────────────────────── */
 function fmt(n: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(n);
 }
@@ -49,7 +64,7 @@ function getGreeting() {
   return "Boa noite";
 }
 
-/* ── reference data ──────────────────────────────────────────── */
+/* ── static data ──────────────────────────────────────────── */
 const CHART_DATA = [
   { date: "18/mai", value: 2200 },
   { date: "19/mai", value: 3400 },
@@ -60,15 +75,15 @@ const CHART_DATA = [
   { date: "24/mai", value: 4100 },
 ];
 
-const MOCK_TRANSACTIONS = [
-  { id: 1, name: "Venda - Balcão",   type: "Receita",      date: "24/mai · 10:42", value:  320.00, positive: true,  Icon: ShoppingCart },
-  { id: 2, name: "Venda - iFood",    type: "Receita",      date: "24/mai · 09:15", value:  185.60, positive: true,  Icon: ShoppingBag  },
-  { id: 3, name: "Compra - Frango",  type: "Insumos",      date: "24/mai · 08:30", value:  154.80, positive: false, Icon: ShoppingCart },
-  { id: 4, name: "Aluguel",          type: "Despesa fixa", date: "24/mai · 07:45", value: 1200.00, positive: false, Icon: Home         },
-  { id: 5, name: "Energia elétrica", type: "Despesa fixa", date: "23/mai · 18:22", value:  320.00, positive: false, Icon: Zap          },
+const MOCK_TX = [
+  { id: 1, name: "Venda - Balcão",   type: "Receita",      date: "24/mai · 10:42", value:  320.00, pos: true,  Icon: ShoppingCart },
+  { id: 2, name: "Venda - iFood",    type: "Receita",      date: "24/mai · 09:15", value:  185.60, pos: true,  Icon: ShoppingBag  },
+  { id: 3, name: "Compra - Frango",  type: "Insumos",      date: "24/mai · 08:30", value:  154.80, pos: false, Icon: ShoppingCart },
+  { id: 4, name: "Aluguel",          type: "Despesa fixa", date: "24/mai · 07:45", value: 1200.00, pos: false, Icon: Home         },
+  { id: 5, name: "Energia elétrica", type: "Despesa fixa", date: "23/mai · 18:22", value:  320.00, pos: false, Icon: Zap          },
 ];
 
-const MOCK_EXPENSES = [
+const MOCK_EXP = [
   { Icon: Home,      label: "Aluguel",          value: 1200 },
   { Icon: Users,     label: "Salários",          value: 4800 },
   { Icon: Zap,       label: "Energia elétrica",  value:  320 },
@@ -77,7 +92,7 @@ const MOCK_EXPENSES = [
   { Icon: Settings2, label: "Outras despesas",   value:  310 },
 ];
 
-const MOCK_PRODUCTS = [
+const MOCK_PROD = [
   { rank: 1, name: "Marmitex Tradicional", units: 312 },
   { rank: 2, name: "Coxinha",              units: 285 },
   { rank: 3, name: "Brigadeiro Gourmet",   units: 210 },
@@ -85,107 +100,109 @@ const MOCK_PRODUCTS = [
   { rank: 5, name: "Bolo no Pote",         units: 162 },
 ];
 
-/* ── card shell ──────────────────────────────────────────────── */
+/* ── shared card wrapper ─────────────────────────────────── */
 function Card({ children, style = {}, className = "" }: { children: React.ReactNode; style?: React.CSSProperties; className?: string }) {
   return (
-    <div
-      className={`rounded-2xl p-5 ${className}`}
-      style={{ background: PC.surface, border: `1px solid ${PC.border}`, boxShadow: "0 1px 4px rgba(0,0,0,0.05)", ...style }}
-    >
+    <div className={`rounded-2xl p-5 ${className}`}
+      style={{ background: T.bgCard, border: `1px solid ${T.borderSoft}`, boxShadow: T.shadow, ...style }}>
       {children}
     </div>
   );
 }
 
-function CardTitle({ children }: { children: React.ReactNode }) {
-  return <p className="text-sm font-bold mb-3" style={{ color: PC.textPrimary }}>{children}</p>;
-}
-
-/* ── KPI card ────────────────────────────────────────────────── */
-function KPICard({ Icon, iconBg, label, value, change, up }: {
-  Icon: React.ElementType; iconBg: string; label: string; value: string; change: string; up: boolean;
+/* ── KPI card ────────────────────────────────────────────── */
+function KPICard({ Icon, iconBg, iconColor, label, value, change, up }: {
+  Icon: React.ElementType; iconBg: string; iconColor: string;
+  label: string; value: string; change: string; up: boolean;
 }) {
   return (
     <div className="flex items-start gap-3 rounded-2xl px-4 py-3"
-      style={{ background: PC.surface, border: `1px solid ${PC.border}`, boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
-      <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5" style={{ background: iconBg }}>
-        <Icon size={16} className="text-white" />
+      style={{ background: T.bgCard, border: `1px solid ${T.borderSoft}`, boxShadow: T.shadowSoft }}>
+      <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+        style={{ background: iconBg }}>
+        <Icon size={17} style={{ color: iconColor }} />
       </div>
       <div className="min-w-0">
-        <p className="text-[11px] font-medium leading-none mb-1" style={{ color: PC.textMuted }}>{label}</p>
-        <p className="text-base font-black leading-tight" style={{ color: PC.textPrimary }}>{value}</p>
-        <div className="flex items-center gap-1 mt-0.5">
+        <p className="text-[11px] font-medium leading-none mb-1" style={{ color: T.textSecondary }}>{label}</p>
+        <p className="text-base font-black leading-tight" style={{ color: T.textPrimary }}>{value}</p>
+        <div className="flex items-center gap-1 mt-0.5 flex-wrap">
           {up
-            ? <TrendingUp size={10} style={{ color: PC.positive }} />
-            : <TrendingDown size={10} style={{ color: PC.negative }} />}
-          <span className="text-[10px] font-semibold" style={{ color: up ? PC.positive : PC.negative }}>{change}</span>
-          <span className="text-[10px]" style={{ color: PC.textMuted }}>vs mês ant.</span>
+            ? <TrendingUp size={10} style={{ color: T.success, flexShrink: 0 }} />
+            : <TrendingDown size={10} style={{ color: T.danger, flexShrink: 0 }} />}
+          <span className="text-[10px] font-semibold" style={{ color: up ? T.success : T.danger }}>{change}</span>
+          <span className="text-[10px]" style={{ color: T.textMuted }}>vs mês ant.</span>
         </div>
       </div>
     </div>
   );
 }
 
-/* ── Resultado do mês ────────────────────────────────────────── */
+/* ── Resultado do mês ────────────────────────────────────── */
 function ResultadoCard({ resultado }: { resultado: number }) {
   const isPos = resultado >= 0;
-  const mainNum = fmt(Math.abs(resultado));
   return (
     <div className="rounded-2xl p-5 flex flex-col relative overflow-hidden h-full"
-      style={{ background: "linear-gradient(150deg, #4f3d82 0%, #7455aa 55%, #9878cc 100%)", minHeight: 300 }}>
+      style={{
+        background: "linear-gradient(180deg, #D9D0E3 0%, #CFC4DC 52%, #B8A9CA 100%)",
+        minHeight: 290,
+      }}>
 
       {/* lighthouse silhouette */}
-      <svg viewBox="0 0 60 110" fill="white"
-        style={{ position: "absolute", bottom: 0, right: 12, width: 56, opacity: 0.18, pointerEvents: "none" }}>
-        {/* base */}
+      <svg viewBox="0 0 60 110" style={{
+        position: "absolute", bottom: 0, right: 10,
+        width: 58, opacity: 0.20, pointerEvents: "none", fill: "#7A6A90",
+      }}>
         <rect x="18" y="90" width="24" height="20" rx="2" />
-        {/* body */}
         <path d="M24 90 L26.5 36 L33.5 36 L36 90 Z" />
-        {/* door */}
         <rect x="27" y="72" width="6" height="10" rx="1.5" />
-        {/* windows */}
         <circle cx="30" cy="58" r="2.5" />
         <circle cx="30" cy="47" r="2" />
-        {/* light room */}
         <rect x="24" y="24" width="12" height="13" rx="1.5" />
-        {/* cap */}
         <polygon points="30,12 22,24 38,24" />
-        {/* top dot */}
         <circle cx="30" cy="10" r="2" />
-        {/* light rays */}
-        <line x1="36" y1="29" x2="54" y2="16" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-        <line x1="36" y1="31" x2="56" y2="31" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-        <line x1="24" y1="29" x2="6"  y2="16" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+        <line x1="36" y1="29" x2="52" y2="18" stroke="#7A6A90" strokeWidth="1.5" strokeLinecap="round" />
+        <line x1="36" y1="31" x2="54" y2="31" stroke="#7A6A90" strokeWidth="1.5" strokeLinecap="round" />
+        <line x1="24" y1="29" x2="8"  y2="18" stroke="#7A6A90" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
 
       <div className="relative z-10 flex flex-col h-full">
-        <p className="text-[11px] font-medium mb-2" style={{ color: "rgba(255,255,255,0.55)" }}>Resultado do mês</p>
+        {/* title */}
+        <p className="text-xs font-medium mb-2" style={{ color: T.textSecondary }}>Resultado do mês</p>
 
-        <p className="text-2xl font-black text-white leading-none mb-2">
-          {isPos ? "" : "-"}{mainNum}
+        {/* main value */}
+        <p className="text-[1.75rem] font-black leading-none mb-2.5" style={{ color: T.plumPrimary }}>
+          {isPos ? "" : "-"}{fmt(Math.abs(resultado))}
         </p>
 
+        {/* pill */}
         <span className="inline-flex items-center gap-1 self-start px-2.5 py-1 rounded-full text-[10px] font-semibold mb-4"
-          style={{ background: "rgba(0,0,0,0.22)", color: isPos ? "#86efac" : "#fca5a5" }}>
+          style={{
+            background: "rgba(77,47,112,0.08)",
+            border: "1px solid rgba(77,47,112,0.10)",
+            color: T.plumPrimary,
+          }}>
           {isPos ? "↑" : "↓"} {isPos ? "+12,1%" : "-12,1%"} vs mês anterior
         </span>
 
-        <div className="border-t border-white/10 my-1" />
+        {/* divider */}
+        <div className="mb-4" style={{ borderTop: "1px solid rgba(77,47,112,0.12)" }} />
 
-        <div className="flex items-start gap-2.5 mt-4 flex-1">
+        {/* advisory */}
+        <div className="flex items-start gap-2.5 flex-1">
           <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-            style={{ background: "rgba(255,255,255,0.13)" }}>
-            <AlertTriangle size={14} className="text-yellow-200" />
+            style={{ background: "rgba(77,47,112,0.10)" }}>
+            <AlertTriangle size={13} style={{ color: T.plumPrimary }} />
           </div>
           <div>
-            <p className="text-sm font-semibold text-white leading-snug">Revise seus custos</p>
-            <p className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.5)" }}>para melhorar o resultado.</p>
+            <p className="text-sm font-semibold leading-snug" style={{ color: T.textPrimary }}>Revise seus custos</p>
+            <p className="text-[11px] mt-0.5" style={{ color: T.textSecondary }}>para melhorar o resultado.</p>
           </div>
         </div>
 
+        {/* CTA */}
         <Link href="/relatorios">
-          <button className="mt-4 w-full h-9 rounded-xl text-xs font-semibold text-white transition-all hover:opacity-90 active:scale-[0.98]"
-            style={{ background: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.22)" }}>
+          <button className="mt-4 w-full h-9 rounded-xl text-xs font-semibold text-white transition-colors hover:opacity-90"
+            style={{ background: T.plumPrimary }}>
             Ver onde melhorar
           </button>
         </Link>
@@ -194,105 +211,118 @@ function ResultadoCard({ resultado }: { resultado: number }) {
   );
 }
 
-/* ── chart tooltip ───────────────────────────────────────────── */
+/* ── chart tooltip ───────────────────────────────────────── */
 function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: { value: number }[]; label?: string }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-xl px-3 py-2 shadow-xl text-white"
-      style={{ background: PC.dark, border: "1px solid rgba(255,255,255,0.08)" }}>
-      <p className="text-[10px] mb-0.5" style={{ color: "rgba(255,255,255,0.5)" }}>{label}</p>
-      <p className="text-sm font-bold">{fmt(payload[0].value)}</p>
+    <div className="rounded-xl px-3 py-2"
+      style={{ background: T.bgCard, border: `1px solid ${T.borderSoft}`, boxShadow: T.shadowSoft }}>
+      <p className="text-[10px] mb-0.5" style={{ color: T.textMuted }}>{label}</p>
+      <p className="text-sm font-bold" style={{ color: T.textPrimary }}>{fmt(payload[0].value)}</p>
     </div>
   );
 }
 
-/* ── donut ───────────────────────────────────────────────────── */
+/* ── donut ───────────────────────────────────────────────── */
 function DonutCard({ pct, faltam }: { pct: number; faltam: number }) {
   const safe = Math.min(100, Math.max(0, pct));
   const data = [{ v: safe }, { v: 100 - safe }];
   return (
     <Card>
-      <div className="flex items-center justify-between mb-3">
-        <CardTitle>Ponto de equilíbrio</CardTitle>
-        <Info size={13} style={{ color: PC.textMuted }} />
+      <div className="flex items-center justify-between mb-1">
+        <p className="text-sm font-bold" style={{ color: T.textPrimary }}>Ponto de equilíbrio</p>
+        <Info size={13} style={{ color: T.textMuted }} />
       </div>
-      <div className="relative flex items-center justify-center" style={{ height: 160 }}>
-        <PieChart width={160} height={160}>
-          <Pie data={data} cx={80} cy={80} innerRadius={52} outerRadius={74}
-            startAngle={90} endAngle={-270} dataKey="v" strokeWidth={0}>
-            <Cell fill={PC.primary} />
-            <Cell fill="#e8e4f0" />
+      <div className="relative flex items-center justify-center my-2" style={{ height: 155 }}>
+        <PieChart width={155} height={155}>
+          <Pie data={data} cx={77.5} cy={77.5}
+            innerRadius={50} outerRadius={70}
+            startAngle={90} endAngle={-270}
+            dataKey="v" strokeWidth={0}>
+            <Cell fill={T.plumPrimary} />
+            <Cell fill="#ECE7F0" />
           </Pie>
         </PieChart>
-        {/* amber marker at ~72% */}
-        <div className="absolute" style={{
-          width: 10, height: 10, borderRadius: "50%",
-          background: "#f59e0b",
+        {/* warning dot marker */}
+        <div style={{
+          position: "absolute",
+          width: 9, height: 9,
+          borderRadius: "50%",
+          background: T.warning,
           border: "2px solid white",
-          top: "50%", left: "50%",
-          transform: `translate(-50%, -50%) rotate(${-72 * 3.6}deg) translateY(-74px) rotate(${72 * 3.6}deg)`,
+          top: "calc(50% - 70px)",
+          left: "50%",
+          transform: "translateX(-50%) rotate(0deg)",
         }} />
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <span className="text-2xl font-black" style={{ color: PC.textPrimary }}>{safe.toFixed(0)}%</span>
-          <span className="text-xs" style={{ color: PC.textMuted }}>atingido</span>
+          <span className="text-2xl font-black" style={{ color: T.textPrimary }}>{safe.toFixed(0)}%</span>
+          <span className="text-xs" style={{ color: T.textSecondary }}>atingido</span>
         </div>
       </div>
-      <p className="text-[11px] text-center mt-3 leading-relaxed" style={{ color: PC.textMuted }}>
-        Faltam <span className="font-semibold" style={{ color: PC.textPrimary }}>
+      <p className="text-[11px] text-center leading-relaxed" style={{ color: T.textSecondary }}>
+        Faltam{" "}
+        <span className="font-semibold" style={{ color: T.textPrimary }}>
           {faltam > 0 ? fmt(faltam) : "R$ 7.120,00"}
-        </span> para alcançar o ponto de equilíbrio este mês.
+        </span>{" "}
+        para alcançar o ponto de equilíbrio este mês.
       </p>
-      <Link href="/relatorios" className="text-[11px] font-semibold text-center mt-3 block hover:underline" style={{ color: PC.primary }}>
+      <Link href="/relatorios"
+        className="text-[11px] font-semibold text-center mt-2.5 block hover:underline"
+        style={{ color: T.plumPrimary }}>
         Ver detalhes
       </Link>
     </Card>
   );
 }
 
-/* ── saúde ───────────────────────────────────────────────────── */
-function SaudeCard({ saudaveis, atencao, criticos }: { saudaveis: number; atencao: number; criticos: number }) {
+/* ── saúde ───────────────────────────────────────────────── */
+function SaudeCard({ s, a, c }: { s: number; a: number; c: number }) {
   return (
     <Card>
       <div className="flex items-center justify-between mb-3">
-        <CardTitle>Saúde do negócio</CardTitle>
-        <Info size={13} style={{ color: PC.textMuted }} />
+        <p className="text-sm font-bold" style={{ color: T.textPrimary }}>Saúde do negócio</p>
+        <Info size={13} style={{ color: T.textMuted }} />
       </div>
-      <div className="rounded-xl p-3 flex items-center gap-2.5 mb-4"
-        style={{ background: "#f0fdf4", border: "1px solid #bbf7d0" }}>
+      {/* green banner */}
+      <div className="rounded-xl p-3 flex items-center gap-2.5 mb-3"
+        style={{ background: T.successSoft, border: "1px solid #D5EEDB" }}>
         <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-          style={{ background: "#22c55e" }}>
-          <Heart size={14} className="text-white" />
+          style={{ background: "#DDF3E5" }}>
+          <Heart size={14} style={{ color: T.success }} />
         </div>
         <div>
-          <p className="text-sm font-bold leading-tight" style={{ color: "#15803d" }}>Saudável</p>
-          <p className="text-[10px] leading-tight" style={{ color: "#16a34a" }}>Seu negócio está no caminho certo!</p>
+          <p className="text-sm font-bold leading-tight" style={{ color: "#2F7D53" }}>Saudável</p>
+          <p className="text-[10px]" style={{ color: "#4D7B60" }}>Seu negócio está no caminho certo!</p>
         </div>
       </div>
+      {/* rows */}
       <div className="space-y-2.5">
         {[
-          { Icon: Activity,     color: "#22c55e", bg: "#dcfce7", label: "Saudável", count: saudaveis },
-          { Icon: AlertTriangle,color: "#f59e0b", bg: "#fef9c3", label: "Atenção",  count: atencao   },
-          { Icon: AlertCircle,  color: "#ef4444", bg: "#fee2e2", label: "Urgente",  count: criticos  },
-        ].map(({ Icon, color, bg, label, count }) => (
+          { Icon: Activity,      bg: "#EAF7EF", color: T.success,  label: "Saudável", count: s },
+          { Icon: AlertTriangle, bg: "#FFF4DE", color: T.warning,  label: "Atenção",  count: a },
+          { Icon: AlertCircle,   bg: "#FBEAEA", color: T.danger,   label: "Urgente",  count: c },
+        ].map(({ Icon, bg, color, label, count }) => (
           <div key={label} className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: bg }}>
                 <Icon size={11} style={{ color }} />
               </div>
-              <span className="text-sm" style={{ color: PC.textPrimary }}>{label}</span>
+              <span className="text-sm" style={{ color: T.textPrimary }}>{label}</span>
             </div>
             <span className="text-sm font-bold" style={{ color }}>{count}</span>
           </div>
         ))}
       </div>
-      <Link href="/relatorios" className="text-[11px] font-semibold mt-4 flex items-center gap-1 hover:underline" style={{ color: PC.primary }}>
+      <Link href="/relatorios"
+        className="text-[11px] font-semibold mt-3 flex items-center gap-1 hover:underline"
+        style={{ color: T.plumPrimary }}>
         Ver todos os indicadores <ArrowRight size={10} />
       </Link>
     </Card>
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════ */
 export default function Painel() {
   const { user } = useAuth();
   const { data: perfil } = usePerfil();
@@ -305,215 +335,215 @@ export default function Painel() {
   const { data: lancamentosRaw } = useListLancamentos();
   const lancamentos = Array.isArray(lancamentosRaw) ? lancamentosRaw : [];
 
-  const greeting    = getGreeting();
+  const greeting = getGreeting();
   const displayName = perfil?.nome_completo?.trim().split(" ")[0]
     || perfil?.nome_negocio
     || user?.email?.split("@")[0]
     || "";
 
-  /* KPI values — real when available, reference mock otherwise */
+  /* real or reference values */
   const receitaTotal = summary?.receita_total  ?? 28540;
   const custosTotal  = summary?.custos_totais  ?? 22350;
   const margem       = summary?.margem_media   ?? 21.7;
   const resultado    = summary?.resultado_mes  ?? -3810;
 
-  /* PE */
-  const hasPE   = pe && pe.ponto_contabil > 0;
-  const pePct   = hasPE ? Math.min(100, (receitaTotal / pe.ponto_contabil) * 100) : 72;
+  const hasPE    = pe && pe.ponto_contabil > 0;
+  const pePct    = hasPE ? Math.min(100, (receitaTotal / pe.ponto_contabil) * 100) : 72;
   const faltamPE = hasPE ? Math.max(0, pe.ponto_contabil - receitaTotal) : 7120;
 
-  /* health */
   const totalP    = topProdutos.length;
-  const saudaveis = totalP > 0 ? topProdutos.filter(p => p.margem_pct >= 30).length : 3;
+  const saudaveis = totalP > 0 ? topProdutos.filter(p => p.margem_pct >= 30).length  : 3;
   const atencao   = totalP > 0 ? topProdutos.filter(p => p.margem_pct >= 15 && p.margem_pct < 30).length : 2;
-  const criticos  = totalP > 0 ? topProdutos.filter(p => p.margem_pct < 15).length : 1;
+  const criticos  = totalP > 0 ? topProdutos.filter(p => p.margem_pct < 15).length  : 1;
 
-  /* transactions */
   const txRows = lancamentos.length > 0
     ? lancamentos.slice(0, 5).map(l => ({
-        id:       l.id,
-        name:     l.descricao,
-        type:     l.tipo === "receita" ? "Receita" : "Despesa",
-        date:     new Date(l.data + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }),
-        value:    l.valor,
-        positive: l.tipo === "receita",
-        Icon:     l.tipo === "receita" ? ShoppingCart : Home,
+        id: l.id, name: l.descricao,
+        type: l.tipo === "receita" ? "Receita" : "Despesa",
+        date: new Date(l.data + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }),
+        value: l.valor, pos: l.tipo === "receita",
+        Icon: l.tipo === "receita" ? ShoppingCart : Home,
       }))
-    : MOCK_TRANSACTIONS;
+    : MOCK_TX;
 
-  /* expenses */
-  const despesaRows = despesas.length > 0
-    ? despesas.slice(0, 6).map((d, i) => ({ Icon: MOCK_EXPENSES[i]?.Icon ?? FileText, label: d.categoria ?? "Despesa", value: d.valor }))
-    : MOCK_EXPENSES;
-  const despesasTotal = despesas.length > 0 ? despesas.reduce((s, d) => s + d.valor, 0) : 7000;
+  const expRows   = despesas.length > 0
+    ? despesas.slice(0, 6).map((d, i) => ({ Icon: MOCK_EXP[i]?.Icon ?? FileText, label: d.categoria ?? "Despesa", value: d.valor }))
+    : MOCK_EXP;
+  const expTotal  = despesas.length > 0 ? despesas.reduce((s, d) => s + d.valor, 0) : 7000;
 
-  /* products */
-  const prodRows = topProdutos.length > 0
+  const prodRows  = topProdutos.length > 0
     ? topProdutos.slice(0, 5).map((p, i) => ({ rank: i + 1, name: p.nome, units: Math.round(p.margem_pct * 3.5) }))
-    : MOCK_PRODUCTS;
-  const maxUnits = prodRows[0]?.units || 1;
+    : MOCK_PROD;
+  const maxUnits  = prodRows[0]?.units || 1;
 
   return (
-    <div className="-m-5 p-5 min-h-full" style={{ background: PC.bg }} data-testid="painel-page">
+    <div className="-m-5 p-5 min-h-full" style={{ background: T.bgPage }} data-testid="painel-page">
 
-      {/* ── HEADER ─────────────────────────────────────────────── */}
+      {/* ── HEADER ──────────────────────────────────────────── */}
       <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 mb-5">
         <div>
-          <h1 className="text-2xl font-black" style={{ color: PC.textPrimary }}>
+          <h1 className="text-2xl font-black" style={{ color: T.textPrimary }}>
             {greeting}{displayName ? `, ${displayName}` : ""} 👋
           </h1>
-          <p className="text-sm mt-0.5" style={{ color: PC.textMuted }}>
+          <p className="text-sm mt-0.5" style={{ color: T.textSecondary }}>
             Aqui está o resumo do seu negócio hoje.
           </p>
         </div>
         <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
-          <KPICard Icon={Wallet}    iconBg="#0d9488" label="Receita do mês"  value={fmt(receitaTotal)}        change="↑ 8,6%"     up={true}  />
-          <KPICard Icon={ShoppingCart} iconBg="#ef4444" label="Custos do mês"   value={fmt(custosTotal)}     change="↑ 5,3%"     up={false} />
-          <KPICard Icon={Activity}  iconBg="#f59e0b" label="Margem média"    value={`${margem.toFixed(1)}%`} change="↑ 2,4 p.p." up={true}  />
-          <KPICard Icon={TrendingDown} iconBg="#7c5cbf" label="Resultado do mês" value={fmt(resultado)}      change="↓ -12,1%"   up={resultado >= 0} />
+          <KPICard Icon={Wallet}       iconBg="#EAF7EF"  iconColor={T.iconGreen}  label="Receita do mês"   value={fmt(receitaTotal)}        change="↑ 8,6%"     up={true}  />
+          <KPICard Icon={ShoppingCart} iconBg="#FDEEE8"  iconColor={T.iconRed}    label="Custos do mês"    value={fmt(custosTotal)}         change="↑ 5,3%"     up={false} />
+          <KPICard Icon={Activity}     iconBg="#FFF4DE"  iconColor={T.iconOrange} label="Margem média"     value={`${margem.toFixed(1)}%`}  change="↑ 2,4 p.p." up={true}  />
+          <KPICard Icon={TrendingDown} iconBg="#F1EAFE"  iconColor={T.iconPurple} label="Resultado do mês" value={fmt(resultado)}           change="↓ -12,1%"   up={resultado >= 0} />
         </div>
       </div>
 
-      {/* ── ROW 1 — 4 cols ─────────────────────────────────────── */}
-      <div
-        className="gap-4 mb-4"
-        style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr 1fr 1fr" }}
-      >
-        {/* 1: Resultado do mês */}
+      {/* ── ROW 1 — 4 cols ──────────────────────────────────── */}
+      <div className="gap-4 mb-4"
+        style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr 1fr 1fr" }}>
+
+        {/* 1 — Resultado do mês */}
         <ResultadoCard resultado={resultado} />
 
-        {/* 2: Line chart */}
+        {/* 2 — Line / area chart */}
         <Card style={{ display: "flex", flexDirection: "column" }}>
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-1.5">
-              <p className="text-sm font-bold" style={{ color: PC.textPrimary }}>Receita dos últimos 7 dias</p>
-              <Info size={12} style={{ color: PC.textMuted }} />
+              <p className="text-sm font-bold" style={{ color: T.textPrimary }}>Receita dos últimos 7 dias</p>
+              <Info size={12} style={{ color: T.textMuted }} />
             </div>
-            <button className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-lg"
-              style={{ background: PC.bg, color: PC.textMuted, border: `1px solid ${PC.border}` }}>
+            <button className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1.5 rounded-lg"
+              style={{ background: "#F7F3EE", color: T.textSecondary, border: `1px solid ${T.borderSoft}` }}>
               Últimos 7 dias
               <svg width="9" height="5" viewBox="0 0 9 5"><path d="M1 1l3.5 3 3.5-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" fill="none"/></svg>
             </button>
           </div>
-          <div style={{ flex: 1, height: 210 }}>
+          <div style={{ flex: 1, height: 205 }}>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={CHART_DATA} margin={{ top: 4, right: 4, bottom: 0, left: -8 }}>
                 <defs>
-                  <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%"   stopColor={PC.primary} stopOpacity={0.20} />
-                    <stop offset="100%" stopColor={PC.primary} stopOpacity={0.02} />
+                  <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%"   stopColor={T.plumPrimary} stopOpacity={0.18} />
+                    <stop offset="100%" stopColor={T.plumPrimary} stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ede9f5" vertical={false} />
-                <XAxis dataKey="date" tick={{ fontSize: 10, fill: PC.textMuted }} axisLine={false} tickLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#EEE7DF" vertical={false} />
+                <XAxis dataKey="date"
+                  tick={{ fontSize: 10, fill: T.textMuted }}
+                  axisLine={false} tickLine={false} />
                 <YAxis
-                  tick={{ fontSize: 10, fill: PC.textMuted }}
+                  tick={{ fontSize: 10, fill: T.textMuted }}
                   axisLine={false} tickLine={false}
                   tickFormatter={v => v === 0 ? "R$ 0" : `R$ ${v / 1000} mil`}
-                  domain={[0, 8000]}
-                  ticks={[0, 2000, 4000, 6000, 8000]}
-                />
+                  domain={[0, 8000]} ticks={[0, 2000, 4000, 6000, 8000]} />
                 <Tooltip content={<ChartTooltip />} />
-                <Area
-                  type="monotone" dataKey="value"
-                  stroke={PC.primary} strokeWidth={2.5}
-                  fill="url(#chartFill)"
-                  dot={{ fill: PC.primary, strokeWidth: 0, r: 4 }}
-                  activeDot={{ fill: PC.primary, r: 5, strokeWidth: 2.5, stroke: "#fff" }}
-                />
+                <Area type="monotone" dataKey="value"
+                  stroke={T.plumPrimary} strokeWidth={2.5}
+                  fill="url(#areaFill)"
+                  dot={{ fill: T.plumPrimary, strokeWidth: 2, stroke: "#fff", r: 4 }}
+                  activeDot={{ fill: T.plumPrimary, r: 5, strokeWidth: 2, stroke: "#fff" }} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </Card>
 
-        {/* 3: Donut */}
+        {/* 3 — Donut */}
         <DonutCard pct={pePct} faltam={faltamPE} />
 
-        {/* 4: Saúde */}
-        <SaudeCard saudaveis={saudaveis} atencao={atencao} criticos={criticos} />
+        {/* 4 — Saúde */}
+        <SaudeCard s={saudaveis} a={atencao} c={criticos} />
       </div>
 
-      {/* ── ROW 2 — 3 cols ─────────────────────────────────────── */}
-      <div
-        className="gap-4"
-        style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr 1fr" }}
-      >
-        {/* 1: Transações recentes */}
+      {/* ── ROW 2 — 3 cols ──────────────────────────────────── */}
+      <div className="gap-4"
+        style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr 1fr" }}>
+
+        {/* 1 — Transações recentes */}
         <Card>
           <div className="flex items-center justify-between mb-3">
-            <CardTitle>Transações recentes</CardTitle>
-            <Link href="/lancamentos" className="text-[11px] font-semibold hover:underline" style={{ color: PC.primary }}>Ver todas</Link>
+            <p className="text-sm font-bold" style={{ color: T.textPrimary }}>Transações recentes</p>
+            <Link href="/lancamentos"
+              className="text-[11px] font-semibold hover:underline"
+              style={{ color: T.plumPrimary }}>Ver todas</Link>
           </div>
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             {txRows.map(tx => (
-              <div key={tx.id} className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-[#f9f8fc] transition-colors">
+              <div key={tx.id} className="flex items-center gap-3 px-2 py-2 rounded-xl transition-colors hover:bg-[#FAF7F4]">
                 <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: tx.positive ? "#dcfce7" : "#fee2e2" }}>
-                  <tx.Icon size={15} style={{ color: tx.positive ? "#16a34a" : "#dc2626" }} />
+                  style={{ background: tx.pos ? T.successSoft : T.dangerSoft }}>
+                  <tx.Icon size={15} style={{ color: tx.pos ? T.success : T.danger }} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold truncate" style={{ color: PC.textPrimary }}>{tx.name}</p>
-                  <p className="text-[10px]" style={{ color: PC.textMuted }}>
-                    <span className="font-medium" style={{ color: PC.textMuted }}>{tx.type}</span>
-                    &nbsp;&nbsp;{tx.date}
+                  <p className="text-sm font-semibold truncate" style={{ color: T.textPrimary }}>{tx.name}</p>
+                  <p className="text-[10px]" style={{ color: T.textMuted }}>
+                    <span style={{ color: T.textSecondary }}>{tx.type}</span>
+                    {"  "}{tx.date}
                   </p>
                 </div>
                 <span className="text-sm font-bold shrink-0 tabular-nums"
-                  style={{ color: tx.positive ? PC.positive : PC.negative }}>
-                  {tx.positive ? "" : "-"}{fmt(tx.value)}
+                  style={{ color: tx.pos ? T.success : T.danger }}>
+                  {tx.pos ? "" : "-"}{fmt(tx.value)}
                 </span>
               </div>
             ))}
           </div>
-          <Link href="/lancamentos" className="text-[11px] font-semibold mt-3 flex items-center gap-1 hover:underline" style={{ color: PC.primary }}>
+          <Link href="/lancamentos"
+            className="text-[11px] font-semibold mt-3 flex items-center gap-1 hover:underline"
+            style={{ color: T.plumPrimary }}>
             Ver todas as transações <ArrowRight size={10} />
           </Link>
         </Card>
 
-        {/* 2: Despesas fixas */}
+        {/* 2 — Despesas fixas */}
         <Card>
-          <CardTitle>Despesas fixas mensais</CardTitle>
-          <div className="space-y-3">
-            {despesaRows.map(d => (
+          <p className="text-sm font-bold mb-3" style={{ color: T.textPrimary }}>Despesas fixas mensais</p>
+          <div className="space-y-2.5">
+            {expRows.map(d => (
               <div key={d.label} className="flex items-center gap-2.5">
                 <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
-                  style={{ background: PC.bg }}>
-                  <d.Icon size={13} style={{ color: PC.textMuted }} />
+                  style={{ background: "#F7F3EE" }}>
+                  <d.Icon size={13} style={{ color: T.textPrimary }} />
                 </div>
-                <span className="text-sm flex-1 truncate" style={{ color: PC.textPrimary }}>{d.label}</span>
-                <span className="text-sm font-semibold tabular-nums shrink-0" style={{ color: PC.textPrimary }}>
+                <span className="text-sm flex-1 truncate" style={{ color: T.textPrimary }}>{d.label}</span>
+                <span className="text-sm font-semibold tabular-nums shrink-0" style={{ color: T.textPrimary }}>
                   {fmt(d.value)}
                 </span>
               </div>
             ))}
           </div>
-          <div className="flex items-center justify-between border-t mt-3 pt-3" style={{ borderColor: PC.border }}>
-            <span className="text-sm font-bold" style={{ color: PC.textPrimary }}>Total</span>
-            <span className="text-sm font-black tabular-nums" style={{ color: PC.textPrimary }}>{fmt(despesasTotal)}</span>
+          <div className="flex items-center justify-between border-t mt-3 pt-3"
+            style={{ borderColor: T.borderSoft }}>
+            <span className="text-sm font-bold" style={{ color: T.textPrimary }}>Total</span>
+            <span className="text-sm font-black tabular-nums" style={{ color: T.textPrimary }}>{fmt(expTotal)}</span>
           </div>
         </Card>
 
-        {/* 3: Produtos mais vendidos */}
-        <div className="rounded-2xl p-5" style={{ background: PC.dark }}>
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm font-bold text-white">Produtos mais vendidos</p>
-          </div>
+        {/* 3 — Produtos mais vendidos */}
+        <div className="rounded-2xl p-5" style={{ background: T.bgDark, boxShadow: T.shadow }}>
+          <p className="text-sm font-bold text-white mb-4">Produtos mais vendidos</p>
           <div className="space-y-3.5">
             {prodRows.map(p => (
               <div key={p.rank}>
                 <div className="flex items-center gap-2 mb-1.5">
-                  <span className="text-[10px] font-bold w-3 shrink-0 text-right" style={{ color: "rgba(255,255,255,0.28)" }}>{p.rank}</span>
+                  <span className="text-[10px] font-bold w-3 text-right shrink-0"
+                    style={{ color: "#B9AFCB" }}>{p.rank}</span>
                   <span className="text-xs font-medium flex-1 text-white truncate">{p.name}</span>
-                  <span className="text-[10px] shrink-0 tabular-nums" style={{ color: "rgba(255,255,255,0.38)" }}>{p.units} un.</span>
+                  <span className="text-[10px] shrink-0 tabular-nums"
+                    style={{ color: "#B9AFCB" }}>{p.units} un.</span>
                 </div>
-                <div className="ml-5 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
+                <div className="ml-5 h-1.5 rounded-full overflow-hidden"
+                  style={{ background: "rgba(255,255,255,0.10)" }}>
                   <div className="h-full rounded-full"
-                    style={{ width: `${(p.units / maxUnits) * 100}%`, background: `linear-gradient(to right, ${PC.primary}, ${PC.light})` }} />
+                    style={{
+                      width: `${(p.units / maxUnits) * 100}%`,
+                      background: T.plumSoft,
+                    }} />
                 </div>
               </div>
             ))}
           </div>
-          <Link href="/produtos" className="text-[11px] font-semibold mt-4 flex items-center gap-1 hover:underline" style={{ color: PC.light }}>
+          <Link href="/produtos"
+            className="text-[11px] font-semibold mt-4 flex items-center gap-1 hover:underline"
+            style={{ color: "#E2D7F1" }}>
             Ver todos os produtos <ArrowRight size={10} />
           </Link>
         </div>

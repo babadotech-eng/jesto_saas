@@ -1,0 +1,489 @@
+IMPORTANT:
+Use the attached target screenshot as the ONLY visual reference.
+Do NOT redesign.
+Do NOT reinterpret.
+Do NOT invent colors.
+Do NOT improvise.
+Refine the existing dashboard so it matches the target much more closely.
+
+Use the exact color tokens below and apply them consistently.
+
+==================================================
+1. COLOR TOKENS — USE EXACTLY THESE
+==================================================
+
+:root {
+  --bg-page: #F5F2ED;
+  --bg-sidebar: #161722;
+  --bg-sidebar-soft: #1D1F2B;
+  --bg-sidebar-active: #6E4B97;
+  --bg-card: #FFFFFF;
+  --bg-card-soft: #FBF9F6;
+  --bg-dark-card: #1A1D2E;
+  --bg-result-card-top: #D9D0E3;
+  --bg-result-card-mid: #CFC4DC;
+  --bg-result-card-bottom: #B8A9CA;
+
+  --border-soft: #E9E2DA;
+  --border-lilac: #DDD3E8;
+
+  --text-primary: #1F2230;
+  --text-secondary: #6F6B78;
+  --text-muted: #8D8794;
+  --text-inverse: #FFFFFF;
+
+  --plum-primary: #4D2F70;
+  --plum-secondary: #6E4B97;
+  --plum-soft: #8D74B3;
+  --plum-mist: #D8CEE5;
+  --plum-dark: #2C1F3D;
+
+  --success: #3F8F63;
+  --success-soft: #EAF7EF;
+  --danger: #C95C5C;
+  --danger-soft: #FBEAEA;
+  --warning: #F2B544;
+  --warning-soft: #FFF4DE;
+
+  --icon-green: #5AAE7F;
+  --icon-red: #E2775E;
+  --icon-orange: #F2B544;
+  --icon-purple: #8C6BC2;
+
+  --shadow-card: 0 6px 24px rgba(25, 24, 33, 0.05);
+  --shadow-soft: 0 4px 14px rgba(25, 24, 33, 0.04);
+}
+
+IMPORTANT RULES:
+- Use only these colors.
+- Do not introduce random purples, random yellows, or black.
+- If a lighter variation is needed, derive it from these tokens only.
+- Keep the palette soft, elegant, and premium.
+
+==================================================
+2. GLOBAL DASHBOARD REFINEMENT
+==================================================
+
+Refine the full dashboard using the palette above.
+
+Page background:
+- use var(--bg-page)
+- do not use pure white
+
+Cards:
+- use var(--bg-card)
+- border: 1px solid var(--border-soft)
+- box-shadow: var(--shadow-card)
+- radius soft and premium
+
+Dark cards:
+- use var(--bg-dark-card)
+- do not use flat black
+
+Typography:
+- headings: var(--text-primary)
+- body and labels: var(--text-secondary)
+- muted meta text: var(--text-muted)
+
+Spacing:
+- refine spacing to match the target reference more closely
+- keep layout clean and breathable
+- avoid cramped or overly large padding
+
+==================================================
+3. SIDEBAR
+==================================================
+
+Refine the sidebar to match the target.
+
+Background:
+- sidebar background: var(--bg-sidebar)
+- subtle inner separation areas can use var(--bg-sidebar-soft)
+
+Logo:
+- icon background or icon mark should use a soft lilac/plum feel, close to var(--plum-soft)
+- logo text: white
+
+Menu items:
+- inactive text: #D9D2E3
+- inactive icons: #C7BED6
+- active item background: var(--bg-sidebar-active)
+- active text/icon: white
+- add a very subtle left accent line using var(--warning) only if it already exists in the layout, otherwise omit
+
+Bottom “Dica do dia” card:
+- background: #232337
+- icon accent: var(--warning)
+- title: white
+- body text: #CFC9DA
+- link: #E4DCF2
+
+Do not let the sidebar become too black or too saturated purple.
+
+==================================================
+4. TOP KPI CARDS
+==================================================
+
+Correct all KPI values and refine the styling.
+
+Card background:
+- var(--bg-card)
+- border: 1px solid var(--border-soft)
+- shadow: var(--shadow-soft)
+
+Text:
+- label: var(--text-secondary)
+- main value: var(--text-primary)
+- change text:
+  - positive: var(--success)
+  - negative: var(--danger)
+
+Use these exact values:
+1. Receita do mês — R$ 28.540,00 — ↑ 8,6% vs mês anterior
+2. Custos do mês — R$ 22.350,00 — ↑ 5,3% vs mês anterior
+3. Margem média — 21,7% — ↑ 2,4 p.p. vs mês anterior
+4. Resultado do mês — -R$ 3.810,00 — ↓ -12,1% vs mês anterior
+
+Icon circles:
+- Receita: background #EAF7EF, icon color var(--icon-green)
+- Custos: background #FDEEE8, icon color var(--icon-red)
+- Margem: background #FFF4DE, icon color var(--icon-orange)
+- Resultado: background #F1EAFE, icon color var(--icon-purple)
+
+Do not keep the current wrong numbers.
+
+==================================================
+5. RESULTADO DO MÊS CARD
+==================================================
+
+This is a priority section.
+Refine it carefully and rebuild parts if needed.
+
+Background:
+Use a soft atmospheric gradient with these exact stops:
+- top: var(--bg-result-card-top) = #D9D0E3
+- middle: var(--bg-result-card-mid) = #CFC4DC
+- bottom: var(--bg-result-card-bottom) = #B8A9CA
+
+Suggested gradient:
+linear-gradient(180deg, #D9D0E3 0%, #CFC4DC 52%, #B8A9CA 100%)
+
+Add a subtle mist layer if needed:
+- use translucent white or #EFEAF5 at low opacity
+- do not overdo it
+
+Lighthouse:
+- place in lower-right area
+- silhouette color: #7A6A90 at low opacity
+- opacity around 0.18 to 0.24
+- no detailed illustration
+- no strong beam
+- if beam exists, use #F6F1FA at extremely low opacity
+
+Content:
+- title: Resultado do mês
+- title color: var(--text-primary)
+- value: -R$ 3.810,00
+- value color: var(--plum-primary)
+- pill text: ↓ -12,1% vs mês anterior
+- pill background: rgba(77, 47, 112, 0.08)
+- pill border: 1px solid rgba(77, 47, 112, 0.10)
+- divider: 1px solid rgba(77, 47, 112, 0.12)
+
+Advisory block:
+- icon circle background: rgba(77, 47, 112, 0.10)
+- icon color: var(--plum-primary)
+- text color: var(--text-primary)
+- support text color: var(--text-secondary)
+
+Button:
+- background: var(--plum-primary)
+- text: white
+- hover: var(--plum-secondary)
+- no gradient button
+- no oversized button
+- compact and elegant
+
+Important:
+- remove any wrong current value
+- remove any extra rows not present in the target
+- make the card feel premium, soft, atmospheric, and subtle
+- it should not be too dark and should not be washed out
+
+==================================================
+6. RECEITA DOS ÚLTIMOS 7 DIAS CHART
+==================================================
+
+Refine chart styling and correct colors.
+
+Card:
+- background: var(--bg-card)
+- border: 1px solid var(--border-soft)
+
+Title:
+- color: var(--text-primary)
+
+Meta elements:
+- info icon: var(--text-muted)
+- dropdown text: var(--text-secondary)
+- dropdown background: #F7F3EE
+- dropdown border: 1px solid var(--border-soft)
+
+Chart colors:
+- line: var(--plum-primary) = #4D2F70
+- area fill: rgba(77, 47, 112, 0.14)
+- point fill: var(--plum-primary)
+- point stroke: white
+- grid lines: #EEE7DF
+- axes text: var(--text-muted)
+
+Tooltip:
+- background: white
+- border: 1px solid var(--border-soft)
+- shadow: var(--shadow-soft)
+- title color: var(--text-primary)
+- value color: var(--text-primary)
+
+Use this exact data:
+18/mai = 2200
+19/mai = 3400
+20/mai = 2800
+21/mai = 3000
+22/mai = 4800
+23/mai = 6320
+24/mai = 4100
+
+Y-axis labels:
+R$ 0
+R$ 2 mil
+R$ 4 mil
+R$ 6 mil
+R$ 8 mil
+
+==================================================
+7. PONTO DE EQUILÍBRIO
+==================================================
+
+Refine donut and correct values.
+
+Card:
+- background: var(--bg-card)
+- border: 1px solid var(--border-soft)
+
+Title:
+- color: var(--text-primary)
+
+Donut:
+- track color: #ECE7F0
+- progress color: var(--plum-primary)
+- small marker: var(--warning)
+
+Center text:
+- 72%
+- color: var(--text-primary)
+- subtitle “atingido” in var(--text-secondary)
+
+Paragraph below:
+- text color: var(--text-secondary)
+- emphasis on “R$ 7.120,00” in var(--text-primary)
+
+Button/link:
+- color: var(--plum-primary)
+
+Use exact text:
+Faltam R$ 7.120,00 para alcançar o ponto de equilíbrio este mês.
+
+==================================================
+8. SAÚDE DO NEGÓCIO
+==================================================
+
+Refine card styling and correct hierarchy.
+
+Card:
+- background: var(--bg-card)
+- border: 1px solid var(--border-soft)
+
+Header:
+- title color: var(--text-primary)
+
+Green banner:
+- background: var(--success-soft)
+- border: 1px solid #D5EEDB
+- icon background: #DDF3E5
+- icon color: var(--success)
+- title “Saudável” color: #2F7D53
+- support text color: #4D7B60
+
+Rows:
+- healthy icon/value: var(--success)
+- warning icon/value: var(--warning)
+- urgent icon/value: var(--danger)
+
+Labels:
+- row text: var(--text-primary)
+- muted supporting text: var(--text-secondary)
+
+Use:
+- 3 Saudável
+- 2 Atenção
+- 1 Urgente
+
+Bottom link:
+- color: var(--plum-primary)
+
+==================================================
+9. TRANSAÇÕES RECENTES
+==================================================
+
+Correct rows, colors, and spacing.
+
+Card:
+- background: var(--bg-card)
+- border: 1px solid var(--border-soft)
+
+Title:
+- color: var(--text-primary)
+
+Rows:
+- icon circle background positive: #EAF7EF
+- icon circle icon positive: var(--success)
+- icon circle background negative: #FBEAEA
+- icon circle icon negative: var(--danger)
+
+Text:
+- main row title: var(--text-primary)
+- metadata: var(--text-muted)
+- positive values: var(--success)
+- negative values: var(--danger)
+
+Use exact rows:
+- Venda - Balcão | Receita | 24/mai · 10:42 | R$ 320,00
+- Venda - iFood | Receita | 24/mai · 09:15 | R$ 185,60
+- Compra - Frango | Insumos | 24/mai · 08:30 | -R$ 154,80
+- Aluguel | Despesa fixa | 24/mai · 07:45 | -R$ 1.200,00
+- Energia elétrica | Despesa fixa | 23/mai · 18:22 | -R$ 320,00
+
+Bottom link:
+- color: var(--plum-primary)
+
+==================================================
+10. DESPESAS FIXAS MENSAIS
+==================================================
+
+Correct values and visual styling.
+
+Card:
+- background: var(--bg-card)
+- border: 1px solid var(--border-soft)
+
+Icons:
+- color: var(--text-primary)
+- icon background if needed: #F7F3EE
+
+Text:
+- label: var(--text-primary)
+- value: var(--text-primary)
+- total row strong emphasis
+
+Divider above total:
+- color: var(--border-soft)
+
+Use exact rows:
+- Aluguel — R$ 1.200,00
+- Salários — R$ 4.800,00
+- Energia elétrica — R$ 320,00
+- Internet — R$ 120,00
+- Contador — R$ 250,00
+- Outras despesas — R$ 310,00
+- Total — R$ 7.000,00
+
+==================================================
+11. PRODUTOS MAIS VENDIDOS
+==================================================
+
+Refine dark card and correct content.
+
+Card:
+- background: var(--bg-dark-card)
+- border: none
+- shadow: var(--shadow-card)
+
+Title:
+- color: white
+
+Row text:
+- ranking number: #B9AFCB
+- product name: white
+- units: #B9AFCB
+
+Progress bars:
+- track: rgba(255,255,255,0.10)
+- fill: var(--plum-soft) = #8D74B3
+
+Bottom link:
+- color: #E2D7F1
+
+Use exact rows:
+1 Marmitex Tradicional — 312 un.
+2 Coxinha — 285 un.
+3 Brigadeiro Gourmet — 210 un.
+4 Refrigerante Lata — 198 un.
+5 Bolo no Pote — 162 un.
+
+==================================================
+12. DICA DO DIA
+==================================================
+
+This is another priority section.
+
+Refine the card so it feels premium and integrated.
+
+Card:
+- background: #232338
+- border: 1px solid rgba(255,255,255,0.04)
+- soft inner contrast if needed
+- no excessive glow
+- no bright purple
+
+Icon:
+- use var(--warning) = #F2B544
+- keep icon small and subtle
+
+Title:
+- color: white
+
+Body text:
+- color: #CFC9DA
+- improve line breaks
+- improve spacing
+
+Link:
+- color: #E6DDF4
+
+Optional decorative detail:
+- only subtle, low-contrast
+- no childish decorative shapes
+
+Use this exact text:
+Title: Dica do dia
+Body: Atualize o custo dos seus ingredientes regularmente.
+Link: Saiba mais →
+
+==================================================
+13. FINAL RULES
+==================================================
+
+- Do not invent new colors
+- Do not keep wrong values
+- Do not keep old styling if it conflicts with the target
+- Use the screenshot as visual truth
+- Use the tokens above as the exact palette
+- Prioritize fidelity over creativity
+
+FINAL REPORT:
+Return only:
+- colors refined
+- cards refined
+- values corrected
+- whether Resultado do mês was rebuilt
+- whether Dica do dia was significantly improved
