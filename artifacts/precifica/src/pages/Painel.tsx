@@ -163,23 +163,35 @@ function ResultadoCard({ resultado }: { resultado: number }) {
         boxShadow: "0 6px 24px rgba(25,24,33,0.07)",
       }}
     >
-      {/* lighthouse — ghost silhouette, bottom-right, very subtle */}
+      {/* lighthouse glow — soft radial CSS layer, sits behind silhouette */}
+      <div aria-hidden="true" style={{
+        position: "absolute",
+        bottom: 10,
+        right: -10,
+        width: 120,
+        height: 120,
+        pointerEvents: "none",
+        borderRadius: "50%",
+        background: "radial-gradient(ellipse at 55% 38%, rgba(255,252,255,0.55) 0%, rgba(240,232,250,0.28) 30%, rgba(220,210,238,0.00) 72%)",
+        filter: "blur(14px)",
+        opacity: 0.7,
+      }} />
+
+      {/* lighthouse — small, quiet silhouette, lower-right */}
       <svg
         viewBox="0 0 80 160"
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
         style={{
           position: "absolute",
-          bottom: -4,
-          right: -2,
-          width: 96,
+          bottom: 0,
+          right: 4,
+          width: 58,
           pointerEvents: "none",
-          opacity: 0.19,
+          opacity: 0.16,
           fill: "#6E5F81",
         }}
       >
-        {/* very soft beam — diagonal haze left */}
-        <polygon points="36,28 -20,2 -20,14" fill="#6E5F81" opacity="0.5" />
         {/* dome */}
         <path d="M28,28 Q40,14 52,28 Z" />
         {/* lantern box */}

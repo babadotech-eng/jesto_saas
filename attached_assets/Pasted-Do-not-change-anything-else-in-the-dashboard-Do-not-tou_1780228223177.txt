@@ -1,0 +1,79 @@
+Do not change anything else in the dashboard.
+Do not touch text, value, button, spacing, layout, or other cards.
+Adjust ONLY the lighthouse inside the “Resultado do mês” card.
+
+GOAL:
+Refine only the lighthouse size, position, and its smoky gradient light.
+The lighthouse must become subtle, atmospheric, and integrated into the card background.
+
+MAKE THESE CHANGES ONLY:
+
+1. LIGHTHOUSE SIZE
+- Reduce the lighthouse size noticeably.
+- It is currently too large and too dominant.
+- Make it feel like a background silhouette, not a foreground illustration.
+
+2. LIGHTHOUSE POSITION
+- Keep it anchored in the lower-right area of the card.
+- It must stay inside the card without taking too much vertical space.
+- Do not let it visually compete with the text block.
+
+3. LIGHTHOUSE STYLE
+- Use a very simple silhouette.
+- No detailed drawing.
+- No hard edges.
+- No strong beam.
+- No icon look.
+- Low opacity only.
+- It should almost disappear into the mist.
+
+4. LIGHT / GLOW EFFECT
+- Implement the lighthouse light as layered CSS.
+- Use CSS gradients only.
+- Do not use an image, SVG replacement, or a hard painted beam.
+- The glow must be created with pseudo-elements, preferably ::after.
+- Use a very soft smoky/foggy gradient glow.
+- The effect should feel diffused, blended, and atmospheric.
+- No sharp triangle beam.
+- No bright spotlight.
+- No high contrast white streak.
+
+5. CSS APPROACH
+Use layered CSS gradients for the glow, such as:
+- one soft radial-gradient for the local glow near the lamp
+- one elongated radial or linear gradient for the misty spread
+- blur + low opacity
+- blend softly into the card background
+
+6. VISUAL RULES
+- subtle
+- elegant
+- quiet
+- foggy
+- premium
+- almost hidden
+
+DO NOT:
+- redraw the whole card
+- change the card background
+- change the text
+- change the value
+- change the button
+- change spacing
+- change other cards
+- make the lighthouse darker
+- make the beam obvious
+- make the lighthouse taller or more detailed
+
+IMPLEMENTATION HINT:
+Keep the lighthouse as one silhouette element and create the smoky light in a separate pseudo-element layer using radial-gradient + blur + very low opacity.
+
+SUCCESS CRITERIA:
+- lighthouse is smaller
+- lighthouse stays in the lower-right
+- lighthouse is less dominant
+- glow is smoky and gradient-based
+- glow is built with layered CSS
+- the rest of the dashboard remains untouched
+
+If you modify anything other than the lighthouse silhouette and its layered CSS glow, the task is incorrect.
