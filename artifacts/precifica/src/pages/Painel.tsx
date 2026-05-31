@@ -143,26 +143,56 @@ function ResultadoCard({ resultado }: { resultado: number }) {
   return (
     <div className="rounded-2xl p-5 flex flex-col relative overflow-hidden h-full"
       style={{
-        background: "linear-gradient(180deg, #D9D0E3 0%, #CFC4DC 52%, #B8A9CA 100%)",
-        minHeight: 290,
+        background: "linear-gradient(175deg, #E2DBF0 0%, #D4C9E5 40%, #C3B3D9 100%)",
+        minHeight: 300,
       }}>
 
-      {/* lighthouse silhouette */}
-      <svg viewBox="0 0 60 110" style={{
-        position: "absolute", bottom: 0, right: 10,
-        width: 58, opacity: 0.20, pointerEvents: "none", fill: "#7A6A90",
-      }}>
-        <rect x="18" y="90" width="24" height="20" rx="2" />
-        <path d="M24 90 L26.5 36 L33.5 36 L36 90 Z" />
-        <rect x="27" y="72" width="6" height="10" rx="1.5" />
-        <circle cx="30" cy="58" r="2.5" />
-        <circle cx="30" cy="47" r="2" />
-        <rect x="24" y="24" width="12" height="13" rx="1.5" />
-        <polygon points="30,12 22,24 38,24" />
-        <circle cx="30" cy="10" r="2" />
-        <line x1="36" y1="29" x2="52" y2="18" stroke="#7A6A90" strokeWidth="1.5" strokeLinecap="round" />
-        <line x1="36" y1="31" x2="54" y2="31" stroke="#7A6A90" strokeWidth="1.5" strokeLinecap="round" />
-        <line x1="24" y1="29" x2="8"  y2="18" stroke="#7A6A90" strokeWidth="1.5" strokeLinecap="round" />
+      {/* lighthouse silhouette — bottom-right, detailed */}
+      <svg
+        viewBox="0 0 120 200"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{
+          position: "absolute",
+          bottom: 0,
+          right: 0,
+          width: 130,
+          height: "75%",
+          pointerEvents: "none",
+          opacity: 1,
+        }}
+      >
+        {/* light beams */}
+        <polygon points="58,38 0,5 0,18"   fill="#9B8AB8" opacity="0.18" />
+        <polygon points="58,38 0,28 0,38"  fill="#9B8AB8" opacity="0.13" />
+        <polygon points="58,38 115,5 115,22" fill="#9B8AB8" opacity="0.14" />
+        {/* cap/dome */}
+        <ellipse cx="58" cy="34" rx="14" ry="5" fill="#8B7AAF" opacity="0.5" />
+        <path d="M44 34 Q58 18 72 34 Z" fill="#8B7AAF" opacity="0.55" />
+        {/* lantern room */}
+        <rect x="46" y="34" width="24" height="16" rx="2" fill="#9B8AAF" opacity="0.5" />
+        {/* lantern glow */}
+        <ellipse cx="58" cy="42" rx="6" ry="5" fill="#E8E0F4" opacity="0.45" />
+        {/* gallery railing */}
+        <rect x="43" y="50" width="30" height="3" rx="1.5" fill="#8B7AAF" opacity="0.55" />
+        {/* tower body — trapezoidal */}
+        <path d="M50 53 L46 150 L70 150 L66 53 Z" fill="#9080B0" opacity="0.48" />
+        {/* window 1 */}
+        <ellipse cx="58" cy="85"  rx="4" ry="5.5" fill="#C4B5E0" opacity="0.4" />
+        {/* window 2 */}
+        <ellipse cx="58" cy="115" rx="3.5" ry="5" fill="#C4B5E0" opacity="0.35" />
+        {/* window 3 */}
+        <ellipse cx="58" cy="138" rx="3" ry="4"   fill="#C4B5E0" opacity="0.3" />
+        {/* door arch */}
+        <path d="M53 150 L53 162 Q58 168 63 162 L63 150 Z" fill="#8070A8" opacity="0.45" />
+        {/* base / foundation */}
+        <rect x="38" y="150" width="40" height="8"  rx="2" fill="#7B6A9E" opacity="0.5" />
+        <rect x="32" y="158" width="52" height="10" rx="2" fill="#7060A0" opacity="0.45" />
+        {/* ground/steps */}
+        <rect x="24" y="168" width="68" height="6"  rx="2" fill="#6858A0" opacity="0.35" />
+        <rect x="14" y="174" width="88" height="26" rx="3" fill="#6050A0" opacity="0.25" />
+        {/* rocks */}
+        <ellipse cx="28" cy="176" rx="10" ry="5" fill="#7060A8" opacity="0.25" />
+        <ellipse cx="90" cy="178" rx="8"  ry="4" fill="#7060A8" opacity="0.22" />
       </svg>
 
       <div className="relative z-10 flex flex-col h-full">
@@ -178,14 +208,14 @@ function ResultadoCard({ resultado }: { resultado: number }) {
         <span className="inline-flex items-center gap-1 self-start px-2.5 py-1 rounded-full text-[10px] font-semibold mb-4"
           style={{
             background: "rgba(77,47,112,0.08)",
-            border: "1px solid rgba(77,47,112,0.10)",
+            border: "1px solid rgba(77,47,112,0.12)",
             color: T.plumPrimary,
           }}>
           {isPos ? "↑" : "↓"} {isPos ? "+12,1%" : "-12,1%"} vs mês anterior
         </span>
 
         {/* divider */}
-        <div className="mb-4" style={{ borderTop: "1px solid rgba(77,47,112,0.12)" }} />
+        <div className="mb-4" style={{ borderTop: "1px solid rgba(77,47,112,0.14)" }} />
 
         {/* advisory */}
         <div className="flex items-start gap-2.5 flex-1">
@@ -199,10 +229,11 @@ function ResultadoCard({ resultado }: { resultado: number }) {
           </div>
         </div>
 
-        {/* CTA */}
+        {/* CTA — full width, compact */}
         <Link href="/relatorios">
-          <button className="mt-4 w-full h-9 rounded-xl text-xs font-semibold text-white transition-colors hover:opacity-90"
-            style={{ background: T.plumPrimary }}>
+          <button
+            className="mt-4 w-full rounded-xl text-sm font-semibold text-white transition-colors hover:opacity-90 active:scale-[0.98]"
+            style={{ background: T.plumPrimary, padding: "10px 16px" }}>
             Ver onde melhorar
           </button>
         </Link>
