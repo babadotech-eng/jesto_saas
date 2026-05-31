@@ -87,8 +87,8 @@
   --elevate-2: rgba(0,0,0, .08);
 
   /* ── Inner-pages warm palette ──────────────────────────── */
-  /* bg: #F8F6F2 warm off-white */
-  --background: 36 20% 96%;
+  /* bg: #F0E8DB clearly warm cream — cards pop white against this */
+  --background: 33 38% 90%;
   /* text: #2C2A33 warm dark */
   --foreground: 258 8% 18%;
 

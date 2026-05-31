@@ -28,7 +28,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const visibleNav = navigation.filter(i => !i.premium || isPremium);
 
   return (
-    <div className="flex min-h-screen w-full" style={{ background: "#F5F2ED" }}>
+    <div className="flex min-h-screen w-full bg-background">
 
       {/* ── Sidebar ──────────────────────────────────────────── */}
       <aside className="w-56 hidden md:flex flex-col shrink-0"
@@ -108,7 +108,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <div className="flex-1 p-5 overflow-y-auto" style={{ background: "#F5F2ED" }}>
+        <div className="flex-1 p-5 overflow-y-auto bg-background">
           {children}
         </div>
       </main>

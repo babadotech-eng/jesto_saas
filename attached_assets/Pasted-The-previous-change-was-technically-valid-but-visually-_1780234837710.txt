@@ -1,0 +1,74 @@
+The previous change was technically valid but visually too subtle.
+I do NOT want only token-level updates that produce almost no visible difference.
+
+Now make the inner pages visibly match the new Produtos page color language.
+
+IMPORTANT:
+- Painel must remain exactly as it is.
+- Do not touch Painel at all.
+- Only update the other pages.
+- I need a clearly visible before/after result on the inner pages.
+- Do not stop at changing root tokens if the UI still looks almost the same.
+- Inspect the actual rendered pages and make sure the visual result is clearly noticeable.
+
+PAGES TO UPDATE:
+- Produtos
+- Ingredientes
+- Receitas
+- Despesas
+- Transações
+- Funcionários
+- Relatórios
+- Configurações
+
+PAGE TO KEEP UNCHANGED:
+- Painel
+
+VISUAL TARGET:
+Use Produtos as the visual reference and make the other inner pages clearly follow this style:
+- dark graphite sidebar
+- warm off-white page background
+- white or near-white cards and tables
+- purple/plum active nav and selected states
+- orange/coral primary CTA buttons
+- soft green positive badges
+- subtle warm borders
+- warmer text and less cold/blue-gray UI
+
+THIS TIME THE RESULT MUST BE VISIBLY OBVIOUS.
+
+REQUIRED VISUAL CHANGES:
+1. Inner-page background must visibly shift from cold/bluish to warm off-white.
+2. Borders must visibly shift from cool gray to warm beige.
+3. Inputs, cards, dialogs, popovers, and tables must clearly look warmer and cleaner.
+4. Primary CTA buttons must visibly use orange/coral.
+5. Focus and active states must visibly use purple/plum.
+6. Positive badges/status must visibly use soft green.
+7. Secondary text must lose the cold blue-gray feel and become warmer gray-lilac.
+8. If any shared component is still using old hardcoded colors, update that shared component too.
+9. If global tokens are not enough, make the smallest additional shared-component edits required to produce a visible result.
+
+IMPLEMENTATION PRIORITY:
+1. Update global theme variables.
+2. Check rendered inner pages.
+3. If the result is still too subtle, update shared components that still preserve the old look.
+4. Do NOT do random page-by-page redesigns.
+5. Keep structure, layout, spacing, and typography unchanged.
+
+YOU MUST VERIFY VISUALLY:
+After changes, inspect at least:
+- Produtos
+- Despesas
+- Configurações
+
+If these pages do not show a clearly visible palette change, continue refining shared styles until they do.
+
+DO NOT CLAIM SUCCESS JUST BECAUSE TOKENS CHANGED.
+Success only counts if the rendered UI visibly changed.
+
+FINAL RESPONSE:
+Return only:
+1. which files were changed
+2. which visible UI elements changed
+3. how Painel was protected
+4. whether shared components needed edits beyond :root
