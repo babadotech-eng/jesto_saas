@@ -1,0 +1,207 @@
+IMPORTANT:
+Use the attached screenshot "mudar-para-esta.jpg" as the ONLY visual reference.
+The current implementation is wrong.
+Do NOT reinterpret.
+Do NOT redesign.
+Do NOT improvise.
+Correct the existing dashboard so it matches the attached reference as closely as possible.
+
+KEEP:
+- existing app structure
+- routes
+- data wiring where possible
+
+CHANGE EVERYTHING BELOW:
+
+1. SIDEBAR
+REMOVE the current sidebar styling if it differs from the reference.
+MAKE IT match the reference:
+- deep navy/plum background
+- Precifica logo with lilac “P” icon and white text
+- active item as rounded muted-plum pill
+- menu labels exactly:
+  Dashboard
+  Produtos
+  Ingredientes
+  Receitas
+  Despesas
+  Transações
+  Funcionários
+  Relatórios
+  Configurações
+- keep “Dica do dia” and “Sair” at the bottom
+- make “Dica do dia” visually match the reference
+
+2. TOP HEADER
+REPLACE the current top cards if needed.
+MAKE the header match the reference:
+- title: “Bom dia, Michel 👋”
+- subtitle: “Aqui está o resumo do seu negócio hoje.”
+
+Top KPI cards must be exactly:
+1. Receita do mês — R$ 28.540,00 — ↑ 8,6% vs mês anterior
+2. Custos do mês — R$ 22.350,00 — ↑ 5,3% vs mês anterior
+3. Margem média — 21,7% — ↑ 2,4 p.p. vs mês anterior
+4. Resultado do mês — -R$ 3.810,00 — ↓ -12,1% vs mês anterior
+
+Each KPI card must have:
+- white background
+- subtle border
+- colored circular icon
+- label, value, change indicator
+- spacing and proportions close to the reference
+
+3. RESULTADO DO MÊS CARD
+THIS CARD IS CURRENTLY WRONG. REBUILD IT.
+
+REMOVE:
+- any wrong large number
+- any wrong Receita/Custos internal rows
+- any heavy dark background if present
+- any layout that does not exist in the reference
+
+BUILD THIS INSTEAD:
+- soft misty plum/lilac atmospheric background
+- elegant subtle gradient
+- lighthouse silhouette in lower-right corner, very subtle
+- title: “Resultado do mês”
+- main number: -R$ 3.810,00
+- pill: “↓ -12,1% vs mês anterior”
+- divider line
+- advisory block with icon + text:
+  “Revise seus custos”
+  “para melhorar o resultado.”
+- button:
+  “Ver onde melhorar”
+
+IMPORTANT:
+This card must look soft, premium, atmospheric, and close to the reference.
+Do NOT make it too dark.
+Do NOT make it too bright.
+Do NOT invent extra content.
+
+4. RECEITA DOS ÚLTIMOS 7 DIAS
+REPLACE the current chart styling if needed.
+MAKE IT match the reference:
+- smooth line chart
+- filled plum area under the curve
+- title: “Receita dos últimos 7 dias”
+- info icon near title
+- dropdown: “Últimos 7 dias”
+- visible round points
+- elegant tooltip near 23/mai showing R$ 6.320,00
+
+Use this exact data:
+18/mai = 2200
+19/mai = 3400
+20/mai = 2800
+21/mai = 3000
+22/mai = 4800
+23/mai = 6320
+24/mai = 4100
+
+Y-axis labels:
+R$ 0
+R$ 2 mil
+R$ 4 mil
+R$ 6 mil
+R$ 8 mil
+
+5. PONTO DE EQUILÍBRIO
+FIX the donut card to match the reference:
+- title: “Ponto de equilíbrio”
+- donut with dark plum progress ring
+- yellow marker on the ring
+- center:
+  72%
+  atingido
+- text below:
+  “Faltam R$ 7.120,00”
+  “para alcançar o ponto”
+  “de equilíbrio este mês.”
+- bottom button/link:
+  “Ver detalhes”
+
+REMOVE any wrong percentage or wrong values.
+
+6. SAÚDE DO NEGÓCIO
+MAKE IT match the reference:
+- title: “Saúde do negócio”
+- green top banner with heart icon
+- text:
+  “Saudável”
+  “Seu negócio está no caminho certo!”
+- status rows:
+  3 Saudável
+  2 Atenção
+  1 Urgente
+- bottom link:
+  “Ver todos os indicadores →”
+
+DO NOT simplify this card too much.
+
+7. TRANSAÇÕES RECENTES
+REPLACE current rows with these exact rows:
+- Venda - Balcão | Receita | 24/mai · 10:42 | R$ 320,00
+- Venda - iFood | Receita | 24/mai · 09:15 | R$ 185,60
+- Compra - Frango | Insumos | 24/mai · 08:30 | -R$ 154,80
+- Aluguel | Despesa fixa | 24/mai · 07:45 | -R$ 1.200,00
+- Energia elétrica | Despesa fixa | 23/mai · 18:22 | -R$ 320,00
+
+Use:
+- colored circular icons
+- green positive values
+- red negative values
+- soft metadata text
+- bottom link:
+  “Ver todas as transações →”
+
+8. DESPESAS FIXAS MENSAIS
+REPLACE current values with:
+- Aluguel — R$ 1.200,00
+- Salários — R$ 4.800,00
+- Energia elétrica — R$ 320,00
+- Internet — R$ 120,00
+- Contador — R$ 250,00
+- Outras despesas — R$ 310,00
+- Total — R$ 7.000,00
+
+Use black icons on the left.
+Keep spacing and hierarchy close to the reference.
+
+9. PRODUTOS MAIS VENDIDOS
+FIX the dark card to match the reference:
+- title: “Produtos mais vendidos”
+- rows:
+  1 Marmitex Tradicional — 312 un.
+  2 Coxinha — 285 un.
+  3 Brigadeiro Gourmet — 210 un.
+  4 Refrigerante Lata — 198 un.
+  5 Bolo no Pote — 162 un.
+- dark navy/plum card background
+- plum progress bars
+- bottom link:
+  “Ver todos os produtos →”
+
+DO NOT stretch this section too much.
+Follow the proportions of the reference.
+
+10. GLOBAL STYLE
+MAKE the whole dashboard closer to the reference:
+- soft warm off-white page background
+- white cards
+- subtle borders
+- soft shadows
+- refined spacing
+- elegant plum palette
+- no yellow as dominant color
+- no leftover styling from the previous wrong dashboard
+
+11. FINAL RULE
+If any existing element conflicts with the attached reference, DELETE it and rebuild it to match the reference.
+Do not preserve wrong implementation choices.
+
+AT THE END, REPORT ONLY:
+- what was corrected
+- which sections were rebuilt
+- whether all values now match the reference

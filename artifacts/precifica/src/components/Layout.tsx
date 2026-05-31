@@ -17,24 +17,23 @@ import {
 import { ReactNode } from "react";
 
 const navigation = [
-  { name: "Painel",          href: "/painel",         icon: LayoutDashboard },
+  { name: "Dashboard",       href: "/painel",         icon: LayoutDashboard },
   { name: "Produtos",        href: "/produtos",        icon: Package },
-  { name: "Insumos",         href: "/insumos",         icon: Carrot },
-  { name: "Fichas Técnicas", href: "/ficha-tecnica",   icon: FileText },
+  { name: "Ingredientes",    href: "/insumos",         icon: Carrot },
+  { name: "Receitas",        href: "/ficha-tecnica",   icon: FileText },
   { name: "Despesas",        href: "/despesas",        icon: Wallet },
-  { name: "Lançamentos",     href: "/lancamentos",     icon: ArrowRightLeft },
+  { name: "Transações",      href: "/lancamentos",     icon: ArrowRightLeft },
   { name: "Funcionários",    href: "/funcionarios",    icon: Users, premium: true },
   { name: "Relatórios",      href: "/relatorios",      icon: BarChart3 },
   { name: "Configurações",   href: "/configuracoes",   icon: Settings },
 ];
 
-const PC = {
-  sidebar:       "#1a1625",
-  sidebarActive: "#2d2540",
-  sidebarText:   "#c4b8d8",
-  sidebarBorder: "rgba(255,255,255,0.06)",
-  accentLight:   "#a37ee8",
-  primary:       "#7c5cbf",
+const SB = {
+  bg:         "#1a1625",
+  activeBg:   "rgba(255,255,255,0.10)",
+  text:       "#a89cc4",
+  textActive: "#ffffff",
+  divider:    "rgba(255,255,255,0.07)",
 };
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -47,41 +46,40 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen w-full" style={{ background: "#f4f3f7" }}>
 
-      {/* ── Sidebar ───────────────────────────────────────────── */}
+      {/* ── Sidebar ─────────────────────────────────── */}
       <aside
-        className="w-64 hidden md:flex flex-col"
-        style={{ background: PC.sidebar, borderRight: `1px solid ${PC.sidebarBorder}` }}
+        className="w-56 hidden md:flex flex-col shrink-0"
+        style={{ background: SB.bg }}
       >
         {/* Logo */}
-        <div className="h-16 flex items-center px-5" style={{ borderBottom: `1px solid ${PC.sidebarBorder}` }}>
+        <div className="h-16 flex items-center px-5" style={{ borderBottom: `1px solid ${SB.divider}` }}>
           <div className="flex items-center gap-2.5">
             <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+              className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
               style={{ background: "linear-gradient(135deg, #7c5cbf, #a37ee8)" }}
             >
               <span className="text-white font-black text-sm leading-none">P</span>
             </div>
-            <span className="font-bold text-lg text-white tracking-tight">Precifica</span>
+            <span className="font-bold text-base text-white tracking-tight">Precifica</span>
           </div>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 py-5 px-3 flex flex-col gap-0.5 overflow-y-auto">
+        <nav className="flex-1 py-4 px-3 flex flex-col gap-0.5 overflow-y-auto">
           {visibleNav.map((item) => {
             const isActive = location === item.href;
             return (
               <Link
                 key={item.name}
                 href={item.href}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all relative"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
                 style={{
-                  background:  isActive ? PC.sidebarActive : "transparent",
-                  color:       isActive ? "#fff"            : PC.sidebarText,
-                  fontWeight:  isActive ? 600               : 400,
-                  borderLeft:  isActive ? `3px solid ${PC.accentLight}` : "3px solid transparent",
+                  background: isActive ? SB.activeBg : "transparent",
+                  color:      isActive ? SB.textActive : SB.text,
+                  fontWeight: isActive ? 600 : 400,
                 }}
               >
-                <item.icon size={17} />
+                <item.icon size={16} />
                 <span className="text-sm">{item.name}</span>
               </Link>
             );
@@ -89,54 +87,50 @@ export default function Layout({ children }: { children: ReactNode }) {
         </nav>
 
         {/* Dica do dia */}
-        <div className="mx-3 mb-3 rounded-xl p-4" style={{ background: "#2d2540", border: `1px solid ${PC.sidebarBorder}` }}>
-          <div className="flex items-start gap-2.5">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: PC.primary }}>
-              <Lightbulb size={13} className="text-white" />
+        <div className="mx-3 mb-3 rounded-2xl p-4" style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${SB.divider}` }}>
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
+              style={{ background: "rgba(124,92,191,0.4)" }}>
+              <Lightbulb size={12} style={{ color: "#c4b0f0" }} />
             </div>
-            <div>
-              <p className="text-xs font-semibold text-white mb-0.5">Dica do dia</p>
-              <p className="text-[11px] leading-relaxed" style={{ color: PC.sidebarText }}>
-                Produtos com margem abaixo de 20% merecem revisão de custo ou preço.
-              </p>
-              <a href="/relatorios" className="text-[11px] font-semibold mt-1.5 block" style={{ color: PC.accentLight }}>
-                Saiba mais →
-              </a>
-            </div>
+            <p className="text-xs font-semibold" style={{ color: "#c4b0f0" }}>Dica do dia</p>
           </div>
+          <p className="text-[11px] leading-relaxed mb-2.5" style={{ color: SB.text }}>
+            Atualize o custo dos seus ingredientes regularmente.
+          </p>
+          <Link href="/insumos" className="text-[11px] font-semibold hover:underline" style={{ color: "#a37ee8" }}>
+            Saiba mais →
+          </Link>
         </div>
 
         {/* Sair */}
-        <div className="px-3 pb-4" style={{ borderTop: `1px solid ${PC.sidebarBorder}`, paddingTop: "12px" }}>
+        <div className="px-3 pb-4 pt-2" style={{ borderTop: `1px solid ${SB.divider}` }}>
           <button
             onClick={signOut}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg w-full transition-all"
-            style={{ color: PC.sidebarText }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = PC.sidebarActive; (e.currentTarget as HTMLElement).style.color = "#fff"; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = PC.sidebarText; }}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl w-full transition-all text-left"
+            style={{ color: SB.text }}
           >
-            <LogOut size={17} />
+            <LogOut size={16} />
             <span className="text-sm">Sair</span>
           </button>
         </div>
       </aside>
 
-      {/* ── Main content ─────────────────────────────────────── */}
+      {/* ── Main ─────────────────────────────────────── */}
       <main className="flex-1 flex flex-col min-w-0">
-        {/* Mobile header */}
         <header
           className="h-14 flex items-center px-5 md:hidden"
-          style={{ background: PC.sidebar, borderBottom: `1px solid ${PC.sidebarBorder}` }}
+          style={{ background: SB.bg }}
         >
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-md flex items-center justify-center" style={{ background: PC.primary }}>
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center"
+              style={{ background: "linear-gradient(135deg, #7c5cbf, #a37ee8)" }}>
               <span className="text-white font-black text-xs">P</span>
             </div>
-            <span className="font-bold text-white">Precifica</span>
+            <span className="font-bold text-white text-sm">Precifica</span>
           </div>
         </header>
-
-        <div className="flex-1 p-4 sm:p-6 overflow-y-auto" style={{ background: "#f4f3f7" }}>
+        <div className="flex-1 p-5 overflow-y-auto" style={{ background: "#f4f3f7" }}>
           {children}
         </div>
       </main>
