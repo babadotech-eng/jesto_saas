@@ -1,0 +1,323 @@
+IMPORTANT:
+Do not change the rest of the dashboard.
+Do not touch any other component.
+Only rebuild the card "Resultado do mês".
+
+Use the attached target screenshot as the visual reference.
+Discard the current version of this card completely.
+Rebuild this single card from zero.
+
+==================================================
+RESULTADO DO MÊS — SINGLE CARD REBUILD
+==================================================
+
+GOAL
+This card must match the reference much more closely.
+The current version is wrong.
+Do not refine it incrementally.
+Delete its current styling and structure and rebuild it from scratch.
+
+==================================================
+1. CONTENT — USE EXACTLY THIS
+==================================================
+
+Title:
+Resultado do mês
+
+Value:
+-R$ 3.810,00
+
+Pill:
+↓ -12,1% vs mês anterior
+
+Advisory:
+Revise seus custos
+para melhorar o resultado.
+
+Button:
+Ver onde melhorar
+
+Do not use any other value.
+Do not use any extra rows.
+Do not add extra copy.
+
+==================================================
+2. LAYOUT — EXACT ORDER
+==================================================
+
+Inside the card, place elements in this order from top to bottom:
+
+1. title
+2. main value
+3. small pill
+4. subtle divider
+5. advisory row with icon on the left and 2 text lines on the right
+6. button
+7. lighthouse silhouette in the background lower-right only
+
+The lighthouse is decorative background only.
+It is NOT a content block.
+
+==================================================
+3. CARD STYLE
+==================================================
+
+The card must feel:
+- soft
+- premium
+- atmospheric
+- misty
+- elegant
+- quiet
+
+The card must NOT feel:
+- flashy
+- neon
+- generic SaaS
+- heavily purple
+- glassmorphic
+- cartoonish
+- overly dark
+
+Card container:
+- rounded corners
+- soft premium radius
+- no hard border
+- subtle shadow only
+
+Suggested card base:
+- border-radius: 22px to 26px
+- overflow: hidden
+- position: relative
+- isolation: isolate
+
+==================================================
+4. BACKGROUND — REPRODUCE THE SMOKY / MISTY EFFECT
+==================================================
+
+Yes, this effect can be done in CSS.
+Do it using layered gradients only.
+Do not use a flat purple fill.
+
+Build the background with multiple layers exactly in this spirit:
+
+Base layer:
+linear-gradient(180deg, #DED7E8 0%, #CEC2DB 54%, #B7A8C9 100%)
+
+Mist layer 1:
+radial-gradient(circle at 18% 18%, rgba(255,255,255,0.48) 0%, rgba(255,255,255,0.00) 42%)
+
+Mist layer 2:
+radial-gradient(circle at 78% 24%, rgba(245,240,248,0.34) 0%, rgba(245,240,248,0.00) 46%)
+
+Mist layer 3:
+radial-gradient(circle at 55% 72%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.00) 38%)
+
+Soft directional haze:
+linear-gradient(135deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.00) 48%, rgba(120,101,148,0.10) 100%)
+
+Apply them as layered backgrounds, not separate visible blocks.
+
+Important:
+- transitions must be soft
+- no sharp edges
+- no saturated purple
+- no high contrast zones
+- no obvious circles
+- final result should feel foggy and blended
+
+Optional:
+add a very subtle noise texture using a pseudo-element with ultra-low opacity if needed.
+If it becomes dirty or grainy, remove it.
+
+==================================================
+5. LIGHTHOUSE — VERY SUBTLE
+==================================================
+
+The lighthouse is being overdone in the current version.
+Fix that.
+
+Rules:
+- lower-right corner only
+- background silhouette only
+- very low opacity
+- no detailed drawing
+- no strong outline
+- no thick beam
+- no icon style
+- should almost disappear into the mist
+
+Suggested lighthouse color:
+#6E5F81
+
+Suggested opacity:
+0.16 to 0.22
+
+If using a beam, make it extremely subtle:
+- soft diagonal haze only
+- white or near-white at very low opacity
+- almost imperceptible
+
+If the lighthouse looks too illustrative, simplify it further.
+
+==================================================
+6. TYPOGRAPHY
+==================================================
+
+Title:
+- small
+- elegant
+- color: #43384E
+- font-weight: 500
+
+Main value:
+- prominent
+- strong hierarchy
+- color: #4A2E69
+- font-weight: 700 or 800
+- value must be exactly: -R$ 3.810,00
+
+Pill text:
+- small
+- color: #5E516C
+
+Advisory line 1:
+- color: #2E2A36
+- font-weight: 600
+
+Advisory line 2:
+- color: #6E6877
+- font-weight: 400
+
+Button text:
+- white
+- medium or semibold
+
+==================================================
+7. PILL
+==================================================
+
+The pill must be quiet and integrated.
+
+Use:
+- background: rgba(74, 46, 105, 0.08)
+- border: 1px solid rgba(74, 46, 105, 0.10)
+- border-radius: 999px
+- compact horizontal padding
+- compact vertical height
+
+Do not make it too dark.
+Do not make it too contrasty.
+
+==================================================
+8. DIVIDER
+==================================================
+
+Use a very soft divider:
+- 1px
+- color: rgba(74, 46, 105, 0.10)
+
+Do not make it prominent.
+
+==================================================
+9. ADVISORY ROW
+==================================================
+
+Structure:
+- icon circle on the left
+- two text lines on the right
+
+Icon circle:
+- size small to medium
+- background: rgba(74, 46, 105, 0.10)
+- color/icon: #5A486D
+
+Icon style:
+- minimal warning icon
+- no bright yellow
+- no heavy stroke
+
+Text block:
+- vertically centered
+- balanced spacing
+- line-height refined
+
+==================================================
+10. BUTTON
+==================================================
+
+The button should be elegant and compact.
+
+Use:
+- background: #5A347E
+- hover: #4B2B69
+- text: #FFFFFF
+- border-radius: 999px
+- no gradient
+- no glow
+- no oversized padding
+- width should feel balanced inside the card, not edge-to-edge
+
+The button must feel premium, not generic.
+
+==================================================
+11. SPACING
+==================================================
+
+Use clean vertical rhythm:
+- generous padding around the card
+- title close to top, but not cramped
+- tight title-to-value spacing
+- comfortable value-to-pill spacing
+- larger spacing before divider
+- advisory row with breathing room
+- button lower with balanced bottom spacing
+
+Do not crowd the content.
+Do not leave excessive empty space.
+
+==================================================
+12. STRICT DO NOTs
+==================================================
+
+DO NOT:
+- keep the old wrong value
+- use -R$ 9.992,51
+- use bright purple
+- use black or very dark purple as background
+- use a flat gradient
+- use a detailed lighthouse illustration
+- use a strong warning icon
+- add extra KPI rows
+- add extra labels
+- make the lighthouse the main visual element
+- change the rest of the dashboard
+
+==================================================
+13. IMPLEMENTATION NOTE
+==================================================
+
+Use pseudo-elements if needed:
+- ::before for mist / haze
+- ::after for lighthouse silhouette or secondary overlay
+
+Keep all effects subtle.
+If any layer becomes visually obvious, reduce it.
+
+==================================================
+14. SUCCESS CRITERIA
+==================================================
+
+This rebuild is only correct if:
+- the card value is exactly -R$ 3.810,00
+- the card background feels misty and atmospheric
+- the lighthouse is subtle and integrated
+- the card looks premium and quiet
+- the rest of the dashboard remains unchanged
+
+FINAL REPORT:
+Return only:
+- whether the card was rebuilt from zero
+- whether the value is now -R$ 3.810,00
+- whether the smoky layered background was implemented
+- whether the lighthouse was simplified

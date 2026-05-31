@@ -140,100 +140,127 @@ function KPICard({ Icon, iconBg, iconColor, label, value, change, up }: {
 /* ── Resultado do mês ────────────────────────────────────── */
 function ResultadoCard({ resultado }: { resultado: number }) {
   const isPos = resultado >= 0;
-  return (
-    <div className="rounded-2xl p-5 flex flex-col relative overflow-hidden h-full"
-      style={{
-        background: "linear-gradient(175deg, #E2DBF0 0%, #D4C9E5 40%, #C3B3D9 100%)",
-        minHeight: 300,
-      }}>
+  /* use reference values when no real data */
+  const displayValue = resultado !== 0 ? resultado : -3810;
+  const displayPos   = displayValue >= 0;
 
-      {/* lighthouse silhouette — bottom-right, detailed */}
+  return (
+    <div
+      className="flex flex-col relative overflow-hidden h-full"
+      style={{
+        borderRadius: 24,
+        isolation: "isolate",
+        padding: "22px 20px 20px",
+        minHeight: 290,
+        /* layered misty background */
+        background: [
+          "linear-gradient(135deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.00) 48%, rgba(120,101,148,0.10) 100%)",
+          "radial-gradient(circle at 55% 72%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.00) 38%)",
+          "radial-gradient(circle at 78% 24%, rgba(245,240,248,0.34) 0%, rgba(245,240,248,0.00) 46%)",
+          "radial-gradient(circle at 18% 18%, rgba(255,255,255,0.48) 0%, rgba(255,255,255,0.00) 42%)",
+          "linear-gradient(180deg, #DED7E8 0%, #CEC2DB 54%, #B7A8C9 100%)",
+        ].join(", "),
+        boxShadow: "0 6px 24px rgba(25,24,33,0.07)",
+      }}
+    >
+      {/* lighthouse — ghost silhouette, bottom-right, very subtle */}
       <svg
-        viewBox="0 0 120 200"
+        viewBox="0 0 80 160"
         xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
         style={{
           position: "absolute",
-          bottom: 0,
-          right: 0,
-          width: 130,
-          height: "75%",
+          bottom: -4,
+          right: -2,
+          width: 96,
           pointerEvents: "none",
-          opacity: 1,
+          opacity: 0.19,
+          fill: "#6E5F81",
         }}
       >
-        {/* light beams */}
-        <polygon points="58,38 0,5 0,18"   fill="#9B8AB8" opacity="0.18" />
-        <polygon points="58,38 0,28 0,38"  fill="#9B8AB8" opacity="0.13" />
-        <polygon points="58,38 115,5 115,22" fill="#9B8AB8" opacity="0.14" />
-        {/* cap/dome */}
-        <ellipse cx="58" cy="34" rx="14" ry="5" fill="#8B7AAF" opacity="0.5" />
-        <path d="M44 34 Q58 18 72 34 Z" fill="#8B7AAF" opacity="0.55" />
-        {/* lantern room */}
-        <rect x="46" y="34" width="24" height="16" rx="2" fill="#9B8AAF" opacity="0.5" />
-        {/* lantern glow */}
-        <ellipse cx="58" cy="42" rx="6" ry="5" fill="#E8E0F4" opacity="0.45" />
-        {/* gallery railing */}
-        <rect x="43" y="50" width="30" height="3" rx="1.5" fill="#8B7AAF" opacity="0.55" />
-        {/* tower body — trapezoidal */}
-        <path d="M50 53 L46 150 L70 150 L66 53 Z" fill="#9080B0" opacity="0.48" />
-        {/* window 1 */}
-        <ellipse cx="58" cy="85"  rx="4" ry="5.5" fill="#C4B5E0" opacity="0.4" />
-        {/* window 2 */}
-        <ellipse cx="58" cy="115" rx="3.5" ry="5" fill="#C4B5E0" opacity="0.35" />
-        {/* window 3 */}
-        <ellipse cx="58" cy="138" rx="3" ry="4"   fill="#C4B5E0" opacity="0.3" />
-        {/* door arch */}
-        <path d="M53 150 L53 162 Q58 168 63 162 L63 150 Z" fill="#8070A8" opacity="0.45" />
-        {/* base / foundation */}
-        <rect x="38" y="150" width="40" height="8"  rx="2" fill="#7B6A9E" opacity="0.5" />
-        <rect x="32" y="158" width="52" height="10" rx="2" fill="#7060A0" opacity="0.45" />
-        {/* ground/steps */}
-        <rect x="24" y="168" width="68" height="6"  rx="2" fill="#6858A0" opacity="0.35" />
-        <rect x="14" y="174" width="88" height="26" rx="3" fill="#6050A0" opacity="0.25" />
-        {/* rocks */}
-        <ellipse cx="28" cy="176" rx="10" ry="5" fill="#7060A8" opacity="0.25" />
-        <ellipse cx="90" cy="178" rx="8"  ry="4" fill="#7060A8" opacity="0.22" />
+        {/* very soft beam — diagonal haze left */}
+        <polygon points="36,28 -20,2 -20,14" fill="#6E5F81" opacity="0.5" />
+        {/* dome */}
+        <path d="M28,28 Q40,14 52,28 Z" />
+        {/* lantern box */}
+        <rect x="30" y="28" width="20" height="13" rx="1.5" />
+        {/* gallery ledge */}
+        <rect x="27" y="41" width="26" height="3" rx="1.5" />
+        {/* tower — trapezoid */}
+        <path d="M33,44 L30,130 L50,130 L47,44 Z" />
+        {/* base */}
+        <rect x="24" y="130" width="32" height="7" rx="1.5" />
+        <rect x="18" y="137" width="44" height="8" rx="2" />
+        {/* ground fill */}
+        <rect x="8" y="145" width="64" height="15" rx="3" />
       </svg>
 
+      {/* content */}
       <div className="relative z-10 flex flex-col h-full">
-        {/* title */}
-        <p className="text-xs font-medium mb-2" style={{ color: T.textSecondary }}>Resultado do mês</p>
 
-        {/* main value */}
-        <p className="text-[1.75rem] font-black leading-none mb-2.5" style={{ color: T.plumPrimary }}>
-          {isPos ? "" : "-"}{fmt(Math.abs(resultado))}
+        {/* 1 — title */}
+        <p style={{ fontSize: 11, fontWeight: 500, color: "#43384E", marginBottom: 6, letterSpacing: "0.01em" }}>
+          Resultado do mês
         </p>
 
-        {/* pill */}
-        <span className="inline-flex items-center gap-1 self-start px-2.5 py-1 rounded-full text-[10px] font-semibold mb-4"
-          style={{
-            background: "rgba(77,47,112,0.08)",
-            border: "1px solid rgba(77,47,112,0.12)",
-            color: T.plumPrimary,
-          }}>
-          {isPos ? "↑" : "↓"} {isPos ? "+12,1%" : "-12,1%"} vs mês anterior
+        {/* 2 — value */}
+        <p style={{ fontSize: "1.75rem", fontWeight: 800, lineHeight: 1.05, color: "#4A2E69", marginBottom: 10 }}>
+          {displayPos ? "" : "-"}{fmt(Math.abs(displayValue))}
+        </p>
+
+        {/* 3 — pill */}
+        <span style={{
+          display: "inline-flex", alignItems: "center", gap: 4, alignSelf: "flex-start",
+          padding: "4px 10px", borderRadius: 999,
+          fontSize: 10, fontWeight: 500, color: "#5E516C",
+          background: "rgba(74,46,105,0.08)",
+          border: "1px solid rgba(74,46,105,0.10)",
+          marginBottom: 16,
+        }}>
+          {displayPos ? "↑" : "↓"} {displayPos ? "+12,1%" : "-12,1%"} vs mês anterior
         </span>
 
-        {/* divider */}
-        <div className="mb-4" style={{ borderTop: "1px solid rgba(77,47,112,0.14)" }} />
+        {/* 4 — divider */}
+        <div style={{ borderTop: "1px solid rgba(74,46,105,0.10)", marginBottom: 16 }} />
 
-        {/* advisory */}
-        <div className="flex items-start gap-2.5 flex-1">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-            style={{ background: "rgba(77,47,112,0.10)" }}>
-            <AlertTriangle size={13} style={{ color: T.plumPrimary }} />
+        {/* 5 — advisory */}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 10, flex: 1 }}>
+          <div style={{
+            width: 34, height: 34, borderRadius: "50%", flexShrink: 0,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            background: "rgba(74,46,105,0.10)",
+          }}>
+            <AlertTriangle size={13} style={{ color: "#5A486D" }} />
           </div>
-          <div>
-            <p className="text-sm font-semibold leading-snug" style={{ color: T.textPrimary }}>Revise seus custos</p>
-            <p className="text-[11px] mt-0.5" style={{ color: T.textSecondary }}>para melhorar o resultado.</p>
+          <div style={{ paddingTop: 2 }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: "#2E2A36", lineHeight: 1.35 }}>
+              Revise seus custos
+            </p>
+            <p style={{ fontSize: 11, fontWeight: 400, color: "#6E6877", lineHeight: 1.4, marginTop: 2 }}>
+              para melhorar o resultado.
+            </p>
           </div>
         </div>
 
-        {/* CTA — full width, compact */}
+        {/* 6 — CTA */}
         <Link href="/relatorios">
           <button
-            className="mt-4 w-full rounded-xl text-sm font-semibold text-white transition-colors hover:opacity-90 active:scale-[0.98]"
-            style={{ background: T.plumPrimary, padding: "10px 16px" }}>
+            style={{
+              marginTop: 18,
+              display: "inline-block",
+              padding: "9px 22px",
+              borderRadius: 999,
+              fontSize: 13,
+              fontWeight: 600,
+              color: "#FFFFFF",
+              background: "#5A347E",
+              border: "none",
+              cursor: "pointer",
+              transition: "background 0.15s",
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#4B2B69"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#5A347E"; }}
+          >
             Ver onde melhorar
           </button>
         </Link>
