@@ -108,7 +108,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <div className="flex-1 p-5 overflow-y-auto bg-background">
+        <div className="flex-1 p-5 overflow-y-auto bg-background inner-pages">
           {children}
         </div>
       </main>

@@ -206,6 +206,25 @@
   --chart-5: 280 65% 60%;
 }
 
+/* ══ Inner-pages scope: override primary to brand plum (#7A4FB2) ══
+   Applied only to the content div inside Layout (.inner-pages).
+   Login, Landing, Cadastro, Planos render OUTSIDE Layout — unaffected.
+   Painel uses 100% inline styles (T.* object) — unaffected.
+   ══════════════════════════════════════════════════════════════════ */
+.inner-pages {
+  /* brand plum #7A4FB2 → HSL 266 39% 50% */
+  --primary: 266 39% 50%;
+  --primary-foreground: 0 0% 100%;
+
+  /* primary border for button outline variant */
+  --primary-border: hsl(266 39% 43%);
+
+  /* yellow accent #FDC205 available as custom property for subtle details */
+  --yellow-accent: #FDC205;
+  --yellow-accent-soft: #FEF3C0;
+  --yellow-accent-border: #FCD34D;
+}
+
 @layer base {
   * {
     @apply border-border;

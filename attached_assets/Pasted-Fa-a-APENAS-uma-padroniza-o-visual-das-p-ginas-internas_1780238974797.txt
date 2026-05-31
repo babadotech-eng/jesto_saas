@@ -1,0 +1,78 @@
+Faça APENAS uma padronização visual das páginas internas do app para seguir a mesma identidade visual já existente no projeto.
+
+ESCOPO PERMITIDO:
+- Ajustar somente as páginas internas:
+  - Produtos
+  - Ingredientes
+  - Receitas
+  - Despesas
+  - Transações
+  - Funcionários
+  - Relatórios
+  - Configurações
+
+ESCOPO PROIBIDO:
+- NÃO alterar a dashboard/painel.
+- NÃO alterar a home.
+- NÃO alterar rotas.
+- NÃO alterar lógica de negócio.
+- NÃO alterar banco de dados.
+- NÃO alterar componentes compartilhados usados pela dashboard/home, se isso puder impactá-las.
+- NÃO refatorar estrutura do projeto.
+- NÃO criar novas funcionalidades.
+- NÃO trocar textos, labels ou fluxos.
+- NÃO mexer em responsividade além do necessário para manter o visual atual funcionando.
+
+OBJETIVO:
+Aplicar nas páginas internas a mesma linguagem visual já existente no app, preservando exatamente o visual atual da dashboard/painel e da home.
+
+DIRETRIZ CRÍTICA:
+Antes de editar, identifique quais arquivos pertencem SOMENTE às páginas internas listadas acima e trabalhe apenas neles. Se algum estilo/componente for compartilhado com dashboard ou home, NÃO altere esse arquivo compartilhado; em vez disso, crie estilos locais/isolados para as páginas internas.
+
+ESTILO A REPLICAR NAS PÁGINAS INTERNAS:
+- Base visual clean e premium.
+- Sidebar escura.
+- Conteúdo principal com fundo claro.
+- Cards brancos com bordas suaves, cantos arredondados e sombra leve.
+- Tipografia moderna e limpa.
+- Roxo/lilás como cor principal de ação.
+- Adicionar detalhes sutis em amarelo `#FDC205`, sem transformar o amarelo em cor principal.
+
+COMO USAR O AMARELO `#FDC205`:
+- Apenas em detalhes sutis:
+  - pequenos indicadores
+  - badges de atenção
+  - pontos de destaque em gráficos
+  - hover leve de ícones
+  - bordas finas de status
+  - microdetalhes visuais
+- Não usar amarelo como fundo principal de card.
+- Não usar amarelo como botão principal.
+- Não exagerar no contraste.
+
+REGRAS DE COMPONENTES:
+- Botão primário: roxo escuro, texto branco, canto arredondado, hover discreto.
+- Botão secundário/ghost: fundo transparente ou neutro, texto escuro, hover suave.
+- Inputs: fundo branco, borda clara, foco em roxo.
+- Tabelas/listas: visual limpo, ícones discretos, valores alinhados, estados positivos em verde e negativos em vermelho.
+- Cards: branco, sombra sutil, radius consistente.
+- Status “atenção” ou “pendente”: usar amarelo `#FDC205` de forma suave, com baixa opacidade.
+
+IMPORTANTE:
+- Preserve 100% da dashboard/painel como está hoje.
+- Preserve 100% da home como está hoje.
+- Não faça melhorias “extras”.
+- Não faça limpeza de código ampla.
+- Não mova arquivos sem necessidade.
+- Não altere nada fora das páginas internas listadas.
+
+ENTREGA ESPERADA:
+- Somente ajustes visuais nas páginas internas.
+- Mesmo padrão visual da dashboard, mas sem tocar na dashboard.
+- Alterações mínimas e isoladas.
+- Se houver risco de impactar dashboard/home, não alterar o arquivo compartilhado; criar variação local.
+
+Ao final, mostre exatamente:
+1. Quais arquivos foram alterados.
+2. Quais páginas foram ajustadas.
+3. Confirme explicitamente que dashboard/painel e home não foram modificadas.
