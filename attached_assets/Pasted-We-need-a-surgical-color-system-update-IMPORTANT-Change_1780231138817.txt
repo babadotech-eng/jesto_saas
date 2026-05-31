@@ -1,0 +1,256 @@
+We need a surgical color-system update.
+
+IMPORTANT:
+- Change the colors of all inner pages EXCEPT the main dashboard home page “Painel”.
+- The Painel page must remain visually EXACTLY as it is today.
+- Do not redesign layout.
+- Do not change spacing.
+- Do not change typography.
+- Do not change component structure.
+- Do not rewrite pages one by one unless absolutely necessary.
+- Prefer global theme-level changes.
+
+PRIMARY GOAL:
+Use the Produtos page as the visual source of truth for the color system of the rest of the app.
+
+PAGES TO UPDATE:
+- Produtos
+- Ingredientes
+- Receitas
+- Despesas
+- Transações
+- Funcionários
+- Relatórios
+- Configurações
+
+PAGE TO PRESERVE:
+- Painel
+
+==================================================
+STEP 1 — INSPECT THE APP BEFORE EDITING
+==================================================
+
+First inspect the codebase and identify:
+1. where global styles live
+2. whether the app uses:
+   - shadcn/ui theme tokens
+   - Tailwind v3
+   - Tailwind v4
+   - plain CSS variables
+   - CSS modules
+   - inline styles
+3. where the sidebar colors, card colors, button colors, and table colors are defined
+4. how routes/layouts are separated
+5. which layout or route corresponds to Painel
+
+Check files such as:
+- app/globals.css
+- src/app/globals.css
+- styles/globals.css
+- app/layout.tsx
+- src/app/layout.tsx
+- app/painel/page.tsx
+- src/app/painel/page.tsx
+- components.json
+- tailwind.config.js
+- tailwind.config.ts
+- postcss.config.js
+- any theme provider
+- sidebar/layout shell components
+
+Before changing anything, determine the safest global theme layer.
+
+==================================================
+STEP 2 — DO NOT TOUCH PAINEL
+==================================================
+
+Painel must keep its current appearance unchanged.
+
+This is mandatory:
+- do not modify Painel background
+- do not modify Painel cards
+- do not modify Painel widgets
+- do not modify Painel-specific gradients
+- do not modify Painel-specific KPI styling
+- do not modify Painel-specific component colors
+
+If there is a shared layout/theme used by Painel and the other pages, split the theme logic so Painel keeps the current theme and the other pages receive the new theme.
+
+Use route-aware theme separation if needed, for example:
+- a specific class on body/root for Painel
+- a different class/data-theme for all non-Painel pages
+- a conditional layout wrapper based on pathname
+- a route-specific layout if the framework supports it
+
+Preferred approach:
+- preserve current dashboard theme as “dashboard-home-theme”
+- create/apply a second theme for all inner pages, such as “app-inner-theme”
+
+==================================================
+STEP 3 — IMPLEMENT THE INNER-PAGES COLOR SYSTEM
+==================================================
+
+Use the Produtos page as the source of truth.
+
+Desired color language:
+- dark graphite sidebar
+- warm off-white main background
+- soft white cards and tables
+- purple/plum for active navigation and selected states
+- orange/coral for primary CTA only
+- green for success/positive metrics
+- soft red for destructive actions
+- subtle warm borders
+- dark warm gray text
+- muted gray-lilac secondary text
+
+TARGET TOKENS:
+
+--app-bg: #F8F6F2;
+--surface: #FFFFFF;
+--surface-soft: #FBFAF8;
+--surface-muted: #F3EFE9;
+--border: #E9E3DB;
+--border-soft: #F1ECE6;
+
+--text-primary: #2C2A33;
+--text-secondary: #7E7A86;
+--text-muted: #A29DAA;
+
+--sidebar-bg: #1D1B27;
+--sidebar-surface: #262233;
+--sidebar-text: rgba(255,255,255,0.86);
+--sidebar-text-muted: rgba(255,255,255,0.58);
+
+--brand-primary: #7C52B8;
+--brand-primary-hover: #6D45A7;
+--brand-primary-soft: #EFE6FB;
+--brand-primary-border: #D8C6F2;
+
+--cta-primary: #FF7A45;
+--cta-primary-hover: #F06B37;
+--cta-primary-soft: #FFF1EA;
+
+--success-bg: #DDF7E7;
+--success-text: #2F9E5B;
+--success-soft: #F1FCF5;
+
+--danger: #EE6B78;
+--danger-soft: #FFF0F2;
+
+--warning: #F3B64C;
+--info: #6E8DFF;
+
+--focus-ring: rgba(124, 82, 184, 0.22);
+
+==================================================
+STEP 4 — IMPLEMENTATION RULES BY STACK
+==================================================
+
+If the app uses shadcn/ui:
+- do NOT hardcode colors directly in each component
+- edit the semantic theme tokens in the main global CSS file
+- map the new palette to tokens like:
+  --background
+  --foreground
+  --card
+  --card-foreground
+  --popover
+  --popover-foreground
+  --primary
+  --primary-foreground
+  --secondary
+  --secondary-foreground
+  --muted
+  --muted-foreground
+  --accent
+  --accent-foreground
+  --destructive
+  --destructive-foreground
+  --border
+  --input
+  --ring
+  --sidebar
+  --sidebar-foreground
+  --sidebar-border
+  --sidebar-accent
+  --sidebar-accent-foreground
+
+- if custom tokens are needed, add:
+  --success
+  --success-foreground
+  --cta
+  --cta-foreground
+
+If the app uses Tailwind v4:
+- keep token definitions in CSS
+- expose them through the existing theme layer if present
+- do not rebuild the theme architecture if a variable-based one already exists
+
+If the app uses Tailwind v3:
+- preserve current structure
+- if colors come from tailwind.config, update semantic references carefully
+- prefer CSS variables if the project already uses them
+
+If the app uses plain CSS:
+- introduce the smallest possible set of global variables
+- apply them to shared layouts/components only
+- avoid page-specific overrides unless necessary
+
+==================================================
+STEP 5 — USAGE RULES
+==================================================
+
+Apply these rules across inner pages:
+- purple = active nav, selected states, tabs, selected filters, focus, small highlights
+- orange = primary CTA button only
+- green = success, margin, positive badges, positive statuses
+- red = destructive actions only
+- content area must remain light, clean, and highly readable
+- tables must remain white or near-white with very subtle borders
+- cards must remain white or near-white
+- avoid gradients on inner pages
+- avoid dark cards in the content area
+- avoid making the whole app purple
+- avoid changing Painel styling in any way
+
+==================================================
+STEP 6 — COMPONENTS TO UPDATE GLOBALLY
+==================================================
+
+Update shared components/tokens affecting:
+- sidebar
+- sidebar active item
+- page background
+- cards
+- tables
+- inputs
+- filters
+- buttons
+- badges
+- hover states
+- focus states
+- destructive icons/buttons
+
+Do this through shared theme/component layers first.
+Only use page-level overrides if a page is truly isolated from the shared system.
+
+==================================================
+STEP 7 — VALIDATION
+==================================================
+
+After implementing:
+- verify Painel is unchanged
+- verify Produtos keeps the new reference look
+- verify the other inner pages now match the Produtos color language
+- verify no accidental spacing/layout changes happened
+- verify buttons, badges, tables, inputs, and sidebar are consistent
+- verify no old purple-heavy dashboard styling leaked into the inner pages
+- verify no inner-page changes leaked back into Painel
+
+FINAL RESPONSE:
+Return only:
+1. what theme layer/files were changed
+2. how Painel was preserved
+3. which shared components inherited the new palette
+4. whether any page required an exception override
