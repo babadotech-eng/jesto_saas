@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { useListFichas, useCreateFicha, useDeleteFicha, useGetFicha, useAddFichaItem, useDeleteFichaItem, useListProdutos, useListInsumos, getListFichasQueryKey, getGetFichaQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAssinatura } from "@/hooks/useAssinatura";
@@ -12,8 +12,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -52,48 +50,80 @@ function InsumoCombobox({
   onValueChange: (id: string) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
   const selected = insumos?.find(i => i.id === value);
 
+  const filtered = useMemo(() => {
+    if (!insumos) return [];
+    const q = search.toLowerCase();
+    if (!q) return insumos;
+    return insumos.filter(i =>
+      i.nome.toLowerCase().includes(q) || i.unidade.toLowerCase().includes(q)
+    );
+  }, [insumos, search]);
+
+  useEffect(() => {
+    if (!open) return;
+    function onDown(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+        setSearch("");
+      }
+    }
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [open]);
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-        >
-          <span className={cn("truncate", selected ? "text-foreground" : "text-muted-foreground")}>
-            {selected ? `${selected.nome} (${selected.unidade})` : "Selecione o ingrediente..."}
-          </span>
-          <ChevronsUpDown size={14} className="ml-2 shrink-0 opacity-50" />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent
-        className="p-0"
-        style={{ width: "var(--radix-popover-trigger-width)" }}
-        align="start"
-        sideOffset={4}
-        avoidCollisions
+    <div ref={containerRef} className="relative w-full">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
       >
-        <Command>
-          <CommandInput placeholder="Buscar ingrediente..." />
-          <CommandList className="max-h-52 overflow-y-auto">
-            <CommandEmpty>Nenhum ingrediente encontrado.</CommandEmpty>
-            <CommandGroup>
-              {insumos?.map(i => (
-                <CommandItem
-                  key={i.id}
-                  value={`${i.nome} ${i.unidade}`}
-                  onSelect={() => { onValueChange(i.id); setOpen(false); }}
-                >
-                  <Check size={13} className={cn("mr-2 shrink-0", value === i.id ? "opacity-100" : "opacity-0")} />
-                  {i.nome} ({i.unidade})
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+        <span className={cn("truncate", selected ? "text-foreground" : "text-muted-foreground")}>
+          {selected ? `${selected.nome} (${selected.unidade})` : "Selecione o ingrediente..."}
+        </span>
+        <ChevronsUpDown size={14} className="ml-2 shrink-0 opacity-50" />
+      </button>
+
+      {open && (
+        <div className="absolute z-50 w-full mt-1 rounded-md border border-border bg-popover text-popover-foreground shadow-md">
+          <div className="p-2 border-b border-border">
+            <input
+              autoFocus
+              className="w-full h-8 rounded-md border border-input bg-background px-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+              placeholder="Buscar ingrediente..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
+          <ul className="max-h-52 overflow-y-auto py-1">
+            {filtered.length === 0 ? (
+              <li className="px-3 py-2 text-sm text-muted-foreground">Nenhum ingrediente encontrado.</li>
+            ) : filtered.map(i => (
+              <li
+                key={i.id}
+                className={cn(
+                  "flex items-center gap-2 px-3 py-1.5 text-sm cursor-pointer select-none hover:bg-accent hover:text-accent-foreground rounded-sm mx-1",
+                  value === i.id && "bg-accent/50"
+                )}
+                onMouseDown={e => {
+                  e.preventDefault();
+                  onValueChange(i.id);
+                  setOpen(false);
+                  setSearch("");
+                }}
+              >
+                <Check size={13} className={cn("shrink-0", value === i.id ? "opacity-100" : "opacity-0")} />
+                {i.nome} ({i.unidade})
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
   );
 }
 
