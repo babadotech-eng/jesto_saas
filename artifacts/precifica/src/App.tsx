@@ -116,6 +116,8 @@ function Router() {
       <Route path="/insumos"><ProtectedRoute component={Insumos} /></Route>
       <Route path="/ficha-tecnica"><ProtectedRoute component={FichaTecnica} /></Route>
       <Route path="/lancamentos"><ProtectedRoute component={Lancamentos} /></Route>
+      {/* Legacy redirect — /despesas foi unificado em /lancamentos */}
+      <Route path="/despesas"><Redirect to="/lancamentos" /></Route>
       <Route path="/relatorios"><ProtectedRoute component={Relatorios} /></Route>
       <Route path="/funcionarios"><ProtectedRoute component={Funcionarios} /></Route>
       <Route path="/configuracoes"><ProtectedRoute component={Configuracoes} /></Route>
