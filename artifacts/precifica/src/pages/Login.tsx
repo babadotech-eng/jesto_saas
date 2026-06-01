@@ -85,7 +85,7 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
         <div className="flex flex-col items-center mb-8">
-          <Link href="/" className="bg-primary text-primary-foreground p-3 rounded-xl mb-4 shadow-md hover:scale-105 transition-transform">
+          <Link href="/" className="bg-purple-700 text-white p-3 rounded-xl mb-4 shadow-md hover:scale-105 transition-transform">
             <BarChart3 size={32} />
           </Link>
           <h1 className="text-3xl font-bold text-foreground">Precifica</h1>
@@ -125,14 +125,14 @@ export default function Login() {
                 <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
                 <PasswordChecklist password={password} />
               </div>
-              <Button type="submit" className="w-full h-11 text-base" disabled={loading}>
+              <Button type="submit" className="w-full h-11 text-base bg-purple-700 hover:bg-purple-800 text-white" disabled={loading}>
                 {loading ? "Entrando..." : "Entrar"}
               </Button>
             </form>
 
             <div className="text-center text-sm text-muted-foreground">
               Não tem conta?{" "}
-              <Link href="/cadastro" className="text-primary font-medium hover:underline">Criar conta grátis</Link>
+              <Link href="/cadastro" className="text-purple-600 font-medium hover:underline">Criar conta grátis</Link>
             </div>
           </CardContent>
         </Card>
