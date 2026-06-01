@@ -823,21 +823,6 @@ export default function FichaTecnica() {
           <p className="text-sm text-muted-foreground mt-1">Composição e custo de cada receita</p>
         </div>
         <div className="flex gap-2 flex-wrap">
-          {planFeatures.excelImportExport ? (
-            <>
-              <Button variant="outline" size="sm" className="gap-1.5" onClick={downloadFichaTemplate}>
-                <Download size={14} />Baixar modelo
-              </Button>
-              <Button variant="outline" size="sm" className="gap-1.5" onClick={() => listImportFileRef.current?.click()}>
-                <Upload size={14} />Importar ingredientes
-              </Button>
-              <input ref={listImportFileRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleListImportFile} />
-            </>
-          ) : (
-            <Button variant="outline" size="sm" className="gap-1.5 text-muted-foreground" onClick={() => setFeatureOpen(true)}>
-              <Lock size={14} />Excel (Pro/Premium)
-            </Button>
-          )}
           <Button onClick={handleNovaFicha} data-testid="button-create-ficha"><Plus size={16} className="mr-2" />Nova Ficha</Button>
         </div>
       </div>
