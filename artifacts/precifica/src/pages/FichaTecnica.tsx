@@ -436,6 +436,7 @@ function NovaFichaForm({ onCancel, onCreated }: { onCancel: () => void; onCreate
   const addItemMutation = useAddFichaItem();
 
   const [produtoId, setProdutoId] = useState("");
+  const [produtoSearch, setProdutoSearch] = useState("");
   const [rendimento, setRendimento] = useState("");
   const [unidadeRendimento, setUnidadeRendimento] = useState("unidades");
   const [observacoes, setObservacoes] = useState("");
@@ -506,9 +507,25 @@ function NovaFichaForm({ onCancel, onCreated }: { onCancel: () => void; onCreate
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Produto *</Label>
-          <Select value={produtoId} onValueChange={setProdutoId}>
+          <Select value={produtoId} onValueChange={v => { setProdutoId(v); setProdutoSearch(""); }} onOpenChange={o => { if (!o) setProdutoSearch(""); }}>
             <SelectTrigger data-testid="select-ficha-produto"><SelectValue placeholder="Selecione o produto..." /></SelectTrigger>
-            <SelectContent>{produtos?.map(p => <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>)}</SelectContent>
+            <SelectContent>
+              <div className="px-2 py-1.5">
+                <input
+                  className="w-full h-8 px-2 text-sm rounded-md border border-border bg-background outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
+                  placeholder="Buscar produto..."
+                  value={produtoSearch}
+                  onChange={e => setProdutoSearch(e.target.value)}
+                  onKeyDown={e => e.stopPropagation()}
+                />
+              </div>
+              {(produtos ?? [])
+                .filter(p => p.nome.toLowerCase().includes(produtoSearch.toLowerCase()))
+                .map(p => <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>)}
+              {(produtos ?? []).filter(p => p.nome.toLowerCase().includes(produtoSearch.toLowerCase())).length === 0 && (
+                <div className="px-3 py-2 text-sm text-muted-foreground">Nenhum produto encontrado.</div>
+              )}
+            </SelectContent>
           </Select>
         </div>
         <div className="space-y-2">
