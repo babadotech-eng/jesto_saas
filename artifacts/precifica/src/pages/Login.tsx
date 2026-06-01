@@ -89,7 +89,7 @@ export default function Login() {
             <BarChart3 size={32} />
           </Link>
           <h1 className="text-3xl font-bold text-foreground">Precifica</h1>
-          <p className="text-muted-foreground mt-2">Seu negócio de comida, no controle.</p>
+          <p className="text-muted-foreground mt-2">Entre para começar seu dia com mais controle</p>
         </div>
 
         <Card className="shadow-xl border-white/10 bg-[#161722]">
