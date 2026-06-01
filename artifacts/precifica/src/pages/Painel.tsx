@@ -17,7 +17,9 @@ import {
   ShoppingCart, Wallet, Activity,
   Home, Users, Zap, Wifi, FileText, Settings2,
   ShoppingBag, Heart, AlertTriangle, AlertCircle,
+  Lightbulb,
 } from "lucide-react";
+import { getDicaDoDia } from "@/data/dicas";
 
 /* ── exact design tokens ──────────────────────────────────── */
 const T = {
@@ -361,6 +363,7 @@ export default function Painel() {
   const { data: lancamentosRaw } = useListLancamentos();
   const lancamentos = Array.isArray(lancamentosRaw) ? lancamentosRaw : [];
 
+  const dicaDoDia = getDicaDoDia();
   const greeting = getGreeting();
   const displayName = perfil?.nome_completo?.trim().split(" ")[0]
     || perfil?.nome_negocio
@@ -572,6 +575,31 @@ export default function Painel() {
             style={{ color: "#E2D7F1" }}>
             Ver todos os produtos <ArrowRight size={10} />
           </Link>
+        </div>
+      </div>
+
+      {/* ── DICA DO DIA ──────────────────────────────────────── */}
+      <div className="mt-4">
+        <div className="rounded-2xl px-5 py-4 flex items-start gap-4"
+          style={{ background: "#F4F0FA", border: "1px solid #E2D9F3", boxShadow: T.shadowSoft }}>
+          <div className="mt-0.5 w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+            style={{ background: "#EDE5F7" }}>
+            <Lightbulb size={16} style={{ color: T.plumPrimary }} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-wide mb-1"
+              style={{ color: T.plumSecondary }}>
+              Dica do dia · {dicaDoDia.categoria}
+            </p>
+            <p className="text-sm leading-relaxed" style={{ color: T.textPrimary }}>
+              {dicaDoDia.texto}
+            </p>
+            <Link href={dicaDoDia.linkPath}
+              className="inline-flex items-center gap-1 text-[12px] font-semibold mt-2 hover:underline"
+              style={{ color: T.plumPrimary }}>
+              {dicaDoDia.linkLabel} <ArrowRight size={11} />
+            </Link>
+          </div>
         </div>
       </div>
     </div>

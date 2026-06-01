@@ -1,0 +1,86 @@
+Implemente APENAS a funcionalidade do card "Dica do dia" no Painel usando o arquivo "365_dicas_precifica_completo.docx", incluindo o link logo abaixo da dica.
+
+OBJETIVO:
+Transformar o conteúdo do arquivo em uma base de dicas revisada, organizada e sem repetições perceptíveis, exibindo 1 dica por dia no card "Dica do dia" do Painel, com um link para a área mais adequada do sistema conforme o tema da dica.
+
+NÃO ALTERAR:
+- layout visual do Painel
+- cores
+- tipografia
+- estrutura do card
+- outros cards
+- home
+- páginas internas fora do necessário para usar rotas já existentes
+- banco, se não for necessário
+- rotas já existentes
+
+IMPLEMENTAÇÃO ESPERADA:
+1. Ler o conteúdo do arquivo anexado.
+2. Extrair as dicas.
+3. Revisar, limpar e reescrever as dicas repetidas ou muito parecidas.
+4. Garantir uma base final com 365 dicas variadas e coerentes com negócios de alimentação.
+5. Salvar essa base em formato estruturado local (ex: JSON).
+6. Cada dica deve conter:
+   - id
+   - categoria
+   - texto
+   - linkLabel
+   - linkPath
+7. O card do Painel deve mostrar:
+   - a dica do dia
+   - um link logo abaixo da dica, apontando para a área correspondente àquela dica
+8. A dica exibida deve mudar por data, de forma previsível, sem sorteio a cada refresh.
+9. Não carregar o .docx diretamente no front-end.
+
+REGRA PRÁTICA DE MAPEAMENTO:
+- Mapear primeiro por categoria.
+- Só personalizar o link por dica específica quando isso trouxer ganho real de contexto.
+- Em caso de dúvida entre duas áreas, priorizar a rota já existente, já funcional e mais útil para a ação sugerida.
+
+REGRAS DE ROTA:
+- Usar SOMENTE rotas que já existam no app.
+- NÃO criar rotas novas para essa funcionalidade.
+- NÃO usar links quebrados, placeholders ou caminhos inventados.
+- Se uma categoria puder apontar para mais de uma área, escolher a rota existente mais coerente com a dica.
+
+CATEGORIAS E DESTINOS SUGERIDOS:
+- Precificação -> rota mais relacionada a Produtos, Receitas ou área de precificação já existente
+- Custos e Despesas -> Despesas ou Transações
+- Estoque e Desperdício -> Ingredientes
+- Vendas e Atendimento -> Produtos, Transações ou Relatórios
+- Lucratividade e Indicadores -> Relatórios
+- Gestão Financeira -> Despesas, Transações ou Relatórios
+- Produtividade e Equipe -> Funcionários
+
+REGRAS DO LINK:
+- O link deve ser contextual para a dica exibida.
+- O texto do link também deve fazer sentido com a dica.
+- Exemplos de labels:
+  - "Ver produtos"
+  - "Ir para receitas"
+  - "Analisar despesas"
+  - "Ver transações"
+  - "Abrir relatórios"
+  - "Gerenciar funcionários"
+  - "Ver ingredientes"
+- Não usar um link genérico igual para todas as dicas se houver categoria disponível.
+
+REGRAS DE CONTEÚDO:
+- As dicas devem ser claras, úteis e naturais.
+- Evitar frases quebradas ou repetitivas.
+- Evitar repetição da mesma estrutura com finais diferentes.
+- Manter o tom profissional e prático.
+- Se o arquivo não tiver 365 dicas realmente únicas, completar com novas dicas no mesmo padrão e qualidade.
+
+REGRAS TÉCNICAS:
+- O Painel deve consumir a base já estruturada.
+- O card deve exibir apenas 1 dica por dia.
+- O link exibido deve vir junto da dica selecionada naquele dia.
+- Implementação leve, sem comprometer desempenho.
+
+AO FINAL:
+1. Liste os arquivos criados e alterados.
+2. Informe onde a base estruturada foi salva.
+3. Informe quantas dicas únicas ficaram na base final.
+4. Confirme que o card agora mostra a dica e o link contextual correspondente.
+5. Confirme que não houve mudanças visuais além do conteúdo dinâmico do card.
