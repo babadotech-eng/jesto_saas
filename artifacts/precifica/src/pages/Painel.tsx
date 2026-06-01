@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from "react";
 import {
   useGetDashboardSummary,
   useGetTopProdutos,
@@ -64,8 +65,80 @@ function getGreeting() {
   return "Boa noite";
 }
 
-/* ── static data ──────────────────────────────────────────── */
-const CHART_DATA = [
+/* ── period ───────────────────────────────────────────────── */
+type Period = "7dias" | "semana_passada" | "mes_passado";
+const PERIOD_LABELS: Record<Period, string> = {
+  "7dias":          "Últimos 7 dias",
+  "semana_passada": "Semana passada",
+  "mes_passado":    "Mês passado",
+};
+
+/* ── info popover ─────────────────────────────────────────── */
+function InfoPopover({ text }: { text: string }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, [open]);
+  return (
+    <div ref={ref} className="relative inline-flex" style={{ lineHeight: 0 }}>
+      <button onClick={() => setOpen(o => !o)} style={{ display: "flex", alignItems: "center" }}>
+        <Info size={13} style={{ color: T.textMuted, cursor: "pointer" }} />
+      </button>
+      {open && (
+        <div className="absolute z-50 rounded-xl px-3 py-2 text-[11px] leading-relaxed"
+          style={{
+            background: T.bgCard, border: `1px solid ${T.borderSoft}`,
+            boxShadow: T.shadow, color: T.textSecondary,
+            width: 200, top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)",
+          }}>
+          {text}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── period dropdown ──────────────────────────────────────── */
+function PeriodSelect({ value, onChange }: { value: Period; onChange: (v: Period) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, [open]);
+  const options: Period[] = ["7dias", "semana_passada", "mes_passado"];
+  return (
+    <div ref={ref} className="relative">
+      <button onClick={() => setOpen(o => !o)}
+        className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1.5 rounded-lg"
+        style={{ background: "#F7F3EE", color: T.textSecondary, border: `1px solid ${T.borderSoft}` }}>
+        {PERIOD_LABELS[value]}
+        <svg width="9" height="5" viewBox="0 0 9 5"><path d="M1 1l3.5 3 3.5-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" fill="none"/></svg>
+      </button>
+      {open && (
+        <div className="absolute right-0 z-50 rounded-xl overflow-hidden mt-1"
+          style={{ background: T.bgCard, border: `1px solid ${T.borderSoft}`, boxShadow: T.shadow, minWidth: 148, top: "100%" }}>
+          {options.map(opt => (
+            <button key={opt} onClick={() => { onChange(opt); setOpen(false); }}
+              className="w-full text-left px-3 py-2 text-[11px] font-medium transition-colors hover:bg-[#F7F3EE]"
+              style={{ color: opt === value ? T.plumPrimary : T.textPrimary }}>
+              {PERIOD_LABELS[opt]}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── chart data helpers ───────────────────────────────────── */
+const CHART_DATA_7DIAS = [
   { date: "18/mai", value: 2200 },
   { date: "19/mai", value: 3400 },
   { date: "20/mai", value: 2800 },
@@ -74,6 +147,74 @@ const CHART_DATA = [
   { date: "23/mai", value: 6320 },
   { date: "24/mai", value: 4100 },
 ];
+const CHART_DATA_SEMANA_PASSADA = [
+  { date: "11/mai", value: 1800 },
+  { date: "12/mai", value: 2900 },
+  { date: "13/mai", value: 3500 },
+  { date: "14/mai", value: 2100 },
+  { date: "15/mai", value: 4200 },
+  { date: "16/mai", value: 5800 },
+  { date: "17/mai", value: 3700 },
+];
+const CHART_DATA_MES_PASSADO = [
+  { date: "Sem 1", value: 16200 },
+  { date: "Sem 2", value: 21500 },
+  { date: "Sem 3", value: 18900 },
+  { date: "Sem 4", value: 24100 },
+];
+const MOCK_CHART: Record<Period, { date: string; value: number }[]> = {
+  "7dias":          CHART_DATA_7DIAS,
+  "semana_passada": CHART_DATA_SEMANA_PASSADA,
+  "mes_passado":    CHART_DATA_MES_PASSADO,
+};
+
+function dateLabel(d: Date) {
+  const months = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+  return `${d.getDate()}/${months[d.getMonth()]}`;
+}
+
+function buildChartData(period: Period, lancamentos: { data: string; tipo: string; valor: number | string }[]): { date: string; value: number }[] {
+  if (!lancamentos.length) return MOCK_CHART[period];
+  const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+
+  if (period === "7dias" || period === "semana_passada") {
+    const days: Date[] = [];
+    if (period === "7dias") {
+      for (let i = 6; i >= 0; i--) { const d = new Date(hoje); d.setDate(d.getDate() - i); days.push(d); }
+    } else {
+      const dow = hoje.getDay();
+      const startDiff = dow === 0 ? 13 : dow + 6;
+      for (let i = 0; i < 7; i++) { const d = new Date(hoje); d.setDate(d.getDate() - startDiff + i); days.push(d); }
+    }
+    return days.map(d => {
+      const iso = d.toISOString().slice(0, 10);
+      const value = lancamentos.filter(l => l.data === iso && l.tipo === "receita").reduce((s, l) => s + Number(l.valor), 0);
+      return { date: dateLabel(d), value };
+    });
+  }
+
+  // mes_passado — weekly buckets
+  const firstLastMonth = new Date(hoje.getFullYear(), hoje.getMonth() - 1, 1);
+  const lastLastMonth  = new Date(hoje.getFullYear(), hoje.getMonth(), 0);
+  const daysInMonth    = lastLastMonth.getDate();
+  const weeks = [
+    { label: "Sem 1", from: 1,  to: 7 },
+    { label: "Sem 2", from: 8,  to: 14 },
+    { label: "Sem 3", from: 15, to: 21 },
+    { label: "Sem 4", from: 22, to: daysInMonth },
+  ];
+  return weeks.map(w => {
+    let value = 0;
+    for (let day = w.from; day <= w.to; day++) {
+      const d = new Date(firstLastMonth.getFullYear(), firstLastMonth.getMonth(), day);
+      const iso = d.toISOString().slice(0, 10);
+      value += lancamentos.filter(l => l.data === iso && l.tipo === "receita").reduce((s, l) => s + Number(l.valor), 0);
+    }
+    return { date: w.label, value };
+  });
+}
+
+/* ── static data ──────────────────────────────────────────── */
 
 const MOCK_TX = [
   { id: 1, name: "Venda - Balcão",   type: "Receita",      date: "24/mai · 10:42", value:  320.00, pos: true,  Icon: ShoppingCart },
@@ -257,7 +398,7 @@ function DonutCard({ pct, faltam }: { pct: number; faltam: number }) {
     <Card>
       <div className="flex items-center justify-between mb-1">
         <p className="text-sm font-bold" style={{ color: T.textPrimary }}>Ponto de equilíbrio</p>
-        <Info size={13} style={{ color: T.textMuted }} />
+        <InfoPopover text="Mostra o percentual da receita mínima mensal que você precisa para cobrir todos os custos fixos e variáveis." />
       </div>
       <div className="relative flex items-center justify-center my-2" style={{ height: 155 }}>
         <PieChart width={155} height={155}>
@@ -319,7 +460,7 @@ function SaudeCard({ s, a, c }: { s: number; a: number; c: number }) {
     <Card>
       <div className="flex items-center justify-between mb-3">
         <p className="text-sm font-bold" style={{ color: T.textPrimary }}>Saúde do negócio</p>
-        <Info size={13} style={{ color: T.textMuted }} />
+        <InfoPopover text="Classifica seus produtos em Saudável (margem ≥ 30%), Atenção (15–30%) e Urgente (< 15%) com base na margem de contribuição." />
       </div>
       {/* green banner */}
       <div className="rounded-xl p-3 flex items-center gap-2.5 mb-3"
@@ -372,6 +513,9 @@ export default function Painel() {
   const despesas = Array.isArray(despesasRaw) ? despesasRaw : [];
   const { data: lancamentosRaw } = useListLancamentos();
   const lancamentos = Array.isArray(lancamentosRaw) ? lancamentosRaw : [];
+
+  const [period, setPeriod] = useState<Period>("7dias");
+  const chartData = buildChartData(period, lancamentos as { data: string; tipo: string; valor: number | string }[]);
 
   const greeting = getGreeting();
   const displayName = perfil?.nome_completo?.trim().split(" ")[0]
@@ -451,17 +595,13 @@ export default function Painel() {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-1.5">
               <p className="text-sm font-bold" style={{ color: T.textPrimary }}>Receita dos últimos 7 dias</p>
-              <Info size={12} style={{ color: T.textMuted }} />
+              <InfoPopover text="Total de receitas registradas nos lançamentos para o período selecionado, exibido dia a dia (ou por semana para o mês passado)." />
             </div>
-            <button className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1.5 rounded-lg"
-              style={{ background: "#F7F3EE", color: T.textSecondary, border: `1px solid ${T.borderSoft}` }}>
-              Últimos 7 dias
-              <svg width="9" height="5" viewBox="0 0 9 5"><path d="M1 1l3.5 3 3.5-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" fill="none"/></svg>
-            </button>
+            <PeriodSelect value={period} onChange={setPeriod} />
           </div>
           <div style={{ flex: 1, height: 205 }}>
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={CHART_DATA} margin={{ top: 4, right: 4, bottom: 0, left: -8 }}>
+              <AreaChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: -8 }}>
                 <defs>
                   <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%"   stopColor={T.plumPrimary} stopOpacity={0.18} />
