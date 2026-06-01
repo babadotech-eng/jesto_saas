@@ -36,6 +36,7 @@ const schema = z.object({
   setor: z.string().optional(),
   cargo: z.string().optional(),
   tipo_contratacao: z.string().min(1),
+  data_inicio: z.string().optional(),
   vale_transporte: z.coerce.number().min(0).default(0),
   vale_refeicao: z.coerce.number().min(0).default(0),
   convenio_medico: z.coerce.number().min(0).default(0),
@@ -54,7 +55,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 const defaultValues: FormValues = {
-  nome: "", salario: 0, setor: "", cargo: "", tipo_contratacao: "CLT",
+  nome: "", salario: 0, setor: "", cargo: "", tipo_contratacao: "CLT", data_inicio: "",
   vale_transporte: 0, vale_refeicao: 0, convenio_medico: 0, carga_horaria_mensal: 220,
   provisao_ferias_pct: 11.11, provisao_terco_ferias_pct: 3.70,
   provisao_decimo_terceiro_pct: 8.33, provisao_decimo_terceiro_ferias_pct: 1.03,
@@ -148,6 +149,7 @@ export default function Funcionarios() {
       setor: f.setor ?? "",
       cargo: f.cargo ?? "",
       tipo_contratacao: f.tipo_contratacao,
+      data_inicio: f.data_inicio ?? "",
       vale_transporte: f.vale_transporte ?? 0,
       vale_refeicao: f.vale_refeicao ?? 0,
       convenio_medico: f.convenio_medico ?? 0,
@@ -171,6 +173,7 @@ export default function Funcionarios() {
       ...values,
       setor: values.setor || null,
       cargo: values.cargo || null,
+      data_inicio: values.data_inicio || null,
       carga_horaria_mensal: Number(values.carga_horaria_mensal) > 0 ? values.carga_horaria_mensal : 220,
     };
     try {
@@ -331,6 +334,9 @@ export default function Funcionarios() {
                   )} />
                   <FormField control={form.control} name="cargo" render={({ field }) => (
                     <FormItem><FormLabel>Cargo</FormLabel><FormControl><Input {...field} placeholder="Ex: Auxiliar" data-testid="input-func-cargo" /></FormControl><FormMessage /></FormItem>
+                  )} />
+                  <FormField control={form.control} name="data_inicio" render={({ field }) => (
+                    <FormItem><FormLabel>Data de início</FormLabel><FormControl><Input type="date" {...field} data-testid="input-func-data_inicio" /></FormControl><FormMessage /></FormItem>
                   )} />
                   <NumberField control={form.control} name="vale_transporte" label="Vale transporte (R$)" />
                   <FormField control={form.control} name="vale_refeicao" render={({ field }) => (

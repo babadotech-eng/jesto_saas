@@ -28,4 +28,6 @@ export interface FuncionarioInput {
   sistema_s_pct?: number;
   fgts_pct?: number;
   fgts_rescisao_pct?: number;
+  /** @nullable */
+  data_inicio?: string | null;
 }

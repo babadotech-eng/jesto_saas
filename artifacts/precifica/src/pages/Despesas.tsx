@@ -293,6 +293,7 @@ export default function Despesas() {
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">Descrição</th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground hidden sm:table-cell">Categoria</th>
+                <th className="text-left px-4 py-3 font-medium text-muted-foreground hidden md:table-cell">Data</th>
                 <th className="text-right px-4 py-3 font-medium text-muted-foreground">Valor</th>
                 <th className="px-4 py-3"></th>
               </tr>
@@ -302,6 +303,9 @@ export default function Despesas() {
                 <tr key={d.id} className="hover:bg-muted/30 transition-colors" data-testid={`row-despesa-${d.id}`}>
                   <td className="px-4 py-3 font-medium">{d.descricao}</td>
                   <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">{d.categoria ?? "-"}</td>
+                  <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">
+                    {d.data ? new Date(d.data + "T12:00:00").toLocaleDateString("pt-BR") : "-"}
+                  </td>
                   <td className="px-4 py-3 text-right font-semibold text-red-600">{fmt(d.valor)}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1">

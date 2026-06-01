@@ -1,4 +1,4 @@
-import { pgTable, text, uuid, numeric, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, uuid, numeric, timestamp, date } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -24,6 +24,7 @@ export const funcionariosTable = pgTable("funcionarios", {
   sistemaSPct: numeric("sistema_s_pct", { precision: 6, scale: 3 }).notNull().default("3.3"),
   fgtsPct: numeric("fgts_pct", { precision: 6, scale: 3 }).notNull().default("8"),
   fgtsRescisaoPct: numeric("fgts_rescisao_pct", { precision: 6, scale: 3 }).notNull().default("4"),
+  dataInicio: date("data_inicio"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

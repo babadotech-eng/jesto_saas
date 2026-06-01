@@ -54,6 +54,7 @@ function serialize(f: typeof funcionariosTable.$inferSelect) {
     fgts_pct: Number(f.fgtsPct),
     fgts_rescisao_pct: Number(f.fgtsRescisaoPct),
     ...d,
+    data_inicio: f.dataInicio ?? null,
     created_at: f.createdAt?.toISOString() ?? null,
   };
 }
@@ -79,6 +80,7 @@ function mapBody(b: any) {
     sistemaSPct: String(b.sistema_s_pct ?? 3.3),
     fgtsPct: String(b.fgts_pct ?? 8),
     fgtsRescisaoPct: String(b.fgts_rescisao_pct ?? 4),
+    dataInicio: b.data_inicio ?? null,
   };
 }
 

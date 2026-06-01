@@ -1038,6 +1038,7 @@ components:
         sistema_s_pct: { type: number }
         fgts_pct: { type: number }
         fgts_rescisao_pct: { type: number }
+        data_inicio: { type: ["string", "null"] }
         encargos_trabalhistas_pct: { type: number }
         encargos_sociais_pct: { type: number }
         encargos_totais_pct: { type: number }
@@ -1069,6 +1070,7 @@ components:
         sistema_s_pct: { type: number }
         fgts_pct: { type: number }
         fgts_rescisao_pct: { type: number }
+        data_inicio: { type: ["string", "null"] }
       required: [nome, salario, tipo_contratacao]
 
     Lancamento:

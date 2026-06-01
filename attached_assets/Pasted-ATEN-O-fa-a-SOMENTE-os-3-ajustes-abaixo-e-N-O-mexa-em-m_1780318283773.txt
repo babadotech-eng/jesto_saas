@@ -1,0 +1,52 @@
+ATENÇÃO: faça SOMENTE os 3 ajustes abaixo e NÃO mexa em mais nada do app.  
+NÃO invente melhorias extras.  
+NÃO refatore outras partes.  
+NÃO altere layout, cores, tipografia, espaçamentos ou lógica fora do que foi pedido.
+
+AJUSTES OBRIGATÓRIOS:
+
+1. PÁGINA PRINCIPAL DE DESPESAS / LANÇAMENTOS
+- Adicionar a data na listagem principal dos lançamentos de despesas.
+- Exibir a data de cada despesa na tabela/lista principal.
+- Se necessário, adicionar uma coluna "Data" ou mostrar a data de forma clara sem quebrar o layout atual.
+- Manter o restante da listagem como está.
+
+2. MENU LATERAL
+- Trocar apenas o texto "Transações" para "Lançamentos".
+- Não alterar rota, ícone, posição no menu ou comportamento.
+- Apenas mudar o nome exibido no menu lateral.
+
+3. MODAL DE NOVOS FUNCIONÁRIOS
+- Adicionar um campo de data de início do trabalho.
+- O campo deve servir para registrar quando o funcionário começou a trabalhar.
+- Usar um campo de data simples e funcional.
+- Inserir esse campo no modal sem alterar desnecessariamente o restante do formulário.
+
+ESCOPO PROIBIDO:
+- NÃO alterar dashboard/painel
+- NÃO alterar home
+- NÃO alterar outras páginas além do necessário para esses 3 pontos
+- NÃO alterar textos além de "Transações" -> "Lançamentos"
+- NÃO mudar outros nomes de menu
+- NÃO alterar estilos globais
+- NÃO mudar botões, cores, sombras ou tipografia
+- NÃO reorganizar seções
+- NÃO mexer em banco ou lógica além do estritamente necessário para salvar/exibir a data
+- NÃO criar novas funcionalidades além dessas 3 solicitadas
+
+REGRA PRINCIPAL:
+Se a mudança não for estritamente necessária para um dos 3 ajustes acima, NÃO faça.
+
+IMPLEMENTAÇÃO SEGURA:
+- Reaproveitar a estrutura atual
+- Fazer a menor quantidade possível de alterações
+- Preservar todo o restante do sistema exatamente como está
+
+REGRA DE PARADA:
+Depois de concluir SOMENTE esses 3 ajustes, pare imediatamente.
+Não continue mexendo em mais nada.
+
+AO FINAL, INFORME EXATAMENTE:
+1. Arquivos alterados
+2. Confirmação de que os 3 ajustes foram feitos
+3. Confirmação de que nenhuma outra parte do app foi alterada

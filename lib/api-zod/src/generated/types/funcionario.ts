@@ -29,6 +29,8 @@ export interface Funcionario {
   sistema_s_pct?: number;
   fgts_pct?: number;
   fgts_rescisao_pct?: number;
+  /** @nullable */
+  data_inicio?: string | null;
   encargos_trabalhistas_pct?: number;
   encargos_sociais_pct?: number;
   encargos_totais_pct: number;

@@ -369,6 +369,7 @@ export const ListFuncionariosResponseItem = zod.object({
   "sistema_s_pct": zod.number().optional(),
   "fgts_pct": zod.number().optional(),
   "fgts_rescisao_pct": zod.number().optional(),
+  "data_inicio": zod.string().nullish(),
   "encargos_trabalhistas_pct": zod.number().optional(),
   "encargos_sociais_pct": zod.number().optional(),
   "encargos_totais_pct": zod.number(),
@@ -402,7 +403,8 @@ export const CreateFuncionarioBody = zod.object({
   "salario_educacao_pct": zod.number().optional(),
   "sistema_s_pct": zod.number().optional(),
   "fgts_pct": zod.number().optional(),
-  "fgts_rescisao_pct": zod.number().optional()
+  "fgts_rescisao_pct": zod.number().optional(),
+  "data_inicio": zod.string().nullish()
 })
 
 
@@ -432,7 +434,8 @@ export const UpdateFuncionarioBody = zod.object({
   "salario_educacao_pct": zod.number().optional(),
   "sistema_s_pct": zod.number().optional(),
   "fgts_pct": zod.number().optional(),
-  "fgts_rescisao_pct": zod.number().optional()
+  "fgts_rescisao_pct": zod.number().optional(),
+  "data_inicio": zod.string().nullish()
 })
 
 export const UpdateFuncionarioResponse = zod.object({
@@ -456,6 +459,7 @@ export const UpdateFuncionarioResponse = zod.object({
   "sistema_s_pct": zod.number().optional(),
   "fgts_pct": zod.number().optional(),
   "fgts_rescisao_pct": zod.number().optional(),
+  "data_inicio": zod.string().nullish(),
   "encargos_trabalhistas_pct": zod.number().optional(),
   "encargos_sociais_pct": zod.number().optional(),
   "encargos_totais_pct": zod.number(),
