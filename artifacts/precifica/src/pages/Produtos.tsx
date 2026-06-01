@@ -97,6 +97,8 @@ export default function Produtos() {
   const [cargoResponsavel, setCargoResponsavel] = useState("");
   const [limiteOpen, setLimiteOpen] = useState(false);
   const [featureOpen, setFeatureOpen] = useState(false);
+  const [importErrorOpen, setImportErrorOpen] = useState(false);
+  const [importErrorRows, setImportErrorRows] = useState<ImportRow[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues });
@@ -201,9 +203,10 @@ export default function Produtos() {
       ["Coxinha frango", "Salgados", 5.50, 1.20, 0, 0, 2.5, 15, 5, 0],
     ]);
     const headerStyle = {
-      fill: { patternType: "solid", fgColor: { rgb: "A1A1A1" } },
-      font: { bold: true, color: { rgb: "FFFFFF" } },
+      fill: { patternType: "solid", fgColor: { rgb: "FFDF20" } },
+      font: { bold: true, color: { rgb: "1A1A1A" } },
       alignment: { horizontal: "center", vertical: "center" },
+      border: { bottom: { style: "medium", color: { rgb: "C8A800" } } },
       protection: { locked: true },
     };
     headers.forEach((_, i) => {
@@ -216,8 +219,36 @@ export default function Produtos() {
       { wch: 14 }, { wch: 16 }, { wch: 14 }, { wch: 14 }, { wch: 13 },
     ];
     ws["!freeze"] = { xSplit: 0, ySplit: 1 };
+    ws["!rows"] = [{ hpt: 22 }];
+    ws["!sheetProtect"] = { selectLockedCells: true, selectUnlockedCells: true };
+    // Aba de instruções
+    const instRows = [
+      ["Coluna", "O que preencher", "Obrigatório?", "Exemplo"],
+      ["nome", "Nome do produto", "Sim", "Marmita fitness"],
+      ["categoria", "Categoria do produto (livre)", "Não", "Marmitas"],
+      ["preco_venda", "Preço de venda em R$", "Sim", "22.90"],
+      ["custo_mao_obra", "Custo de mão de obra por unidade em R$", "Não", "4.50"],
+      ["frete", "Custo de frete por unidade em R$", "Não", "0"],
+      ["imposto_pct", "Imposto em % — ex: 6 para 6%", "Não", "6"],
+      ["taxa_cartao_pct", "Taxa de cartão de crédito em %", "Não", "2.5"],
+      ["taxa_app_pct", "Taxa de aplicativo (iFood, etc.) em %", "Não", "15"],
+      ["comissao_pct", "Comissão de vendedor em %", "Não", "0"],
+      ["taxa_vr_pct", "Taxa Vale Refeição em %", "Não", "0"],
+      [],
+      ["ATENÇÃO: Não altere os nomes das colunas na aba Produtos. Preencha a partir da linha 2."],
+    ];
+    const wsInst = XLSX.utils.aoa_to_sheet(instRows);
+    wsInst["!cols"] = [{ wch: 22 }, { wch: 42 }, { wch: 14 }, { wch: 22 }];
+    const instHeader = {
+      fill: { patternType: "solid", fgColor: { rgb: "FFDF20" } },
+      font: { bold: true, color: { rgb: "1A1A1A" } },
+      alignment: { horizontal: "center" },
+    };
+    ["A1", "B1", "C1", "D1"].forEach(ref => { if (wsInst[ref]) wsInst[ref].s = instHeader; });
+    wsInst["!freeze"] = { xSplit: 0, ySplit: 1 };
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Produtos");
+    XLSX.utils.book_append_sheet(wb, wsInst, "Instrucoes");
     XLSX.writeFile(wb, "produtos_modelo.xlsx");
     toast.success("Planilha modelo baixada!");
   }
@@ -248,6 +279,15 @@ export default function Produtos() {
         if (isNaN(preco_venda) || preco_venda < 0) return { ...base, valid: false, error: "Preço inválido" };
         return { ...base, valid: true };
       });
+      if (parsed.length === 0) {
+        toast.error("Arquivo inválido ou vazio. Use a planilha modelo e tente novamente.");
+        return;
+      }
+      if (parsed.every(r => !r.valid)) {
+        setImportErrorRows(parsed);
+        setImportErrorOpen(true);
+        return;
+      }
       setImportRows(parsed);
       setImportOpen(true);
     };
@@ -582,6 +622,26 @@ export default function Produtos() {
             <Button onClick={confirmImport} disabled={importing || !importRows.some(r => r.valid)}>
               {importing ? "Importando..." : `Importar ${importRows.filter(r => r.valid).length} produtos`}
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Import Error Dialog */}
+      <Dialog open={importErrorOpen} onOpenChange={setImportErrorOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>Arquivo com erros</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm">Seu arquivo possui erros e não pôde ser importado. Revise os campos preenchidos, corrija as informações indicadas e envie novamente.</p>
+            <div className="bg-muted rounded-lg p-3 space-y-1 max-h-48 overflow-y-auto">
+              {importErrorRows.map((r, i) => (
+                <p key={i} className="text-sm text-destructive">• Linha {i + 2}: {r.nome ? `"${r.nome}"` : "(sem nome)"} — {r.error}</p>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground">Dica: baixe a planilha modelo para garantir o formato correto.</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setImportErrorOpen(false)}>Fechar</Button>
+            <Button onClick={() => { setImportErrorOpen(false); downloadTemplate(); }}>Baixar modelo</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

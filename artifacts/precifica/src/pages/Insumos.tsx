@@ -103,6 +103,8 @@ export default function Insumos() {
   const [importing, setImporting] = useState(false);
   const [limiteOpen, setLimiteOpen] = useState(false);
   const [featureOpen, setFeatureOpen] = useState(false);
+  const [importErrorOpen, setImportErrorOpen] = useState(false);
+  const [importErrorRows, setImportErrorRows] = useState<ImportRow[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const planLimites = getLimites(assinatura?.plano ?? "gratis");
@@ -186,11 +188,11 @@ export default function Insumos() {
       ["Ovos", "dz", 12.0, 1, "", "", "Sítio Feliz", "Bandeja 12un", 5],
       ["Frango", "kg", 18.9, 1.33, 1.33, 1, "Frigorifico ABC", "Pacote 1kg", 8],
     ]);
-    // Header style: #A1A1A1 background, white bold text
     const headerStyle = {
-      fill: { patternType: "solid", fgColor: { rgb: "A1A1A1" } },
-      font: { bold: true, color: { rgb: "FFFFFF" } },
+      fill: { patternType: "solid", fgColor: { rgb: "FFDF20" } },
+      font: { bold: true, color: { rgb: "1A1A1A" } },
       alignment: { horizontal: "center", vertical: "center" },
+      border: { bottom: { style: "medium", color: { rgb: "C8A800" } } },
       protection: { locked: true },
     };
     headers.forEach((_, i) => {
@@ -198,11 +200,37 @@ export default function Insumos() {
       if (!ws[cellRef]) ws[cellRef] = { v: headers[i], t: "s" };
       ws[cellRef].s = headerStyle;
     });
-    ws["!cols"] = [{ wch: 25 }, { wch: 16 }, { wch: 16 }, { wch: 16 }, { wch: 12 }, { wch: 13 }, { wch: 22 }, { wch: 18 }, { wch: 20 }];
+    ws["!cols"] = [{ wch: 25 }, { wch: 18 }, { wch: 16 }, { wch: 16 }, { wch: 12 }, { wch: 13 }, { wch: 22 }, { wch: 18 }, { wch: 22 }];
     ws["!freeze"] = { xSplit: 0, ySplit: 1 };
+    ws["!rows"] = [{ hpt: 22 }];
     ws["!sheetProtect"] = { selectLockedCells: true, selectUnlockedCells: true };
+    // Aba de instruções
+    const instRows = [
+      ["Coluna", "O que preencher", "Obrigatório?", "Exemplo"],
+      ["nome", "Nome do insumo/ingrediente", "Sim", "Farinha de trigo"],
+      ["unidade_de_medida", "Unidade: kg, g, L, ml, un, dz, etc.", "Sim", "kg"],
+      ["preco_unitario", "Preço por unidade em R$", "Sim", "4.50"],
+      ["fator_correcao", "Fator de correção (1 se não houver perda)", "Não", "1.33"],
+      ["peso_bruto", "Peso bruto da embalagem comprada", "Não", "1"],
+      ["peso_liquido", "Peso líquido aproveitável", "Não", "0.75"],
+      ["fornecedor", "Nome do fornecedor", "Não", "Distribuidora Silva"],
+      ["embalagem", "Descrição da embalagem", "Não", "Saco 1kg"],
+      ["quantidade_em_estoque", "Quantidade atual em estoque", "Não", "10"],
+      [],
+      ["ATENÇÃO: Não altere os nomes das colunas na aba Insumos. Preencha a partir da linha 2."],
+    ];
+    const wsInst = XLSX.utils.aoa_to_sheet(instRows);
+    wsInst["!cols"] = [{ wch: 24 }, { wch: 44 }, { wch: 14 }, { wch: 22 }];
+    const instHeader = {
+      fill: { patternType: "solid", fgColor: { rgb: "FFDF20" } },
+      font: { bold: true, color: { rgb: "1A1A1A" } },
+      alignment: { horizontal: "center" },
+    };
+    ["A1", "B1", "C1", "D1"].forEach(ref => { if (wsInst[ref]) wsInst[ref].s = instHeader; });
+    wsInst["!freeze"] = { xSplit: 0, ySplit: 1 };
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Insumos");
+    XLSX.utils.book_append_sheet(wb, wsInst, "Instrucoes");
     XLSX.writeFile(wb, "insumos_modelo.xlsx");
     toast.success("Planilha modelo baixada!");
   }
@@ -237,6 +265,15 @@ export default function Insumos() {
         if (data?.some(i => i.nome.toLowerCase().trim() === nomeLower)) return { ...base, valid: false, error: "Já existe na plataforma" };
         return { ...base, valid: true };
       });
+      if (parsed.length === 0) {
+        toast.error("Arquivo inválido ou vazio. Use a planilha modelo e tente novamente.");
+        return;
+      }
+      if (parsed.every(r => !r.valid)) {
+        setImportErrorRows(parsed);
+        setImportErrorOpen(true);
+        return;
+      }
       setImportRows(parsed);
       setImportOpen(true);
     };
@@ -536,6 +573,26 @@ export default function Insumos() {
             <Button onClick={confirmImport} disabled={importing || !importRows.some(r => r.valid)}>
               {importing ? "Importando..." : `Importar ${importRows.filter(r => r.valid).length} insumos`}
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Import Error Dialog */}
+      <Dialog open={importErrorOpen} onOpenChange={setImportErrorOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>Arquivo com erros</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm">Seu arquivo possui erros e não pôde ser importado. Revise os campos preenchidos, corrija as informações indicadas e envie novamente.</p>
+            <div className="bg-muted rounded-lg p-3 space-y-1 max-h-48 overflow-y-auto">
+              {importErrorRows.map((r, i) => (
+                <p key={i} className="text-sm text-destructive">• Linha {i + 2}: {r.nome ? `"${r.nome}"` : "(sem nome)"} — {r.error}</p>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground">Dica: baixe a planilha modelo para garantir o formato correto.</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setImportErrorOpen(false)}>Fechar</Button>
+            <Button onClick={() => { setImportErrorOpen(false); downloadTemplate(); }}>Baixar modelo</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

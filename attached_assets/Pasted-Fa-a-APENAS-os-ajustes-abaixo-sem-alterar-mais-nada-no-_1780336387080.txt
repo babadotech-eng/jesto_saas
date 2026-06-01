@@ -1,0 +1,95 @@
+Faça APENAS os ajustes abaixo, sem alterar mais nada no app.
+
+OBJETIVO GERAL
+Melhorar todas as planilhas-modelo do app para uso por cliente leigo, adicionar os botões que faltam na página Ficha Técnica e remover o botão incorreto, sem mexer em outros campos, fluxos ou telas.
+
+ESCOPO EXATO
+
+1) TODAS AS PLANILHAS-MODELO DO APP
+Melhorar todas as planilhas de download/importação do app para ficarem autoexplicativas, fáceis de preencher e seguras para usuário leigo.
+
+APLICAR EM TODAS:
+- deixar os nomes das colunas claros e humanos, evitando termos técnicos confusos quando possível
+- destacar visualmente a primeira linha com os nomes dos campos
+- bloquear/proteger a primeira linha dos cabeçalhos para o usuário não editar por engano
+- congelar a primeira linha para ela permanecer visível ao rolar a planilha
+- diferenciar visualmente as áreas editáveis das não editáveis
+- incluir orientação simples para preenchimento, de forma visual e objetiva
+- manter a estrutura necessária para importação correta pela plataforma
+- garantir que o arquivo continue funcionando no upload/importação
+
+REGRAS DAS PLANILHAS:
+- não mudar a lógica de importação
+- não mudar a ordem dos campos se isso quebrar o import
+- não remover campos obrigatórios
+- não inventar colunas novas sem necessidade real
+- melhorar usabilidade e clareza sem quebrar compatibilidade
+
+2) PÁGINA FICHA TÉCNICA
+Na página/aba de Ficha Técnica:
+
+- adicionar botão de download da planilha-modelo
+- adicionar botão de upload/importação da planilha
+- remover/excluir o botão “Exporta lista”
+
+REGRAS:
+- adicionar os botões de forma coerente com o layout atual
+- não alterar outros botões que já existirem e não façam parte deste escopo
+- não mexer em outros campos da página
+- não alterar outras abas
+- não alterar dashboard, home, login, cadastro ou páginas fora de Ficha Técnica
+
+3) VALIDAÇÃO DE ERRO NO ARQUIVO ENVIADO
+Ao fazer upload/importação da planilha, caso o arquivo tenha erro:
+
+- exibir um pop-up/modal/alerta claro informando que o arquivo contém erro
+- orientar o usuário a corrigir e reenviar o arquivo
+- a mensagem deve ser simples, objetiva e compreensível para leigo
+- se possível, informar de maneira amigável o que precisa ser corrigido
+- impedir importação silenciosa com erro
+- não usar mensagem técnica confusa se houver alternativa mais clara
+
+EXEMPLO DE TOM DA MENSAGEM:
+“Seu arquivo possui erros e não pôde ser importado. Revise os campos preenchidos, corrija as informações indicadas e envie novamente.”
+
+COMPORTAMENTO ESPERADO
+- o usuário baixa a planilha-modelo
+- entende facilmente onde preencher
+- não consegue editar a linha de cabeçalho por engano
+- envia a planilha pela página Ficha Técnica
+- se houver erro, recebe aviso claro em pop-up para corrigir e reenviar
+
+PROIBIDO
+- não mexer em outras páginas
+- não mexer em outras regras do sistema
+- não alterar cálculos
+- não alterar banco de dados sem necessidade estrita
+- não reformular outras interfaces fora do escopo acima
+- não criar funcionalidades extras além do que foi pedido
+- não mudar nomes de campos internos se isso afetar integração/importação
+
+REGRA ABSOLUTA
+Se a alteração não for estritamente para:
+1. melhorar as planilhas-modelo,
+2. adicionar download/upload em Ficha Técnica,
+3. remover o botão “Exporta lista”,
+4. bloquear a primeira linha das planilhas,
+5. mostrar pop-up de erro no upload,
+
+NÃO mexa.
+
+VALIDAÇÃO FINAL OBRIGATÓRIA
+Antes de encerrar, verificar e garantir:
+- todas as planilhas-modelo foram melhoradas visualmente para leigo
+- a primeira linha dos cabeçalhos está bloqueada/protegida
+- a primeira linha está congelada
+- Ficha Técnica agora tem botão de download
+- Ficha Técnica agora tem botão de upload
+- o botão “Exporta lista” foi removido
+- o upload com erro mostra pop-up claro pedindo correção
+- nenhuma outra área do sistema foi alterada
+
+AO FINAL
+Pare e informe apenas:
+- o que foi ajustado
+- os arquivos alterados

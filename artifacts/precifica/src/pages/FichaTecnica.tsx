@@ -153,6 +153,8 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
   const [importOpen, setImportOpen] = useState(false);
   const [importRows, setImportRows] = useState<ImportItemRow[]>([]);
   const [importing, setImporting] = useState(false);
+  const [importErrorOpen, setImportErrorOpen] = useState(false);
+  const [importErrorRows, setImportErrorRows] = useState<ImportItemRow[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const selectedInsumo = insumos?.find(i => i.id === addInsumoId);
@@ -203,9 +205,10 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
   function exportExcel() {
     if (!ficha) { toast.error("Ficha não carregada."); return; }
     const headerStyle = {
-      fill: { patternType: "solid", fgColor: { rgb: "A1A1A1" } },
-      font: { bold: true, color: { rgb: "FFFFFF" } },
+      fill: { patternType: "solid", fgColor: { rgb: "FFDF20" } },
+      font: { bold: true, color: { rgb: "1A1A1A" } },
       alignment: { horizontal: "center", vertical: "center" },
+      border: { bottom: { style: "medium", color: { rgb: "C8A800" } } },
       protection: { locked: true },
     };
     const applyHeader = (ws: XLSX.WorkSheet, headers: string[]) => {
@@ -261,6 +264,15 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
         if (!resolved) return { nome, quantidade: qtd, valid: false, error: "Insumo não encontrado", resolvedId: undefined };
         return { nome, quantidade: qtd, valid: true, resolvedId: resolved.id };
       });
+      if (parsed.length === 0) {
+        toast.error("Arquivo inválido ou vazio. Use a planilha modelo e tente novamente.");
+        return;
+      }
+      if (parsed.every(r => !r.valid)) {
+        setImportErrorRows(parsed);
+        setImportErrorOpen(true);
+        return;
+      }
       setImportRows(parsed);
       setImportOpen(true);
     };
@@ -403,7 +415,7 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
               </thead>
               <tbody className="divide-y divide-border">
                 {importRows.map((r, i) => (
-                  <tr key={i} className={r.valid ? "" : "bg-red-50"}>
+                  <tr key={i} className={r.valid ? "" : "bg-red-50 dark:bg-red-950/20"}>
                     <td className="px-3 py-2">{r.nome || <span className="text-red-500 italic">vazio</span>}</td>
                     <td className="px-3 py-2 text-right">{r.quantidade}</td>
                     <td className="px-3 py-2 text-right">
@@ -419,6 +431,25 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
             <Button onClick={confirmImport} disabled={importing || !importRows.some(r => r.valid)}>
               {importing ? "Importando..." : `Importar ${importRows.filter(r => r.valid).length} ingredientes`}
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Import Error Dialog */}
+      <Dialog open={importErrorOpen} onOpenChange={setImportErrorOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>Arquivo com erros</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm">Seu arquivo possui erros e não pôde ser importado. Revise os campos preenchidos, corrija as informações indicadas e envie novamente.</p>
+            <div className="bg-muted rounded-lg p-3 space-y-1 max-h-48 overflow-y-auto">
+              {importErrorRows.map((r, i) => (
+                <p key={i} className="text-sm text-destructive">• Linha {i + 2}: {r.nome ? `"${r.nome}"` : "(sem nome)"} — {r.error}</p>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground">Dica: o nome do ingrediente deve ser idêntico ao insumo cadastrado na plataforma. Baixe o modelo para ver o formato correto.</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setImportErrorOpen(false)}>Fechar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -631,12 +662,20 @@ export default function FichaTecnica() {
   const { data, isLoading } = useListFichas();
   const { data: assinatura } = useAssinatura();
   const deleteMutation = useDeleteFicha();
+  const { data: insumos } = useListInsumos();
+  const addItemListMutation = useAddFichaItem();
+  const listImportFileRef = useRef<HTMLInputElement>(null);
 
   const [showForm, setShowForm] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [limiteOpen, setLimiteOpen] = useState(false);
   const [featureOpen, setFeatureOpen] = useState(false);
+  const [listImportOpen, setListImportOpen] = useState(false);
+  const [listImportRows, setListImportRows] = useState<Array<{nome: string; quantidade: number; valid: boolean; error?: string; resolvedId?: string}>>([]);
+  const [listImportFichaId, setListImportFichaId] = useState<string>("");
+  const [listImporting, setListImporting] = useState(false);
+  const [listImportErrorOpen, setListImportErrorOpen] = useState(false);
 
   const planLimites = getLimites(assinatura?.plano ?? "gratis");
   const planFeatures = getFeatures(assinatura?.plano ?? "gratis");
@@ -659,16 +698,105 @@ export default function FichaTecnica() {
     setDeleteId(null);
   }
 
-  function exportListaFichas() {
-    if (!data?.length) { toast.error("Nenhuma ficha cadastrada."); return; }
-    const headers = ["produto", "rendimento", "unidade_rendimento", "cmv_total"];
-    const rows = data.map(f => [f.produto_nome ?? "", f.rendimento ?? "", f.unidade_rendimento ?? "", f.cmv_total ?? 0]);
-    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-    ws["!cols"] = [{ wch: 28 }, { wch: 12 }, { wch: 20 }, { wch: 14 }];
+  function downloadFichaTemplate() {
+    const headers = ["ingrediente", "quantidade"];
+    const ws = XLSX.utils.aoa_to_sheet([
+      headers,
+      ["Farinha de trigo", 0.5],
+      ["Açúcar", 0.2],
+      ["Ovos", 2],
+    ]);
+    const headerStyle = {
+      fill: { patternType: "solid", fgColor: { rgb: "FFDF20" } },
+      font: { bold: true, color: { rgb: "1A1A1A" } },
+      alignment: { horizontal: "center", vertical: "center" },
+      border: { bottom: { style: "medium", color: { rgb: "C8A800" } } },
+      protection: { locked: true },
+    };
+    ["A1", "B1"].forEach(ref => { if (ws[ref]) ws[ref].s = headerStyle; });
+    ws["!cols"] = [{ wch: 32 }, { wch: 16 }];
+    ws["!freeze"] = { xSplit: 0, ySplit: 1 };
+    ws["!rows"] = [{ hpt: 22 }];
+    ws["!sheetProtect"] = { selectLockedCells: true, selectUnlockedCells: true };
+    // Aba de instruções
+    const instRows = [
+      ["Coluna", "O que preencher", "Obrigatório?", "Exemplo"],
+      ["ingrediente", "Nome exato do insumo cadastrado na plataforma (acentos incluídos)", "Sim", "Farinha de trigo"],
+      ["quantidade", "Quantidade usada na receita (na unidade do insumo)", "Sim", "0.5"],
+      [],
+      ["ATENÇÃO: O nome do ingrediente deve ser idêntico ao insumo cadastrado na plataforma."],
+      ["Não altere os nomes das colunas. Preencha a partir da linha 2 na aba Ingredientes."],
+    ];
+    const wsInst = XLSX.utils.aoa_to_sheet(instRows);
+    wsInst["!cols"] = [{ wch: 58 }, { wch: 14 }, { wch: 22 }];
+    const instHeader = {
+      fill: { patternType: "solid", fgColor: { rgb: "FFDF20" } },
+      font: { bold: true, color: { rgb: "1A1A1A" } },
+      alignment: { horizontal: "center" },
+    };
+    ["A1", "B1", "C1", "D1"].forEach(ref => { if (wsInst[ref]) wsInst[ref].s = instHeader; });
+    wsInst["!freeze"] = { xSplit: 0, ySplit: 1 };
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "FichasTecnicas");
-    XLSX.writeFile(wb, "fichas_tecnicas.xlsx");
-    toast.success("Lista de fichas exportada!");
+    XLSX.utils.book_append_sheet(wb, ws, "Ingredientes");
+    XLSX.utils.book_append_sheet(wb, wsInst, "Instrucoes");
+    XLSX.writeFile(wb, "ficha_tecnica_modelo.xlsx");
+    toast.success("Planilha modelo baixada!");
+  }
+
+  function handleListImportFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const raw = new Uint8Array(ev.target!.result as ArrayBuffer);
+      const wb = XLSX.read(raw, { type: "array" });
+      const sheetName = wb.SheetNames.find(n => n.toLowerCase() === "ingredientes") ?? wb.SheetNames[0];
+      const ws = wb.Sheets[sheetName];
+      const rows: Record<string, unknown>[] = XLSX.utils.sheet_to_json(ws);
+      const normalize = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+      const parsed = rows.map(r => {
+        const nome = String(r["ingrediente"] ?? r["nome"] ?? "").trim();
+        const qtd = Number(r["quantidade"]);
+        const resolved = insumos?.find(i => normalize(i.nome) === normalize(nome));
+        if (!nome) return { nome, quantidade: qtd, valid: false, error: "Nome vazio" };
+        if (isNaN(qtd) || qtd <= 0) return { nome, quantidade: qtd, valid: false, error: "Quantidade inválida" };
+        if (!resolved) return { nome, quantidade: qtd, valid: false, error: "Insumo não cadastrado na plataforma", resolvedId: undefined };
+        return { nome, quantidade: qtd, valid: true, resolvedId: resolved.id };
+      });
+      if (parsed.length === 0) {
+        toast.error("Arquivo inválido ou vazio. Use a planilha modelo e tente novamente.");
+        return;
+      }
+      if (parsed.every(r => !r.valid)) {
+        setListImportRows(parsed);
+        setListImportErrorOpen(true);
+        return;
+      }
+      setListImportRows(parsed);
+      setListImportOpen(true);
+    };
+    reader.readAsArrayBuffer(file);
+    e.target.value = "";
+  }
+
+  async function confirmListImport() {
+    if (!listImportFichaId) { toast.error("Selecione uma ficha técnica."); return; }
+    const valid = listImportRows.filter(r => r.valid && r.resolvedId);
+    if (!valid.length) { toast.error("Nenhuma linha válida para importar."); return; }
+    setListImporting(true);
+    let count = 0;
+    for (const row of valid) {
+      try {
+        await addItemListMutation.mutateAsync({ id: listImportFichaId, data: { insumo_id: row.resolvedId!, quantidade: row.quantidade } });
+        count++;
+      } catch { /* skip */ }
+    }
+    setListImporting(false);
+    qc.invalidateQueries({ queryKey: getGetFichaQueryKey(listImportFichaId) });
+    setListImportOpen(false);
+    setListImportRows([]);
+    setListImportFichaId("");
+    toast.success(`${count} ingredientes importados com sucesso.`);
   }
 
   if (detailId) return <FichaDetail fichaId={detailId} onBack={() => setDetailId(null)} />;
@@ -692,12 +820,18 @@ export default function FichaTecnica() {
         </div>
         <div className="flex gap-2 flex-wrap">
           {planFeatures.excelImportExport ? (
-            <Button variant="outline" size="sm" className="gap-1.5" onClick={exportListaFichas}>
-              <Download size={14} />Exportar lista
-            </Button>
+            <>
+              <Button variant="outline" size="sm" className="gap-1.5" onClick={downloadFichaTemplate}>
+                <Download size={14} />Baixar modelo
+              </Button>
+              <Button variant="outline" size="sm" className="gap-1.5" onClick={() => listImportFileRef.current?.click()}>
+                <Upload size={14} />Importar ingredientes
+              </Button>
+              <input ref={listImportFileRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleListImportFile} />
+            </>
           ) : (
             <Button variant="outline" size="sm" className="gap-1.5 text-muted-foreground" onClick={() => setFeatureOpen(true)}>
-              <Lock size={14} />Exportar (Pro/Premium)
+              <Lock size={14} />Excel (Pro/Premium)
             </Button>
           )}
           <Button onClick={handleNovaFicha} data-testid="button-create-ficha"><Plus size={16} className="mr-2" />Nova Ficha</Button>
@@ -775,6 +909,79 @@ export default function FichaTecnica() {
         titulo="Recurso disponível nos planos Pro e Premium"
         descricao="Exportar e importar fichas técnicas em Excel está disponível nos planos Pro e Premium."
       />
+
+      {/* List-level Import Dialog */}
+      <Dialog open={listImportOpen} onOpenChange={v => { if (!v) { setListImportOpen(false); setListImportRows([]); setListImportFichaId(""); } }}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Importar ingredientes para ficha</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Selecione a ficha técnica de destino *</label>
+              <Select value={listImportFichaId} onValueChange={setListImportFichaId}>
+                <SelectTrigger><SelectValue placeholder="Selecione uma ficha..." /></SelectTrigger>
+                <SelectContent>
+                  {[...(data ?? [])].sort((a, b) => (a.produto_nome ?? "").localeCompare(b.produto_nome ?? "", "pt-BR")).map(f => (
+                    <SelectItem key={f.id} value={f.id}>{f.produto_nome ?? "Sem produto"}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {listImportRows.filter(r => r.valid).length} linhas válidas · {listImportRows.filter(r => !r.valid).length} com erros (serão ignoradas)
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border border-border rounded-xl overflow-hidden">
+                <thead className="bg-muted/50">
+                  <tr>
+                    <th className="text-left px-3 py-2 font-medium text-muted-foreground">Ingrediente</th>
+                    <th className="text-right px-3 py-2 font-medium text-muted-foreground">Quantidade</th>
+                    <th className="px-3 py-2"></th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {listImportRows.map((r, i) => (
+                    <tr key={i} className={r.valid ? "" : "bg-red-50 dark:bg-red-950/20"}>
+                      <td className="px-3 py-2">{r.nome || <span className="text-red-500 italic">vazio</span>}</td>
+                      <td className="px-3 py-2 text-right">{r.quantidade}</td>
+                      <td className="px-3 py-2 text-right">
+                        {r.valid
+                          ? <span className="text-green-600 text-xs">✓</span>
+                          : <span className="text-red-500 text-xs" title={r.error}><X size={12} /></span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setListImportOpen(false); setListImportRows([]); setListImportFichaId(""); }}>Cancelar</Button>
+            <Button onClick={confirmListImport} disabled={listImporting || !listImportRows.some(r => r.valid) || !listImportFichaId}>
+              {listImporting ? "Importando..." : `Importar ${listImportRows.filter(r => r.valid).length} ingredientes`}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* List Import Error Dialog */}
+      <Dialog open={listImportErrorOpen} onOpenChange={setListImportErrorOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>Arquivo com erros</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm">Seu arquivo possui erros e não pôde ser importado. Revise os campos preenchidos, corrija as informações indicadas e envie novamente.</p>
+            <div className="bg-muted rounded-lg p-3 space-y-1 max-h-48 overflow-y-auto">
+              {listImportRows.map((r, i) => (
+                <p key={i} className="text-sm text-destructive">• Linha {i + 2}: {r.nome ? `"${r.nome}"` : "(sem nome)"} — {r.error}</p>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground">Dica: o nome do ingrediente deve ser idêntico ao insumo cadastrado na plataforma. Baixe a planilha modelo para ver o formato correto.</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setListImportErrorOpen(false)}>Fechar</Button>
+            <Button onClick={() => { setListImportErrorOpen(false); downloadFichaTemplate(); }}>Baixar modelo</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
