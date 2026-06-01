@@ -128,17 +128,24 @@ export default function Cadastro() {
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <div className="w-full max-w-md text-center">
           <div className="flex justify-center mb-6">
-            <div className="bg-primary/10 text-primary p-4 rounded-full"><Mail size={36} /></div>
+            <div className="bg-[#FFDF20]/10 text-[#FFDF20] p-4 rounded-full"><Mail size={36} /></div>
           </div>
           <h1 className="text-2xl font-bold text-foreground mb-2">Confirme seu e-mail</h1>
           <p className="text-muted-foreground mb-6">
             Enviamos um link de confirmação para <strong>{email}</strong>. Clique no link para ativar sua conta.
           </p>
           <div className="space-y-3">
-            <Link href="/login"><Button className="w-full">Ir para Login</Button></Link>
+            <Link href="/login">
+              <Button
+                className="w-full font-semibold text-[#1A1A1A] disabled:!opacity-100"
+                style={{ backgroundColor: '#FFDF20' }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#FDC700')}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#FFDF20')}
+              >Ir para Login</Button>
+            </Link>
             <Button
               variant="outline"
-              className="w-full"
+              className="w-full bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
               onClick={handleResend}
               disabled={countdown > 0 || resending}
             >
@@ -146,7 +153,7 @@ export default function Cadastro() {
             </Button>
             <Button
               variant="ghost"
-              className="w-full text-muted-foreground"
+              className="w-full text-zinc-500"
               onClick={() => setConfirmSent(false)}
             >
               ← Voltar e corrigir e-mail
