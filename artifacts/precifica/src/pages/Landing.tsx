@@ -7,13 +7,14 @@ import chefImg from "@assets/file_00000000bfc471f58b48209158bd14c0_1779979641753
 
 /* ── palette ── */
 const C = {
-  bg:      "#ECEAE5",
-  bg2:     "#E6E2DB",
-  surface: "#F5F4F1",
-  text:    "#1A1A1A",
-  muted:   "#6B6864",
-  border:  "#C8C3BB",
-  accent:  "#E8712A",
+  bg:        "#ECEAE5",
+  bg2:       "#E6E2DB",
+  surface:   "#F5F4F1",
+  text:      "#1A1A1A",
+  muted:     "#6B6864",
+  border:    "#C8C3BB",
+  accent:    "#4B2B69",
+  accentAlt: "#FDC203",
 };
 
 /* ── smooth scroll ── */
@@ -205,7 +206,7 @@ export default function Landing() {
               <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
                 {["Grátis para começar","Sem cartão obrigatório","Cancele quando quiser"].map(l => (
                   <span key={l} className="flex items-center gap-1.5" style={{ fontSize: "0.75rem", fontWeight: 500, color: C.muted }}>
-                    <span className="w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0" style={{ background: C.accent }}><Check size={8} className="text-white" /></span>
+                    <span className="w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0" style={{ background: C.accentAlt }}><Check size={8} className="text-white" /></span>
                     {l}
                   </span>
                 ))}
@@ -253,9 +254,9 @@ export default function Landing() {
               </div>
 
               <div style={{ position: "absolute", zIndex: 4, left: "12%", bottom: -14, background: C.bg2, border: `1.5px solid ${C.border}`, borderRadius: 99, padding: "7px 16px", display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.07)" }}>
-                <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.accent, flexShrink: 0 }} />
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.accentAlt, flexShrink: 0 }} />
                 <span style={{ fontSize: "0.75rem", fontWeight: 600, color: C.text }}>Ficha técnica criada</span>
-                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: C.accent }}>✓</span>
+                <span style={{ fontSize: "0.75rem", fontWeight: 700, color: C.accentAlt }}>✓</span>
               </div>
 
               <svg style={{ position: "absolute", left: 16, top: "28%", overflow: "visible", pointerEvents: "none", zIndex: 5 }} width="2" height="60">
@@ -624,7 +625,7 @@ export default function Landing() {
 
               <Reveal delay={80} className="flex">
                 <div className="rounded-2xl px-7 py-10 flex flex-col relative w-full shadow-xl" style={{ background: "#1A1A1A", border: `2px solid ${C.accent}`, minHeight: 560 }}>
-                  <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", fontSize: "0.68rem", fontWeight: 700, padding: "3px 14px", borderRadius: 99, background: C.accent, color: "#fff", whiteSpace: "nowrap" }}>Mais popular</div>
+                  <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", fontSize: "0.68rem", fontWeight: 700, padding: "3px 14px", borderRadius: 99, background: C.accentAlt, color: "#1A1A1A", whiteSpace: "nowrap" }}>Mais popular</div>
                   <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#fff", marginBottom: 4 }}>Pro</h3>
                   <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.45)", marginBottom: "1.5rem" }}>Para quem precisa de mais controle na operação e na precificação.</p>
                   <div style={{ marginBottom: "1.5rem" }}><span style={{ fontSize: "2.4rem", fontWeight: 900, color: "#fff" }}>R$ {fmt(anual ? PRICES.pro.a : PRICES.pro.m)}</span><span style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.4)", marginLeft: 4 }}>{anual ? "/ano" : "/mês"}</span></div>
