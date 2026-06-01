@@ -286,11 +286,23 @@ function DonutCard({ pct, faltam }: { pct: number; faltam: number }) {
         </div>
       </div>
       <p className="text-[11px] text-center leading-relaxed" style={{ color: T.textSecondary }}>
-        Faltam{" "}
-        <span className="font-semibold" style={{ color: T.textPrimary }}>
-          {faltam > 0 ? fmt(faltam) : "R$ 7.120,00"}
-        </span>{" "}
-        para alcançar o ponto de equilíbrio este mês.
+        {faltam > 0 ? (
+          <>
+            Faltam{" "}
+            <span className="font-semibold" style={{ color: T.textPrimary }}>
+              {fmt(faltam)}
+            </span>{" "}
+            para alcançar o ponto de equilíbrio este mês.
+          </>
+        ) : (
+          <>
+            Ponto de equilíbrio{" "}
+            <span className="font-semibold" style={{ color: T.textPrimary }}>
+              atingido
+            </span>{" "}
+            este mês!
+          </>
+        )}
       </p>
       <Link href="/relatorios"
         className="text-[11px] font-semibold text-center mt-2.5 block hover:underline"
@@ -373,9 +385,13 @@ export default function Painel() {
   const margem       = summary?.margem_media   ?? 21.7;
   const resultado    = summary?.resultado_mes  ?? -3810;
 
-  const hasPE    = pe && pe.ponto_contabil > 0;
-  const pePct    = hasPE ? Math.min(100, (receitaTotal / pe.ponto_contabil) * 100) : 72;
-  const faltamPE = hasPE ? Math.max(0, pe.ponto_contabil - receitaTotal) : 7120;
+  // Para o card PE: usa 0 como padrão quando summary ainda não carregou.
+  // Isso evita misturar ponto_contabil real com receitaTotal mock, o que gerava
+  // percentuais fictícios que depois caíam abruptamente para 0%.
+  const receitaPE    = summary?.receita_total ?? 0;
+  const hasPE        = pe && pe.ponto_contabil > 0;
+  const pePct        = hasPE ? Math.min(100, (receitaPE / pe.ponto_contabil) * 100) : 72;
+  const faltamPE     = hasPE ? Math.max(0, pe.ponto_contabil - receitaPE) : 7120;
 
   const totalP    = topProdutos.length;
   const saudaveis = totalP > 0 ? topProdutos.filter(p => p.margem_pct >= 30).length  : 3;
