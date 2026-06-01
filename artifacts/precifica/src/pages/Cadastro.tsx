@@ -201,7 +201,7 @@ export default function Cadastro() {
                 <Label htmlFor="confirmPassword" className="text-zinc-300">Confirmar Senha</Label>
                 <Input id="confirmPassword" type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required className="bg-white/5 border-white/15 text-white placeholder:text-zinc-500 focus-visible:ring-yellow-400/40 focus-visible:border-yellow-400/60" />
               </div>
-              <Button type="submit" className="w-full h-11 text-base mt-2 bg-[#FFDF20] hover:bg-[#FDC700] text-[#1A1A1A] font-semibold" disabled={loading || !passwordValid(password)}>
+              <Button type="submit" className="w-full h-11 text-base mt-2 font-semibold text-[#1A1A1A]" style={{ backgroundColor: '#FFDF20' }} onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#FDC700')} onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#FFDF20')} disabled={loading || !passwordValid(password)}>
                 {loading ? "Criando..." : "Criar Conta Grátis"}
               </Button>
             </form>
