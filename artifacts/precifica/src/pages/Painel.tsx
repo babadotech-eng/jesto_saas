@@ -453,7 +453,7 @@ export default function Painel() {
       <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 mb-5">
         <div>
           {perfil?.logo_url && (
-            <img src={perfil.logo_url} alt="Logo do negócio" className="mb-2 object-contain" style={{ height: 56, width: "auto", maxWidth: 160 }} />
+            <img src={perfil.logo_url} alt="Logo do negócio" className="mb-2 object-cover rounded-full" style={{ height: 56, width: 56 }} />
           )}
           <h1 className="text-2xl font-black" style={{ color: T.textPrimary }}>
             {greeting}{displayName ? `, ${displayName}` : ""}
