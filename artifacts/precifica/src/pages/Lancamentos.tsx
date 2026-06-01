@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useListLancamentos, useCreateLancamento, useUpdateLancamento, useDeleteLancamento, getListLancamentosQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, ArrowRightLeft, TrendingUp, TrendingDown } from "lucide-react";
+import { Plus, Pencil, Trash2, ArrowRightLeft, TrendingUp, TrendingDown, ChevronDown, X, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -19,15 +19,152 @@ function fmt(n: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(n);
 }
 
+const CATEGORIAS = [
+  {
+    grupo: "Matérias-Primas e Insumos",
+    itens: ["Ingredientes e alimentos", "Embalagens e descartáveis", "Temperos e condimentos", "Bebidas e líquidos", "Produtos de panificação e confeitaria"],
+  },
+  {
+    grupo: "Custos de Produção",
+    itens: ["Mão de obra direta", "Mão de obra terceirizada", "Gás de cozinha", "Utensílios e pequenos equipamentos", "Manutenção de equipamentos", "Uniformes e EPIs"],
+  },
+  {
+    grupo: "Infraestrutura e Utilidades",
+    itens: ["Aluguel do espaço", "Condomínio", "Energia elétrica", "Água e esgoto", "Internet e telefone", "IPTU"],
+  },
+  {
+    grupo: "Vendas e Delivery",
+    itens: ["Taxa de aplicativo (iFood, Rappi etc.)", "Taxa de cartão de crédito/débito", "Frete e entrega", "Embalagem para delivery", "Material de divulgação e panfletos"],
+  },
+  {
+    grupo: "Marketing e Digital",
+    itens: ["Publicidade nas redes sociais", "Criação de conteúdo", "Fotografia de produtos", "Site e domínio", "E-mail marketing"],
+  },
+  {
+    grupo: "Administrativo e Financeiro",
+    itens: ["Contador e escritório contábil", "Taxas bancárias", "IOF e tarifas financeiras", "Software de gestão", "Material de escritório"],
+  },
+  {
+    grupo: "Impostos e Obrigações Legais",
+    itens: ["MEI e Simples Nacional", "Alvará e licenças sanitárias", "Vigilância sanitária", "Certificações e registros"],
+  },
+  {
+    grupo: "Pessoal e RH",
+    itens: ["Salários e pró-labore", "Férias e 13º", "INSS e encargos", "Vale-transporte e alimentação", "Cursos e capacitações"],
+  },
+  {
+    grupo: "Limpeza e Higiene",
+    itens: ["Produtos de limpeza", "Higienização de equipamentos", "Controle de pragas", "Descarte de resíduos"],
+  },
+  {
+    grupo: "Transporte e Logística",
+    itens: ["Combustível próprio", "Manutenção de veículo", "Seguro do veículo", "Estacionamento"],
+  },
+  {
+    grupo: "Receitas",
+    itens: ["Venda de produtos", "Entrega / delivery", "Encomendas", "Eventos e buffet", "Outras receitas"],
+  },
+  {
+    grupo: "Outros",
+    itens: ["Seguros em geral", "Despesas eventuais", "Perdas e desperdícios", "Outros não categorizados"],
+  },
+];
+
+function CategoriaCombobox({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  const query = search.toLowerCase();
+  const filtered = CATEGORIAS
+    .map(g => ({
+      grupo: g.grupo,
+      itens: g.itens.filter(i => i.toLowerCase().includes(query) || g.grupo.toLowerCase().includes(query)),
+    }))
+    .filter(g => g.itens.length > 0);
+
+  useEffect(() => {
+    if (!open) return;
+    setTimeout(() => searchRef.current?.focus(), 50);
+  }, [open]);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  function select(item: string) { onChange(item); setOpen(false); setSearch(""); }
+  function clear(e: React.MouseEvent) { e.stopPropagation(); onChange(""); setSearch(""); }
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="flex w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 min-h-9"
+      >
+        <span className={value ? "text-foreground" : "text-muted-foreground"}>
+          {value || "Selecione uma categoria..."}
+        </span>
+        <span className="flex items-center gap-1 shrink-0 ml-2">
+          {value && <X size={13} className="text-muted-foreground hover:text-foreground" onClick={clear} />}
+          <ChevronDown size={14} className="text-muted-foreground" />
+        </span>
+      </button>
+      {open && (
+        <div className="absolute z-50 mt-1 w-full rounded-md border border-border bg-popover shadow-md">
+          <div className="flex items-center border-b border-border px-2">
+            <Search size={13} className="text-muted-foreground mr-1.5 shrink-0" />
+            <input
+              ref={searchRef}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Buscar categoria..."
+              className="w-full bg-transparent py-2 text-sm outline-none placeholder:text-muted-foreground"
+            />
+            {search && <button type="button" onClick={() => setSearch("")}><X size={12} className="text-muted-foreground hover:text-foreground" /></button>}
+          </div>
+          <div className="max-h-60 overflow-y-auto py-1">
+            {filtered.length === 0 ? (
+              <p className="px-3 py-4 text-center text-sm text-muted-foreground">Nenhuma categoria encontrada.</p>
+            ) : (
+              filtered.map(g => (
+                <div key={g.grupo}>
+                  <p className="sticky top-0 bg-muted/60 px-2 py-1 text-xs font-semibold text-muted-foreground">{g.grupo}</p>
+                  {g.itens.map(item => (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => select(item)}
+                      className={`w-full px-4 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground ${value === item ? "bg-accent/60 font-medium" : ""}`}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const schema = z.object({
   descricao: z.string().min(1, "Descrição é obrigatória"),
   tipo: z.enum(["receita", "despesa"]),
   valor: z.coerce.number().min(0.01, "Valor deve ser maior que zero"),
   data: z.string().min(1, "Data é obrigatória"),
+  categoria: z.string().optional(),
 });
 type FormValues = z.infer<typeof schema>;
 const today = new Date().toISOString().slice(0, 10);
-const defaultValues: FormValues = { descricao: "", tipo: "receita", valor: 0, data: today };
+const defaultValues: FormValues = { descricao: "", tipo: "receita", valor: 0, data: today, categoria: "" };
 
 export default function Lancamentos() {
   const qc = useQueryClient();
@@ -51,17 +188,18 @@ export default function Lancamentos() {
   function openCreate() { setEditingId(null); form.reset(defaultValues); setOpen(true); }
   function openEdit(l: NonNullable<typeof data>[0]) {
     setEditingId(l.id);
-    form.reset({ descricao: l.descricao, tipo: l.tipo as "receita" | "despesa", valor: l.valor, data: l.data });
+    form.reset({ descricao: l.descricao, tipo: l.tipo as "receita" | "despesa", valor: l.valor, data: l.data, categoria: l.categoria ?? "" });
     setOpen(true);
   }
 
   async function onSubmit(values: FormValues) {
+    const payload = { ...values, categoria: values.categoria || null };
     try {
       if (editingId) {
-        await updateMutation.mutateAsync({ id: editingId, data: values });
+        await updateMutation.mutateAsync({ id: editingId, data: payload });
         toast.success("Lançamento atualizado!");
       } else {
-        await createMutation.mutateAsync({ data: values });
+        await createMutation.mutateAsync({ data: payload });
         toast.success("Lançamento registrado!");
       }
       qc.invalidateQueries({ queryKey: getListLancamentosQueryKey() });
@@ -199,6 +337,15 @@ export default function Lancamentos() {
               </div>
               <FormField control={form.control} name="valor" render={({ field }) => (
                 <FormItem><FormLabel>Valor (R$) *</FormLabel><FormControl><Input type="number" step="0.01" {...field} data-testid="input-lancamento-valor" /></FormControl><FormMessage /></FormItem>
+              )} />
+              <FormField control={form.control} name="categoria" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Categoria</FormLabel>
+                  <FormControl>
+                    <CategoriaCombobox value={field.value ?? ""} onChange={field.onChange} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )} />
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>

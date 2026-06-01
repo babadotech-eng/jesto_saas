@@ -20,6 +20,7 @@ router.get("/lancamentos", requireAuth, async (req, res): Promise<void> => {
     tipo: r.tipo,
     valor: Number(r.valor),
     data: r.data,
+    categoria: r.categoria ?? null,
     created_at: r.createdAt?.toISOString() ?? null,
   })));
 });
@@ -35,6 +36,7 @@ router.post("/lancamentos", requireAuth, async (req, res): Promise<void> => {
     tipo: b.tipo,
     valor: String(b.valor),
     data: b.data,
+    categoria: b.categoria ?? null,
   }).returning();
 
   res.status(201).json({
@@ -43,6 +45,7 @@ router.post("/lancamentos", requireAuth, async (req, res): Promise<void> => {
     tipo: row.tipo,
     valor: Number(row.valor),
     data: row.data,
+    categoria: row.categoria ?? null,
     created_at: row.createdAt?.toISOString() ?? null,
   });
 });
@@ -55,7 +58,7 @@ router.put("/lancamentos/:id", requireAuth, async (req, res): Promise<void> => {
   const b = parsed.data;
   const [row] = await db
     .update(lancamentosTable)
-    .set({ descricao: b.descricao, tipo: b.tipo, valor: String(b.valor), data: b.data })
+    .set({ descricao: b.descricao, tipo: b.tipo, valor: String(b.valor), data: b.data, categoria: b.categoria ?? null })
     .where(and(eq(lancamentosTable.id, id), eq(lancamentosTable.userId, userId)))
     .returning();
 
@@ -66,6 +69,7 @@ router.put("/lancamentos/:id", requireAuth, async (req, res): Promise<void> => {
     tipo: row.tipo,
     valor: Number(row.valor),
     data: row.data,
+    categoria: row.categoria ?? null,
     created_at: row.createdAt?.toISOString() ?? null,
   });
 });

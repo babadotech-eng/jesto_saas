@@ -12,4 +12,6 @@ export interface LancamentoInput {
   tipo: LancamentoInputTipo;
   valor: number;
   data: string;
+  /** @nullable */
+  categoria?: string | null;
 }

@@ -14,5 +14,7 @@ export interface Lancamento {
   valor: number;
   data: string;
   /** @nullable */
+  categoria?: string | null;
+  /** @nullable */
   created_at?: string | null;
 }

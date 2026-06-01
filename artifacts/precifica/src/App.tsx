@@ -17,7 +17,6 @@ import Planos from "@/pages/Planos";
 import Produtos from "@/pages/Produtos";
 import Insumos from "@/pages/Insumos";
 import FichaTecnica from "@/pages/FichaTecnica";
-import Despesas from "@/pages/Despesas";
 import Lancamentos from "@/pages/Lancamentos";
 import Relatorios from "@/pages/Relatorios";
 import Configuracoes from "@/pages/Configuracoes";
@@ -116,7 +115,6 @@ function Router() {
       <Route path="/produtos"><ProtectedRoute component={Produtos} /></Route>
       <Route path="/insumos"><ProtectedRoute component={Insumos} /></Route>
       <Route path="/ficha-tecnica"><ProtectedRoute component={FichaTecnica} /></Route>
-      <Route path="/despesas"><ProtectedRoute component={Despesas} /></Route>
       <Route path="/lancamentos"><ProtectedRoute component={Lancamentos} /></Route>
       <Route path="/relatorios"><ProtectedRoute component={Relatorios} /></Route>
       <Route path="/funcionarios"><ProtectedRoute component={Funcionarios} /></Route>

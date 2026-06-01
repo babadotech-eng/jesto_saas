@@ -1087,6 +1087,8 @@ components:
           type: number
         data:
           type: string
+        categoria:
+          type: ["string", "null"]
         created_at:
           type: ["string", "null"]
       required: [id, descricao, tipo, valor, data]
@@ -1103,6 +1105,8 @@ components:
           type: number
         data:
           type: string
+        categoria:
+          type: ["string", "null"]
       required: [descricao, tipo, valor, data]
 
     DashboardSummary:

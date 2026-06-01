@@ -544,6 +544,7 @@ export const ListLancamentosResponseItem = zod.object({
   "tipo": zod.enum(['receita', 'despesa']),
   "valor": zod.number(),
   "data": zod.string(),
+  "categoria": zod.string().nullish(),
   "created_at": zod.string().nullish()
 })
 export const ListLancamentosResponse = zod.array(ListLancamentosResponseItem)
@@ -556,7 +557,8 @@ export const CreateLancamentoBody = zod.object({
   "descricao": zod.string(),
   "tipo": zod.enum(['receita', 'despesa']),
   "valor": zod.number(),
-  "data": zod.string()
+  "data": zod.string(),
+  "categoria": zod.string().nullish()
 })
 
 
@@ -571,7 +573,8 @@ export const UpdateLancamentoBody = zod.object({
   "descricao": zod.string(),
   "tipo": zod.enum(['receita', 'despesa']),
   "valor": zod.number(),
-  "data": zod.string()
+  "data": zod.string(),
+  "categoria": zod.string().nullish()
 })
 
 export const UpdateLancamentoResponse = zod.object({
@@ -580,6 +583,7 @@ export const UpdateLancamentoResponse = zod.object({
   "tipo": zod.enum(['receita', 'despesa']),
   "valor": zod.number(),
   "data": zod.string(),
+  "categoria": zod.string().nullish(),
   "created_at": zod.string().nullish()
 })
 

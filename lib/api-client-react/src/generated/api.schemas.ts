@@ -261,6 +261,8 @@ export interface Lancamento {
   valor: number;
   data: string;
   /** @nullable */
+  categoria?: string | null;
+  /** @nullable */
   created_at?: string | null;
 }
 
@@ -277,6 +279,8 @@ export interface LancamentoInput {
   tipo: LancamentoInputTipo;
   valor: number;
   data: string;
+  /** @nullable */
+  categoria?: string | null;
 }
 
 export interface DashboardSummary {

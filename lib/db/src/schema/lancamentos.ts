@@ -9,6 +9,7 @@ export const lancamentosTable = pgTable("lancamentos", {
   tipo: text("tipo", { enum: ["receita", "despesa"] }).notNull(),
   valor: numeric("valor", { precision: 10, scale: 2 }).notNull().default("0"),
   data: text("data").notNull(),
+  categoria: text("categoria"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
