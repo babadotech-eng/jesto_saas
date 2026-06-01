@@ -3,8 +3,11 @@ import { eq, sql, desc, and } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 import type { Request, Response, NextFunction } from "express";
 import { createClient } from "@supabase/supabase-js";
+import { customAlphabet } from "nanoid";
 import { db, perfisTable, assinaturasTable, promoCodesTable } from "@workspace/db";
 import { requireAuth, getUserEmail } from "../middlewares/auth";
+
+const nanoidUpper = customAlphabet("ABCDEFGHJKLMNPQRSTUVWXYZ23456789", 4);
 
 const ADMIN_EMAIL = "michelkhodair@gmail.com";
 const PLAN_PRICES: Record<string, number> = { gratis: 0, pro: 49, premium: 99 };
@@ -24,13 +27,6 @@ function requireAdmin(req: Request, res: Response, next: NextFunction): void {
     return;
   }
   next();
-}
-
-function generateSuffix(length = 4): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let r = "";
-  for (let i = 0; i < length; i++) r += chars[Math.floor(Math.random() * chars.length)];
-  return r;
 }
 
 // ── MODULE 1: STATS ──────────────────────────────────────────────────────────
@@ -507,7 +503,7 @@ router.post("/admin/codigos/lote", requireAuth, requireAdmin, async (req, res): 
     let attempts = 0;
     while (generated.size < qty && attempts < qty * 10) {
       attempts++;
-      generated.add(`${prefix}-${generateSuffix(4)}`);
+      generated.add(`${prefix}-${nanoidUpper()}`);
     }
     targetCodes = Array.from(generated);
   } else {
@@ -545,10 +541,17 @@ router.post("/admin/codigos/lote", requireAuth, requireAdmin, async (req, res): 
       await db.insert(promoCodesTable).values({ ...values, codigo });
       criados.push(codigo);
     } catch (err: unknown) {
-      pulados.push(codigo);
       const pg = err as { code?: string };
-      if (pg?.code !== "23505") {
-        req.log.warn({ err, codigo }, "batch promo insert skipped");
+      if (pg?.code === "23505") {
+        pulados.push(codigo);
+      } else {
+        req.log.error({ err, codigo, criados, pulados }, "batch promo insert failed");
+        res.status(500).json({
+          error: "Erro interno ao inserir código. Operação interrompida.",
+          criados,
+          pulados,
+        });
+        return;
       }
     }
   }
