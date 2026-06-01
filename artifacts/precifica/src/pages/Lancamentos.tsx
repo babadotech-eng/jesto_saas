@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useListLancamentos, useCreateLancamento, useUpdateLancamento, useDeleteLancamento, getListLancamentosQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, ArrowRightLeft, TrendingUp, TrendingDown, ChevronDown, X, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, ArrowRightLeft, TrendingUp, TrendingDown, ChevronDown, X, Search, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -178,11 +178,28 @@ export default function Lancamentos() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [filterTipo, setFilterTipo] = useState<"todos" | "receita" | "despesa">("todos");
 
+  const now = new Date();
+  const [filterYear, setFilterYear] = useState(now.getFullYear());
+  const [filterMonth, setFilterMonth] = useState(now.getMonth()); // 0-indexed
+
+  function prevMonth() {
+    if (filterMonth === 0) { setFilterYear(y => y - 1); setFilterMonth(11); }
+    else setFilterMonth(m => m - 1);
+  }
+  function nextMonth() {
+    if (filterMonth === 11) { setFilterYear(y => y + 1); setFilterMonth(0); }
+    else setFilterMonth(m => m + 1);
+  }
+
+  const monthLabel = new Date(filterYear, filterMonth, 1).toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+  const monthPrefix = `${filterYear}-${String(filterMonth + 1).padStart(2, "0")}`;
+
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues });
 
-  const filtered = data?.filter(l => filterTipo === "todos" || l.tipo === filterTipo) ?? [];
-  const totalReceita = data?.filter(l => l.tipo === "receita").reduce((s, l) => s + l.valor, 0) ?? 0;
-  const totalDespesa = data?.filter(l => l.tipo === "despesa").reduce((s, l) => s + l.valor, 0) ?? 0;
+  const byMonth = data?.filter(l => l.data.startsWith(monthPrefix)) ?? [];
+  const filtered = byMonth.filter(l => filterTipo === "todos" || l.tipo === filterTipo);
+  const totalReceita = byMonth.filter(l => l.tipo === "receita").reduce((s, l) => s + l.valor, 0);
+  const totalDespesa = byMonth.filter(l => l.tipo === "despesa").reduce((s, l) => s + l.valor, 0);
   const saldo = totalReceita - totalDespesa;
 
   function openCreate() { setEditingId(null); form.reset(defaultValues); setOpen(true); }
@@ -252,13 +269,29 @@ export default function Lancamentos() {
         </div>
       </div>
 
-      {/* Filter */}
-      <div className="flex gap-2">
-        {(["todos", "receita", "despesa"] as const).map(t => (
-          <Button key={t} variant={filterTipo === t ? "default" : "outline"} size="sm" onClick={() => setFilterTipo(t)} data-testid={`filter-${t}`} className="capitalize">
-            {t === "todos" ? "Todos" : t === "receita" ? "Receitas" : "Despesas"}
+      {/* Month filter */}
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-1 bg-card border border-border rounded-xl px-2 py-1 shadow-sm">
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={prevMonth} aria-label="Mês anterior">
+            <ChevronLeft size={15} />
           </Button>
-        ))}
+          <span className="flex items-center gap-1.5 px-2 text-sm font-medium capitalize select-none min-w-[150px] justify-center">
+            <CalendarDays size={14} className="text-muted-foreground shrink-0" />
+            {monthLabel}
+          </span>
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={nextMonth} aria-label="Próximo mês">
+            <ChevronRight size={15} />
+          </Button>
+        </div>
+
+        {/* Tipo filter */}
+        <div className="flex gap-2">
+          {(["todos", "receita", "despesa"] as const).map(t => (
+            <Button key={t} variant={filterTipo === t ? "default" : "outline"} size="sm" onClick={() => setFilterTipo(t)} data-testid={`filter-${t}`} className="capitalize">
+              {t === "todos" ? "Todos" : t === "receita" ? "Receitas" : "Despesas"}
+            </Button>
+          ))}
+        </div>
       </div>
 
       {isLoading ? (
