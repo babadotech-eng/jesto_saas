@@ -92,17 +92,17 @@ export default function Login() {
           <p className="text-muted-foreground mt-2">Seu negócio de comida, no controle.</p>
         </div>
 
-        <Card className="shadow-lg border-border/50">
+        <Card className="shadow-xl border-white/10 bg-[#1A1A1A]">
           <CardHeader>
-            <CardTitle>Entrar</CardTitle>
-            <CardDescription>Acesse sua conta para continuar</CardDescription>
+            <CardTitle className="text-white">Entrar</CardTitle>
+            <CardDescription className="text-zinc-400">Acesse sua conta para continuar</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Google Login */}
             <Button
               type="button"
               variant="outline"
-              className="w-full h-11 gap-2 border-border hover:bg-zinc-50"
+              className="w-full h-11 gap-2 bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
               onClick={handleGoogleLogin}
               disabled={googleLoading}
             >
@@ -111,28 +111,28 @@ export default function Login() {
             </Button>
 
             <div className="relative">
-              <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
-              <div className="relative flex justify-center text-xs"><span className="bg-card px-2 text-muted-foreground">ou</span></div>
+              <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-white/10" /></div>
+              <div className="relative flex justify-center text-xs"><span className="bg-[#1A1A1A] px-2 text-zinc-500">ou</span></div>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="seu@email.com" value={email} onChange={e => setEmail(e.target.value)} required />
+                <Label htmlFor="email" className="text-zinc-300">Email</Label>
+                <Input id="email" type="email" placeholder="seu@email.com" value={email} onChange={e => setEmail(e.target.value)} required className="bg-white/5 border-white/15 text-white placeholder:text-zinc-500 focus-visible:ring-yellow-400/40 focus-visible:border-yellow-400/60" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Senha</Label>
-                <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+                <Label htmlFor="password" className="text-zinc-300">Senha</Label>
+                <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} required className="bg-white/5 border-white/15 text-white placeholder:text-zinc-500 focus-visible:ring-yellow-400/40 focus-visible:border-yellow-400/60" />
                 <PasswordChecklist password={password} />
               </div>
-              <Button type="submit" className="w-full h-11 text-base bg-purple-700 hover:bg-purple-800 text-white" disabled={loading}>
+              <Button type="submit" className="w-full h-11 text-base bg-yellow-400 hover:bg-yellow-300 text-[#1A1A1A] font-semibold" disabled={loading}>
                 {loading ? "Entrando..." : "Entrar"}
               </Button>
             </form>
 
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-sm text-zinc-500">
               Não tem conta?{" "}
-              <Link href="/cadastro" className="text-purple-600 font-medium hover:underline">Criar conta grátis</Link>
+              <Link href="/cadastro" className="text-yellow-400 font-medium hover:underline">Criar conta grátis</Link>
             </div>
           </CardContent>
         </Card>
