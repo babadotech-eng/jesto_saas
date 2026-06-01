@@ -163,50 +163,6 @@ function ResultadoCard({ resultado }: { resultado: number }) {
         boxShadow: "0 6px 24px rgba(25,24,33,0.07)",
       }}
     >
-      {/* lighthouse glow — soft radial CSS layer, sits behind silhouette */}
-      <div aria-hidden="true" style={{
-        position: "absolute",
-        bottom: 10,
-        right: -10,
-        width: 120,
-        height: 120,
-        pointerEvents: "none",
-        borderRadius: "50%",
-        background: "radial-gradient(ellipse at 55% 38%, rgba(255,252,255,0.55) 0%, rgba(240,232,250,0.28) 30%, rgba(220,210,238,0.00) 72%)",
-        filter: "blur(14px)",
-        opacity: 0.7,
-      }} />
-
-      {/* lighthouse — small, quiet silhouette, lower-right */}
-      <svg
-        viewBox="0 0 80 160"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          bottom: 0,
-          right: 4,
-          width: 58,
-          pointerEvents: "none",
-          opacity: 0.16,
-          fill: "#6E5F81",
-        }}
-      >
-        {/* dome */}
-        <path d="M28,28 Q40,14 52,28 Z" />
-        {/* lantern box */}
-        <rect x="30" y="28" width="20" height="13" rx="1.5" />
-        {/* gallery ledge */}
-        <rect x="27" y="41" width="26" height="3" rx="1.5" />
-        {/* tower — trapezoid */}
-        <path d="M33,44 L30,130 L50,130 L47,44 Z" />
-        {/* base */}
-        <rect x="24" y="130" width="32" height="7" rx="1.5" />
-        <rect x="18" y="137" width="44" height="8" rx="2" />
-        {/* ground fill */}
-        <rect x="8" y="145" width="64" height="15" rx="3" />
-      </svg>
-
       {/* content */}
       <div className="relative z-10 flex flex-col h-full">
 
