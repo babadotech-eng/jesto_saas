@@ -23,7 +23,7 @@ function PasswordChecklist({ password }: { password: string }) {
   return (
     <div className="mt-2 space-y-1">
       {checks.map(c => (
-        <div key={c.label} className={`flex items-center gap-1.5 text-xs ${c.ok ? "text-green-600" : "text-zinc-400"}`}>
+        <div key={c.label} className={`flex items-center gap-1.5 text-xs ${c.ok ? "text-white" : "text-zinc-400"}`}>
           {c.ok ? <Check size={12} /> : <X size={12} />}
           {c.label}
         </div>
@@ -168,17 +168,13 @@ export default function Cadastro() {
           <p className="text-muted-foreground mt-2">Comece a organizar seu negócio hoje.</p>
         </div>
 
-        <Card className="shadow-lg border-border/50">
-          <CardHeader>
-            <CardTitle>Cadastro</CardTitle>
-            <CardDescription>Preencha os dados abaixo</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <Card className="shadow-xl border-white/10 bg-[#161722]">
+          <CardContent className="space-y-4 !pt-6">
             {/* Google */}
             <Button
               type="button"
               variant="outline"
-              className="w-full h-11 gap-2 border-border hover:bg-zinc-50"
+              className="w-full h-11 gap-2 bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
               onClick={handleGoogleLogin}
               disabled={googleLoading}
             >
@@ -187,32 +183,32 @@ export default function Cadastro() {
             </Button>
 
             <div className="relative">
-              <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
-              <div className="relative flex justify-center text-xs"><span className="bg-card px-2 text-muted-foreground">ou</span></div>
+              <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-white/10" /></div>
+              <div className="relative flex justify-center text-xs"><span className="bg-[#161722] px-2 text-zinc-500">ou</span></div>
             </div>
 
             <form onSubmit={handleSignup} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="seu@email.com" value={email} onChange={e => setEmail(e.target.value)} required />
+                <Label htmlFor="email" className="text-zinc-300">Email</Label>
+                <Input id="email" type="email" placeholder="seu@email.com" value={email} onChange={e => setEmail(e.target.value)} required className="bg-white/5 border-white/15 text-white placeholder:text-zinc-500 focus-visible:ring-yellow-400/40 focus-visible:border-yellow-400/60" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Senha</Label>
-                <Input id="password" type="password" placeholder="Crie uma senha segura" value={password} onChange={e => setPassword(e.target.value)} required />
+                <Label htmlFor="password" className="text-zinc-300">Senha</Label>
+                <Input id="password" type="password" placeholder="Crie uma senha segura" value={password} onChange={e => setPassword(e.target.value)} required className="bg-white/5 border-white/15 text-white placeholder:text-zinc-500 focus-visible:ring-yellow-400/40 focus-visible:border-yellow-400/60" />
                 <PasswordChecklist password={password} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirmar Senha</Label>
-                <Input id="confirmPassword" type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required />
+                <Label htmlFor="confirmPassword" className="text-zinc-300">Confirmar Senha</Label>
+                <Input id="confirmPassword" type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required className="bg-white/5 border-white/15 text-white placeholder:text-zinc-500 focus-visible:ring-yellow-400/40 focus-visible:border-yellow-400/60" />
               </div>
-              <Button type="submit" className="w-full h-11 text-base mt-2" disabled={loading || !passwordValid(password)}>
+              <Button type="submit" className="w-full h-11 text-base mt-2 bg-yellow-400 hover:bg-yellow-300 text-[#1A1A1A] font-semibold" disabled={loading || !passwordValid(password)}>
                 {loading ? "Criando..." : "Criar Conta Grátis"}
               </Button>
             </form>
 
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-sm text-zinc-500">
               Já tem uma conta?{" "}
-              <Link href="/login" className="text-primary font-medium hover:underline">Fazer login</Link>
+              <Link href="/login" className="text-white font-medium hover:underline">Fazer login</Link>
             </div>
           </CardContent>
         </Card>
