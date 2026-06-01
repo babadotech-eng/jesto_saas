@@ -109,7 +109,8 @@ export default function Insumos() {
   const planFeatures = getFeatures(assinatura?.plano ?? "gratis");
 
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues });
-  const filtered = data?.filter(i => i.nome.toLowerCase().includes(search.toLowerCase())) ?? [];
+  const filtered = (data?.filter(i => i.nome.toLowerCase().includes(search.toLowerCase())) ?? [])
+    .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
 
   function openCreate() { setEditingId(null); form.reset(defaultValues); setOpen(true); }
   function openEdit(item: NonNullable<typeof data>[0]) {

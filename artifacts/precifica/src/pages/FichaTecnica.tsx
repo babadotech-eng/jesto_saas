@@ -717,7 +717,7 @@ export default function FichaTecnica() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {data.map(ficha => (
+          {[...data].sort((a, b) => (a.produto_nome ?? "").localeCompare(b.produto_nome ?? "", "pt-BR")).map(ficha => (
             <button
               key={ficha.id}
               onClick={() => setDetailId(ficha.id)}

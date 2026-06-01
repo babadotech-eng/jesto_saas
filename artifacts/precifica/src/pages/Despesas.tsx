@@ -299,7 +299,7 @@ export default function Despesas() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {data.map(d => (
+              {[...data].sort((a, b) => (b.data ?? "").localeCompare(a.data ?? "")).map(d => (
                 <tr key={d.id} className="hover:bg-muted/30 transition-colors" data-testid={`row-despesa-${d.id}`}>
                   <td className="px-4 py-3 font-medium">{d.descricao}</td>
                   <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">{d.categoria ?? "-"}</td>

@@ -136,7 +136,8 @@ export default function Produtos() {
     }
   }, [autoMaoObra]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const filtered = data?.filter(p => p.nome.toLowerCase().includes(search.toLowerCase())) ?? [];
+  const filtered = (data?.filter(p => p.nome.toLowerCase().includes(search.toLowerCase())) ?? [])
+    .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
 
   function openCreate() {
     if ((data?.length ?? 0) >= planLimites.produtos) {

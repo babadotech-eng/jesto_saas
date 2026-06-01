@@ -265,7 +265,7 @@ export default function Funcionarios() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {data.map(f => (
+              {[...data].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR")).map(f => (
                 <tr key={f.id} className="hover:bg-muted/30 transition-colors" data-testid={`row-funcionario-${f.id}`}>
                   <td className="px-4 py-3 font-medium">{f.nome}</td>
                   <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{f.cargo ?? "-"}</td>
