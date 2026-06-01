@@ -1,0 +1,45 @@
+Faça APENAS este ajuste no modal de Novo Funcionário:
+
+OBJETIVO
+Adicionar uma opção para que, ao cadastrar um funcionário, o salário dele seja lançado automaticamente em Despesas na data de pagamento definida pela empresa.
+
+O QUE ADICIONAR
+1. Um botão de seleção (toggle, checkbox ou switch) no modal de Novo Funcionário para ativar/desativar esse comportamento automático.
+2. Um campo de calendário ao lado desse botão para selecionar a data desejada.
+
+COMPORTAMENTO ESPERADO
+- quando o botão de seleção estiver ativado, o sistema deve adicionar automaticamente o salário do funcionário em Despesas na data de pagamento selecionada
+- quando o botão estiver desativado, nenhum lançamento automático em Despesas deve ser criado
+- o calendário deve ficar ao lado do botão de seleção
+- a data escolhida no calendário será a referência do lançamento automático da despesa do salário
+
+REGRAS
+- fazer somente esse ajuste no modal de Novo Funcionário
+- não alterar outros campos do modal
+- não mexer em outros modais
+- não alterar a aba Despesas além do necessário para receber esse lançamento automático
+- não alterar dashboard, home, login, cadastro ou outras páginas
+- não mudar outras regras do sistema
+- não criar funcionalidades extras fora desse comportamento específico
+
+IMPORTANTE
+- manter o layout coerente com o restante do app
+- o botão e o calendário devem ser claros e fáceis de entender
+- se necessário, usar um rótulo objetivo, por exemplo:
+  “Lançar salário automaticamente em Despesas”
+- o campo de calendário deve estar visualmente vinculado a essa opção
+
+REGRA ABSOLUTA
+Se a alteração não for estritamente para:
+- adicionar o botão de seleção no modal de Novo Funcionário
+- adicionar o calendário ao lado
+- permitir o lançamento automático do salário em Despesas na data selecionada
+
+NÃO mexa.
+
+VALIDAÇÃO FINAL
+- confirmar que o modal de Novo Funcionário agora tem o botão de seleção
+- confirmar que o calendário foi adicionado ao lado
+- confirmar que, com a opção ativada, o salário é lançado automaticamente em Despesas na data escolhida
+- confirmar que, com a opção desativada, isso não acontece
+- informar apenas os arquivos alterados

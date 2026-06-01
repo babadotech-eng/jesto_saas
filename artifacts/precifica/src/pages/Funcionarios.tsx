@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   useListFuncionarios, useCreateFuncionario, useUpdateFuncionario, useDeleteFuncionario,
-  getListFuncionariosQueryKey,
+  getListFuncionariosQueryKey, useCreateLancamento, getListLancamentosQueryKey,
   type Funcionario as FuncionarioRow,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -123,9 +123,13 @@ export default function Funcionarios() {
   const updateMutation = useUpdateFuncionario();
   const deleteMutation = useDeleteFuncionario();
 
+  const createLancamento = useCreateLancamento();
+
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [autoLancamento, setAutoLancamento] = useState(false);
+  const [dataPagamentoAuto, setDataPagamentoAuto] = useState(() => new Date().toISOString().slice(0, 10));
 
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues });
   const calc = CalculosLive({ control: form.control });
@@ -138,9 +142,13 @@ export default function Funcionarios() {
   function openCreate() {
     setEditingId(null);
     form.reset(defaultValues);
+    setAutoLancamento(false);
+    setDataPagamentoAuto(new Date().toISOString().slice(0, 10));
     setOpen(true);
   }
   function openEdit(f: FuncionarioRow) {
+    setAutoLancamento(false);
+    setDataPagamentoAuto(new Date().toISOString().slice(0, 10));
     setEditingId(f.id);
     form.reset({
       ...defaultValues,
@@ -182,7 +190,21 @@ export default function Funcionarios() {
         toast.success("Funcionário atualizado!");
       } else {
         await createMutation.mutateAsync({ data: payload });
-        toast.success("Funcionário cadastrado!");
+        if (autoLancamento && dataPagamentoAuto) {
+          await createLancamento.mutateAsync({
+            data: {
+              descricao: `Salário — ${values.nome}`,
+              tipo: "despesa",
+              valor: Number(values.salario),
+              data: dataPagamentoAuto,
+              categoria: "Salários e pró-labore",
+            },
+          });
+          qc.invalidateQueries({ queryKey: getListLancamentosQueryKey() });
+          toast.success("Funcionário cadastrado e salário lançado em Lançamentos!");
+        } else {
+          toast.success("Funcionário cadastrado!");
+        }
       }
       qc.invalidateQueries({ queryKey: getListFuncionariosQueryKey() });
       setOpen(false);
@@ -402,6 +424,40 @@ export default function Funcionarios() {
                   <ReadOnlyField label="Valor/Hora" value={fmt(calc.valorHora)} highlight />
                 </div>
               </div>
+
+              {/* Lançamento automático de salário */}
+              {!editingId && (
+                <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-3">
+                  <label className="flex items-center gap-3 cursor-pointer select-none">
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={autoLancamento}
+                      onClick={() => setAutoLancamento(v => !v)}
+                      className={`relative inline-flex h-5 w-9 shrink-0 rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${autoLancamento ? "bg-primary" : "bg-input"}`}
+                    >
+                      <span className={`pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow-lg ring-0 transition-transform ${autoLancamento ? "translate-x-4" : "translate-x-0"}`} />
+                    </button>
+                    <span className="text-sm font-medium text-foreground">Lançar salário automaticamente em Lançamentos</span>
+                  </label>
+                  {autoLancamento && (
+                    <div className="flex items-center gap-3 pl-12">
+                      <label className="text-sm text-muted-foreground whitespace-nowrap">Data de pagamento:</label>
+                      <input
+                        type="date"
+                        value={dataPagamentoAuto}
+                        onChange={e => setDataPagamentoAuto(e.target.value)}
+                        className="flex h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      />
+                    </div>
+                  )}
+                  {autoLancamento && (
+                    <p className="text-xs text-muted-foreground pl-12">
+                      Um lançamento de despesa no valor do salário será criado na data escolhida.
+                    </p>
+                  )}
+                </div>
+              )}
 
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
