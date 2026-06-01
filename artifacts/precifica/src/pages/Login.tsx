@@ -94,7 +94,7 @@ export default function Login() {
 
         <Card className="shadow-xl border-white/10 bg-[#161722]">
 
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-4">
             {/* Google Login */}
             <Button
               type="button"
