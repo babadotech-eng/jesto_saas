@@ -93,10 +93,7 @@ export default function Login() {
         </div>
 
         <Card className="shadow-xl border-white/10 bg-[#161722]">
-          <CardHeader>
-            <CardTitle className="text-white">Entrar</CardTitle>
-            <CardDescription className="text-zinc-400">Acesse sua conta para continuar</CardDescription>
-          </CardHeader>
+
           <CardContent className="space-y-4">
             {/* Google Login */}
             <Button
