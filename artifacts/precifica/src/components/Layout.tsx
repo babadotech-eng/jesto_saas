@@ -9,7 +9,7 @@ import {
 import { ReactNode } from "react";
 
 const navigation = [
-  { name: "Dashboard",     href: "/painel",       icon: LayoutDashboard },
+  { name: "Painel",        href: "/painel",       icon: LayoutDashboard },
   { name: "Produtos",      href: "/produtos",      icon: Package },
   { name: "Ingredientes",  href: "/insumos",       icon: Carrot },
   { name: "Ficha Técnica", href: "/ficha-tecnica", icon: FileText },
