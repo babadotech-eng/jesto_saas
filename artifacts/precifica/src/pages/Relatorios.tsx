@@ -400,14 +400,15 @@ export default function Relatorios() {
       <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
         <h2 className="font-semibold mb-4">Ranking de Produtos por Margem</h2>
         {loadingTop ? <Skeleton className="h-40 w-full" /> : topProdutos?.length ? (
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="border-b border-border">
               <tr>
                 <th className="text-left py-2 font-medium text-muted-foreground">#</th>
                 <th className="text-left py-2 font-medium text-muted-foreground">Produto</th>
                 <th className="text-left py-2 font-medium text-muted-foreground hidden sm:table-cell">Categoria</th>
-                <th className="text-right py-2 font-medium text-muted-foreground">Preço</th>
-                <th className="text-right py-2 font-medium text-muted-foreground">Margem (R$)</th>
+                <th className="text-right py-2 font-medium text-muted-foreground hidden sm:table-cell">Preço</th>
+                <th className="text-right py-2 font-medium text-muted-foreground hidden sm:table-cell">Margem (R$)</th>
                 <th className="text-center py-2 font-medium text-muted-foreground">Margem %</th>
               </tr>
             </thead>
@@ -419,13 +420,14 @@ export default function Relatorios() {
                   </td>
                   <td className="py-3 font-medium">{p.nome}</td>
                   <td className="py-3 text-muted-foreground hidden sm:table-cell">{p.categoria ?? "-"}</td>
-                  <td className="py-3 text-right">{fmt(p.preco_venda)}</td>
-                  <td className="py-3 text-right font-medium">{fmt(p.margem_contribuicao)}</td>
+                  <td className="py-3 text-right hidden sm:table-cell">{fmt(p.preco_venda)}</td>
+                  <td className="py-3 text-right font-medium hidden sm:table-cell">{fmt(p.margem_contribuicao)}</td>
                   <td className="py-3 text-center"><MargemBadge pct={p.margem_pct} /></td>
                 </tr>
               ))}
             </tbody>
           </table>
+          </div>
         ) : (
           <div className="text-center py-8 text-sm text-muted-foreground">Nenhum produto cadastrado ainda.</div>
         )}

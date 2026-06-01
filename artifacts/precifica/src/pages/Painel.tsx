@@ -587,8 +587,7 @@ export default function Painel() {
       </div>
 
       {/* ── ROW 1 — 4 cols ──────────────────────────────────── */}
-      <div className="gap-4 mb-4"
-        style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr 1fr 1fr" }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
 
         {/* 1 — Resultado do mês */}
         <ResultadoCard resultado={resultado} />
@@ -639,8 +638,7 @@ export default function Painel() {
       </div>
 
       {/* ── ROW 2 — 3 cols ──────────────────────────────────── */}
-      <div className="gap-4"
-        style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr 1fr" }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
 
         {/* 1 — Transações recentes */}
         <Card>

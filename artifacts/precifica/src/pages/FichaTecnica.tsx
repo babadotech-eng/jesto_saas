@@ -315,7 +315,7 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
           <h2 className="text-xl font-bold">{ficha.produto_nome ?? "Ficha Técnica"}</h2>
           <p className="text-sm text-muted-foreground">CMV total: <span className="font-semibold text-foreground">{fmt(ficha.cmv_total ?? 0)}</span></p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button variant="outline" size="sm" className="gap-1.5" onClick={exportExcel}>
             <Download size={14} />Exportar Excel
           </Button>
