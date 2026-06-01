@@ -5,15 +5,18 @@ import { useAssinatura } from "@/hooks/useAssinatura";
 import { getLimites, getFeatures } from "@/lib/planConfig";
 import { UpgradeModal } from "@/components/UpgradeModal";
 import { Lock } from "lucide-react";
-import { Plus, Trash2, FileText, ArrowLeft, Download, Upload, X } from "lucide-react";
+import { Plus, Trash2, FileText, ArrowLeft, Download, Upload, X, ChevronsUpDown, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 
@@ -35,6 +38,63 @@ const UNIDADES_FRACAO: Record<string, string[]> = {
 
 function getUnidadesParaInsumo(nativeUnit: string): string[] {
   return UNIDADES_FRACAO[nativeUnit] ?? [nativeUnit];
+}
+
+type InsumoOption = { id: string; nome: string; unidade: string };
+
+function InsumoCombobox({
+  insumos,
+  value,
+  onValueChange,
+}: {
+  insumos: InsumoOption[] | undefined;
+  value: string;
+  onValueChange: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = insumos?.find(i => i.id === value);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+        >
+          <span className={cn("truncate", selected ? "text-foreground" : "text-muted-foreground")}>
+            {selected ? `${selected.nome} (${selected.unidade})` : "Selecione o ingrediente..."}
+          </span>
+          <ChevronsUpDown size={14} className="ml-2 shrink-0 opacity-50" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        className="p-0"
+        style={{ width: "var(--radix-popover-trigger-width)" }}
+        align="start"
+        sideOffset={4}
+        avoidCollisions
+      >
+        <Command>
+          <CommandInput placeholder="Buscar ingrediente..." />
+          <CommandList className="max-h-52 overflow-y-auto">
+            <CommandEmpty>Nenhum ingrediente encontrado.</CommandEmpty>
+            <CommandGroup>
+              {insumos?.map(i => (
+                <CommandItem
+                  key={i.id}
+                  value={`${i.nome} ${i.unidade}`}
+                  onSelect={() => { onValueChange(i.id); setOpen(false); }}
+                >
+                  <Check size={13} className={cn("mr-2 shrink-0", value === i.id ? "opacity-100" : "opacity-0")} />
+                  {i.nome} ({i.unidade})
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
 }
 
 function convertToNativeUnit(qty: number, fromUnit: string, toUnit: string): number {
@@ -229,10 +289,7 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
 
         <div className="flex gap-2 mb-1 flex-wrap">
           <div className="flex-1 min-w-[180px]">
-            <Select value={addInsumoId} onValueChange={handleInsumoChange}>
-              <SelectTrigger data-testid="select-item-insumo"><SelectValue placeholder="Selecione o ingrediente..." /></SelectTrigger>
-              <SelectContent>{insumos?.map(i => <SelectItem key={i.id} value={i.id}>{i.nome} ({i.unidade})</SelectItem>)}</SelectContent>
-            </Select>
+            <InsumoCombobox insumos={insumos} value={addInsumoId} onValueChange={handleInsumoChange} />
           </div>
           <Input
             type="number" step="0.001" placeholder="Quantidade"
@@ -457,10 +514,7 @@ function NovaFichaForm({ onCancel, onCreated }: { onCancel: () => void; onCreate
             return (
               <div key={i} className="flex gap-2 items-start">
                 <div className="flex-1">
-                  <Select value={ing.insumo_id} onValueChange={v => updateIngrediente(i, "insumo_id", v)}>
-                    <SelectTrigger><SelectValue placeholder="Selecione o ingrediente..." /></SelectTrigger>
-                    <SelectContent>{insumos?.map(ins => <SelectItem key={ins.id} value={ins.id}>{ins.nome} ({ins.unidade})</SelectItem>)}</SelectContent>
-                  </Select>
+                  <InsumoCombobox insumos={insumos} value={ing.insumo_id} onValueChange={v => updateIngrediente(i, "insumo_id", v)} />
                 </div>
                 <Input
                   type="number" step="0.001" placeholder="Qtd"
