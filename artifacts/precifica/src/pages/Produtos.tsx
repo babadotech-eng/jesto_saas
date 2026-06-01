@@ -193,14 +193,14 @@ export default function Produtos() {
   // ── Excel template download ──────────────────────────────────────────────
   function downloadTemplate() {
     const headers = [
-      "nome", "categoria", "preco_venda", "custo_mao_obra", "frete",
+      "nome", "categoria", "preco_venda", "frete",
       "imposto_pct", "taxa_cartao_pct", "taxa_app_pct", "comissao_pct", "taxa_vr_pct",
     ];
     const ws = XLSX.utils.aoa_to_sheet([
       headers,
-      ["Marmita fitness", "Marmitas", 22.90, 4.50, 0, 6, 2.5, 0, 0, 0],
-      ["Bolo de cenoura", "Bolos", 45.00, 8.00, 0, 6, 0, 12, 0, 0],
-      ["Coxinha frango", "Salgados", 5.50, 1.20, 0, 0, 2.5, 15, 5, 0],
+      ["Marmita fitness", "Marmitas", 22.90, 0, 6, 2.5, 0, 0, 0],
+      ["Bolo de cenoura", "Bolos", 45.00, 0, 6, 0, 12, 0, 0],
+      ["Coxinha frango", "Salgados", 5.50, 0, 0, 2.5, 15, 5, 0],
     ]);
     const headerStyle = {
       fill: { patternType: "solid", fgColor: { rgb: "FFDF20" } },
@@ -215,7 +215,7 @@ export default function Produtos() {
       ws[cellRef].s = headerStyle;
     });
     ws["!cols"] = [
-      { wch: 25 }, { wch: 16 }, { wch: 14 }, { wch: 16 }, { wch: 10 },
+      { wch: 25 }, { wch: 16 }, { wch: 14 }, { wch: 10 },
       { wch: 14 }, { wch: 16 }, { wch: 14 }, { wch: 14 }, { wch: 13 },
     ];
     ws["!freeze"] = { xSplit: 0, ySplit: 1 };
@@ -227,7 +227,6 @@ export default function Produtos() {
       ["nome", "Nome do produto", "Sim", "Marmita fitness"],
       ["categoria", "Categoria do produto (livre)", "Não", "Marmitas"],
       ["preco_venda", "Preço de venda em R$", "Sim", "22.90"],
-      ["custo_mao_obra", "Custo de mão de obra por unidade em R$", "Não", "4.50"],
       ["frete", "Custo de frete por unidade em R$", "Não", "0"],
       ["imposto_pct", "Imposto em % — ex: 6 para 6%", "Não", "6"],
       ["taxa_cartao_pct", "Taxa de cartão de crédito em %", "Não", "2.5"],

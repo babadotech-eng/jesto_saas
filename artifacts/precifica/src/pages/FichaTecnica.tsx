@@ -699,13 +699,6 @@ export default function FichaTecnica() {
   }
 
   function downloadFichaTemplate() {
-    const headers = ["ingrediente", "quantidade"];
-    const ws = XLSX.utils.aoa_to_sheet([
-      headers,
-      ["Farinha de trigo", 0.5],
-      ["Açúcar", 0.2],
-      ["Ovos", 2],
-    ]);
     const headerStyle = {
       fill: { patternType: "solid", fgColor: { rgb: "FFDF20" } },
       font: { bold: true, color: { rgb: "1A1A1A" } },
@@ -713,22 +706,40 @@ export default function FichaTecnica() {
       border: { bottom: { style: "medium", color: { rgb: "C8A800" } } },
       protection: { locked: true },
     };
-    ["A1", "B1"].forEach(ref => { if (ws[ref]) ws[ref].s = headerStyle; });
-    ws["!cols"] = [{ wch: 32 }, { wch: 16 }];
-    ws["!freeze"] = { xSplit: 0, ySplit: 1 };
-    ws["!rows"] = [{ hpt: 22 }];
-    ws["!sheetProtect"] = { selectLockedCells: true, selectUnlockedCells: true };
+    // Aba Produto (nome do produto)
+    const prodHeaders = ["produto"];
+    const wsProd = XLSX.utils.aoa_to_sheet([prodHeaders, ["Bolo de cenoura"]]);
+    ["A1"].forEach(ref => { if (wsProd[ref]) wsProd[ref].s = headerStyle; });
+    wsProd["!cols"] = [{ wch: 32 }];
+    wsProd["!freeze"] = { xSplit: 0, ySplit: 1 };
+    wsProd["!rows"] = [{ hpt: 22 }];
+    // Aba Ingredientes (ingrediente, quantidade, unidade, custo)
+    const ingHeaders = ["ingrediente", "quantidade", "unidade", "custo"];
+    const wsIng = XLSX.utils.aoa_to_sheet([
+      ingHeaders,
+      ["Farinha de trigo", 0.5, "kg", 2.25],
+      ["Açúcar", 0.2, "kg", 0.90],
+      ["Ovos", 2, "un", 1.60],
+    ]);
+    ["A1", "B1", "C1", "D1"].forEach(ref => { if (wsIng[ref]) wsIng[ref].s = headerStyle; });
+    wsIng["!cols"] = [{ wch: 32 }, { wch: 14 }, { wch: 12 }, { wch: 14 }];
+    wsIng["!freeze"] = { xSplit: 0, ySplit: 1 };
+    wsIng["!rows"] = [{ hpt: 22 }];
+    wsIng["!sheetProtect"] = { selectLockedCells: true, selectUnlockedCells: true };
     // Aba de instruções
     const instRows = [
       ["Coluna", "O que preencher", "Obrigatório?", "Exemplo"],
+      ["produto", "Nome do produto vinculado a esta ficha (aba Produto)", "Sim", "Bolo de cenoura"],
       ["ingrediente", "Nome exato do insumo cadastrado na plataforma (acentos incluídos)", "Sim", "Farinha de trigo"],
       ["quantidade", "Quantidade usada na receita (na unidade do insumo)", "Sim", "0.5"],
+      ["unidade", "Unidade de medida do ingrediente (referência)", "Não", "kg"],
+      ["custo", "Custo estimado do ingrediente (referência)", "Não", "2.25"],
       [],
       ["ATENÇÃO: O nome do ingrediente deve ser idêntico ao insumo cadastrado na plataforma."],
-      ["Não altere os nomes das colunas. Preencha a partir da linha 2 na aba Ingredientes."],
+      ["Não altere os nomes das colunas. Preencha a partir da linha 2 em cada aba."],
     ];
     const wsInst = XLSX.utils.aoa_to_sheet(instRows);
-    wsInst["!cols"] = [{ wch: 58 }, { wch: 14 }, { wch: 22 }];
+    wsInst["!cols"] = [{ wch: 18 }, { wch: 58 }, { wch: 14 }, { wch: 22 }];
     const instHeader = {
       fill: { patternType: "solid", fgColor: { rgb: "FFDF20" } },
       font: { bold: true, color: { rgb: "1A1A1A" } },
@@ -737,7 +748,8 @@ export default function FichaTecnica() {
     ["A1", "B1", "C1", "D1"].forEach(ref => { if (wsInst[ref]) wsInst[ref].s = instHeader; });
     wsInst["!freeze"] = { xSplit: 0, ySplit: 1 };
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Ingredientes");
+    XLSX.utils.book_append_sheet(wb, wsProd, "Produto");
+    XLSX.utils.book_append_sheet(wb, wsIng, "Ingredientes");
     XLSX.utils.book_append_sheet(wb, wsInst, "Instrucoes");
     XLSX.writeFile(wb, "ficha_tecnica_modelo.xlsx");
     toast.success("Planilha modelo baixada!");
