@@ -74,7 +74,7 @@ const PERIOD_LABELS: Record<Period, string> = {
 };
 
 /* ── info popover ─────────────────────────────────────────── */
-function InfoPopover({ text }: { text: string }) {
+function InfoPopover({ text, align = "center" }: { text: string; align?: "center" | "right" }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -83,6 +83,9 @@ function InfoPopover({ text }: { text: string }) {
     document.addEventListener("mousedown", h);
     return () => document.removeEventListener("mousedown", h);
   }, [open]);
+  const popoverPos = align === "right"
+    ? { right: 0, left: "auto", transform: "none" }
+    : { left: "50%", transform: "translateX(-50%)" };
   return (
     <div ref={ref} className="relative inline-flex" style={{ lineHeight: 0 }}>
       <button onClick={() => setOpen(o => !o)} style={{ display: "flex", alignItems: "center" }}>
@@ -93,7 +96,7 @@ function InfoPopover({ text }: { text: string }) {
           style={{
             background: T.bgCard, border: `1px solid ${T.borderSoft}`,
             boxShadow: T.shadow, color: T.textSecondary,
-            width: 200, top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)",
+            width: 200, top: "calc(100% + 6px)", ...popoverPos,
           }}>
           {text}
         </div>
@@ -460,7 +463,7 @@ function SaudeCard({ s, a, c }: { s: number; a: number; c: number }) {
     <Card>
       <div className="flex items-center justify-between mb-3">
         <p className="text-sm font-bold" style={{ color: T.textPrimary }}>Saúde do negócio</p>
-        <InfoPopover text="Classifica seus produtos em Saudável (margem ≥ 30%), Atenção (15–30%) e Urgente (< 15%) com base na margem de contribuição." />
+        <InfoPopover text="Classifica seus produtos em Saudável (margem ≥ 30%), Atenção (15–30%) e Urgente (< 15%) com base na margem de contribuição." align="right" />
       </div>
       {/* green banner */}
       <div className="rounded-xl p-3 flex items-center gap-2.5 mb-3"
