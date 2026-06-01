@@ -222,7 +222,7 @@ export default function Landing() {
 
             {/* RIGHT */}
             <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
-              <div style={{ position: "absolute", top: 0, right: 10, width: 40, height: 40, borderRadius: "50%", background: C.accent, zIndex: 3, pointerEvents: "none" }} />
+
               <div style={{ position: "absolute", left: -4, top: "15%", bottom: "15%", width: 1, background: `linear-gradient(to bottom, transparent, ${C.border} 30%, ${C.border} 70%, transparent)`, pointerEvents: "none", zIndex: 1 }} />
               <div style={{ position: "absolute", top: "12%", left: "8%", right: "8%", height: 1, background: `linear-gradient(to right, transparent, ${C.border} 20%, ${C.border} 80%, transparent)`, pointerEvents: "none", zIndex: 1 }} />
 
