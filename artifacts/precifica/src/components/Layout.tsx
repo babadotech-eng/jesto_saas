@@ -1,10 +1,11 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useAssinatura } from "@/hooks/useAssinatura";
+import { getDicaDoDia } from "@/data/dicas";
 import { Link, useLocation } from "wouter";
 import {
   LayoutDashboard, Package, Carrot, FileText,
   Wallet, ArrowRightLeft, BarChart3, Settings,
-  Users, LogOut, Lightbulb,
+  Users, LogOut, Lightbulb, ArrowRight,
 } from "lucide-react";
 import { ReactNode } from "react";
 
@@ -66,6 +67,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         </nav>
 
         {/* Dica do dia */}
+        {(() => { const d = getDicaDoDia(); return (
         <div className="mx-3 mb-3 rounded-2xl p-4"
           style={{ background: "#232338", border: "1px solid rgba(255,255,255,0.04)" }}>
           <div className="flex items-center gap-2 mb-2">
@@ -73,14 +75,15 @@ export default function Layout({ children }: { children: ReactNode }) {
             <p className="text-xs font-semibold text-white">Dica do dia</p>
           </div>
           <p className="text-[11px] leading-relaxed mb-2.5" style={{ color: "#CFC9DA" }}>
-            Atualize o custo dos seus ingredientes regularmente.
+            {d.texto}
           </p>
-          <Link href="/insumos"
-            className="text-[11px] font-semibold hover:underline"
+          <Link href={d.linkPath}
+            className="inline-flex items-center gap-1 text-[11px] font-semibold hover:underline"
             style={{ color: "#E6DDF4" }}>
-            Saiba mais →
+            {d.linkLabel} <ArrowRight size={10} />
           </Link>
         </div>
+        ); })()}
 
         {/* Sair */}
         <div className="px-3 pb-4 pt-2"
