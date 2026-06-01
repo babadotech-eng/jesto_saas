@@ -616,7 +616,7 @@ export default function Landing() {
                   <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: C.text, marginBottom: 4 }}>Grátis</h3>
                   <p style={{ fontSize: "0.85rem", color: C.muted, marginBottom: "1.5rem" }}>Para começar e entender se o produto faz sentido para você.</p>
                   <div style={{ marginBottom: "1.5rem" }}><span style={{ fontSize: "2.4rem", fontWeight: 900, color: C.text }}>R$ 0</span><span style={{ fontSize: "0.85rem", color: C.muted, marginLeft: 4 }}>/mês</span></div>
-                  <Link href="/cadastro"><button className="w-full h-11 rounded-full font-semibold text-sm transition-all hover:bg-[#1A1A1A] hover:text-white border mb-7" style={{ borderColor: C.border, color: C.text }}>Comece grátis</button></Link>
+                  <Link href="/cadastro"><button className="w-full h-11 rounded-full font-semibold text-sm transition-all hover:bg-black/[0.06] active:scale-[0.97] border mb-7" style={{ borderColor: C.border, color: C.text }}>Comece grátis</button></Link>
                   <div className="space-y-3">{["Até 5 produtos","Até 10 fichas técnicas","Até 30 insumos","Cálculo de custo e CMV"].map(f => (
                     <div key={f} className="flex items-center gap-2.5 text-sm" style={{ color: C.text }}><Check size={13} style={{ color: C.accent, flexShrink: 0 }} /> {f}</div>
                   ))}</div>
@@ -629,7 +629,7 @@ export default function Landing() {
                   <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#fff", marginBottom: 4 }}>Pro</h3>
                   <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.45)", marginBottom: "1.5rem" }}>Para quem precisa de mais controle na operação e na precificação.</p>
                   <div style={{ marginBottom: "1.5rem" }}><span style={{ fontSize: "2.4rem", fontWeight: 900, color: "#fff" }}>R$ {fmt(anual ? PRICES.pro.a : PRICES.pro.m)}</span><span style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.4)", marginLeft: 4 }}>{anual ? "/ano" : "/mês"}</span></div>
-                  <Link href="/planos"><button className="w-full h-11 rounded-full font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.97] mb-7 text-white" style={{ background: C.accent }}>Assinar Pro</button></Link>
+                  <Link href="/planos"><button className="w-full h-11 rounded-full font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.97] mb-7" style={{ background: C.accentAlt, color: "#1A1A1A" }}>Assinar Pro</button></Link>
                   <div className="space-y-3">{["Produtos ilimitados","Fichas técnicas ilimitadas","Insumos ilimitados","Cálculo de margem real","Cálculo de custo e CMV","Dashboard de custos","Alertas de margem baixa"].map(f => (
                     <div key={f} className="flex items-center gap-2.5 text-sm text-white"><Check size={13} style={{ color: C.accent, flexShrink: 0 }} /> {f}</div>
                   ))}</div>
@@ -693,7 +693,7 @@ export default function Landing() {
                 Organize custos, controle gastos e forme preços<br/>com base no que sobra no negócio — não no chute.
               </p>
               <Link href="/cadastro">
-                <button style={{ height: 50, padding: "0 40px", borderRadius: 999, background: "#fff", color: "#1A1A1A", fontWeight: 700, fontSize: "0.95rem", display: "inline-flex", alignItems: "center", gap: 8, cursor: "pointer", border: "none", transition: "opacity 0.2s" }}>
+                <button className="hover:opacity-85 active:scale-[0.97]" style={{ height: 50, padding: "0 40px", borderRadius: 999, background: "#fff", color: "#1A1A1A", fontWeight: 700, fontSize: "0.95rem", display: "inline-flex", alignItems: "center", gap: 8, cursor: "pointer", border: "none", transition: "opacity 0.2s, transform 0.15s" }}>
                   Comece grátis <ArrowRight size={15} />
                 </button>
               </Link>
