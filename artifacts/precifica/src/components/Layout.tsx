@@ -12,7 +12,7 @@ const navigation = [
   { name: "Dashboard",     href: "/painel",       icon: LayoutDashboard },
   { name: "Produtos",      href: "/produtos",      icon: Package },
   { name: "Ingredientes",  href: "/insumos",       icon: Carrot },
-  { name: "Receitas",      href: "/ficha-tecnica", icon: FileText },
+  { name: "Ficha Técnica", href: "/ficha-tecnica", icon: FileText },
   { name: "Despesas",      href: "/despesas",      icon: Wallet },
   { name: "Transações",    href: "/lancamentos",   icon: ArrowRightLeft },
   { name: "Funcionários",  href: "/funcionarios",  icon: Users, premium: true },
