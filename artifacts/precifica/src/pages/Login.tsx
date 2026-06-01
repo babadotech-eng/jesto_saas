@@ -23,7 +23,7 @@ function PasswordChecklist({ password }: { password: string }) {
   return (
     <div className="mt-2 space-y-1">
       {checks.map(c => (
-        <div key={c.label} className={`flex items-center gap-1.5 text-xs ${c.ok ? "text-green-600" : "text-zinc-400"}`}>
+        <div key={c.label} className={`flex items-center gap-1.5 text-xs ${c.ok ? "text-white" : "text-zinc-400"}`}>
           {c.ok ? <Check size={12} /> : <X size={12} />}
           {c.label}
         </div>
@@ -92,7 +92,7 @@ export default function Login() {
           <p className="text-muted-foreground mt-2">Seu negócio de comida, no controle.</p>
         </div>
 
-        <Card className="shadow-xl border-white/10 bg-[#1A1A1A]">
+        <Card className="shadow-xl border-white/10 bg-[#161722]">
           <CardHeader>
             <CardTitle className="text-white">Entrar</CardTitle>
             <CardDescription className="text-zinc-400">Acesse sua conta para continuar</CardDescription>
@@ -132,7 +132,7 @@ export default function Login() {
 
             <div className="text-center text-sm text-zinc-500">
               Não tem conta?{" "}
-              <Link href="/cadastro" className="text-yellow-400 font-medium hover:underline">Criar conta grátis</Link>
+              <Link href="/cadastro" className="text-white font-medium hover:underline">Criar conta grátis</Link>
             </div>
           </CardContent>
         </Card>
