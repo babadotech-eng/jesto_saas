@@ -452,12 +452,12 @@ export default function Painel() {
       {/* ── HEADER ──────────────────────────────────────────── */}
       <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 mb-5">
         <div>
+          {perfil?.logo_url && (
+            <img src={perfil.logo_url} alt="Logo do negócio" className="mb-2 object-contain" style={{ height: 56, width: "auto", maxWidth: 160 }} />
+          )}
           <h1 className="text-2xl font-black" style={{ color: T.textPrimary }}>
-            {greeting}{displayName ? `, ${displayName}` : ""} 👋
+            {greeting}{displayName ? `, ${displayName}` : ""}
           </h1>
-          <p className="text-sm mt-0.5" style={{ color: T.textSecondary }}>
-            Aqui está o resumo do seu negócio hoje.
-          </p>
         </div>
         <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
           <KPICard Icon={Wallet}       iconBg="#EAF7EF"  iconColor={T.iconGreen}  label="Receita do mês"   value={fmt(receitaTotal)}        change="↑ 8,6%"     up={true}  />
