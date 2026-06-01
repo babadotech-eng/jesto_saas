@@ -19,6 +19,7 @@ router.get("/despesas", requireAuth, async (req, res): Promise<void> => {
     descricao: r.descricao,
     valor: Number(r.valor),
     categoria: r.categoria,
+    data: r.data ?? null,
     created_at: r.createdAt?.toISOString() ?? null,
   })));
 });
@@ -33,6 +34,7 @@ router.post("/despesas", requireAuth, async (req, res): Promise<void> => {
     descricao: b.descricao,
     valor: String(b.valor),
     categoria: b.categoria ?? null,
+    data: b.data ?? null,
   }).returning();
 
   res.status(201).json({
@@ -40,6 +42,7 @@ router.post("/despesas", requireAuth, async (req, res): Promise<void> => {
     descricao: row.descricao,
     valor: Number(row.valor),
     categoria: row.categoria,
+    data: row.data ?? null,
     created_at: row.createdAt?.toISOString() ?? null,
   });
 });
@@ -52,7 +55,7 @@ router.put("/despesas/:id", requireAuth, async (req, res): Promise<void> => {
   const b = parsed.data;
   const [row] = await db
     .update(despesasFixasTable)
-    .set({ descricao: b.descricao, valor: String(b.valor), categoria: b.categoria ?? null })
+    .set({ descricao: b.descricao, valor: String(b.valor), categoria: b.categoria ?? null, data: b.data ?? null })
     .where(and(eq(despesasFixasTable.id, id), eq(despesasFixasTable.userId, userId)))
     .returning();
 
@@ -62,6 +65,7 @@ router.put("/despesas/:id", requireAuth, async (req, res): Promise<void> => {
     descricao: row.descricao,
     valor: Number(row.valor),
     categoria: row.categoria,
+    data: row.data ?? null,
     created_at: row.createdAt?.toISOString() ?? null,
   });
 });

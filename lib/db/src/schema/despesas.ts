@@ -1,4 +1,4 @@
-import { pgTable, text, uuid, numeric, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, uuid, numeric, timestamp, date } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -8,6 +8,7 @@ export const despesasFixasTable = pgTable("despesas_fixas", {
   descricao: text("descricao").notNull(),
   valor: numeric("valor", { precision: 10, scale: 2 }).notNull().default("0"),
   categoria: text("categoria"),
+  data: date("data"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

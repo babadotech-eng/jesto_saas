@@ -11,4 +11,9 @@ export interface DespesaInput {
   valor: number;
   /** @nullable */
   categoria?: string | null;
+  /**
+     * Data da despesa (YYYY-MM-DD)
+     * @nullable
+     */
+  data?: string | null;
 }

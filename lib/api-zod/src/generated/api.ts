@@ -482,6 +482,7 @@ export const ListDespesasResponseItem = zod.object({
   "descricao": zod.string(),
   "valor": zod.number(),
   "categoria": zod.string().nullish(),
+  "data": zod.string().nullish().describe('Data da despesa (YYYY-MM-DD)'),
   "created_at": zod.string().nullish()
 })
 export const ListDespesasResponse = zod.array(ListDespesasResponseItem)
@@ -493,7 +494,8 @@ export const ListDespesasResponse = zod.array(ListDespesasResponseItem)
 export const CreateDespesaBody = zod.object({
   "descricao": zod.string(),
   "valor": zod.number(),
-  "categoria": zod.string().nullish()
+  "categoria": zod.string().nullish(),
+  "data": zod.string().nullish().describe('Data da despesa (YYYY-MM-DD)')
 })
 
 
@@ -507,7 +509,8 @@ export const UpdateDespesaParams = zod.object({
 export const UpdateDespesaBody = zod.object({
   "descricao": zod.string(),
   "valor": zod.number(),
-  "categoria": zod.string().nullish()
+  "categoria": zod.string().nullish(),
+  "data": zod.string().nullish().describe('Data da despesa (YYYY-MM-DD)')
 })
 
 export const UpdateDespesaResponse = zod.object({
@@ -515,6 +518,7 @@ export const UpdateDespesaResponse = zod.object({
   "descricao": zod.string(),
   "valor": zod.number(),
   "categoria": zod.string().nullish(),
+  "data": zod.string().nullish().describe('Data da despesa (YYYY-MM-DD)'),
   "created_at": zod.string().nullish()
 })
 

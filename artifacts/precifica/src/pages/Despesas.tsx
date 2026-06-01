@@ -1,16 +1,15 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useListDespesas, useCreateDespesa, useUpdateDespesa, useDeleteDespesa, getListDespesasQueryKey } from "@workspace/api-client-react";
 import { useAssinatura } from "@/hooks/useAssinatura";
 import { getLimites } from "@/lib/planConfig";
 import { UpgradeModal } from "@/components/UpgradeModal";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, Wallet } from "lucide-react";
+import { Plus, Pencil, Trash2, Wallet, ChevronDown, X, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -68,13 +67,133 @@ const CATEGORIAS = [
   },
 ];
 
+/* ── Combobox de Categoria com busca ─────────────────────── */
+function CategoriaCombobox({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  const query = search.toLowerCase();
+  const filtered = CATEGORIAS
+    .map(g => ({
+      grupo: g.grupo,
+      itens: g.itens.filter(i => i.toLowerCase().includes(query) || g.grupo.toLowerCase().includes(query)),
+    }))
+    .filter(g => g.itens.length > 0);
+
+  useEffect(() => {
+    if (!open) return;
+    setTimeout(() => searchRef.current?.focus(), 50);
+  }, [open]);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  function select(item: string) {
+    onChange(item);
+    setOpen(false);
+    setSearch("");
+  }
+
+  function clear(e: React.MouseEvent) {
+    e.stopPropagation();
+    onChange("");
+    setSearch("");
+  }
+
+  return (
+    <div ref={containerRef} className="relative" data-testid="input-despesa-categoria">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="flex w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 min-h-9"
+      >
+        <span className={value ? "text-foreground" : "text-muted-foreground"}>
+          {value || "Selecione uma categoria..."}
+        </span>
+        <span className="flex items-center gap-1 shrink-0 ml-2">
+          {value && (
+            <X
+              size={13}
+              className="text-muted-foreground hover:text-foreground"
+              onClick={clear}
+            />
+          )}
+          <ChevronDown size={14} className="text-muted-foreground" />
+        </span>
+      </button>
+
+      {open && (
+        <div className="absolute z-50 mt-1 w-full rounded-md border border-border bg-popover shadow-md">
+          <div className="flex items-center border-b border-border px-2">
+            <Search size={13} className="text-muted-foreground mr-1.5 shrink-0" />
+            <input
+              ref={searchRef}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Buscar categoria..."
+              className="w-full bg-transparent py-2 text-sm outline-none placeholder:text-muted-foreground"
+            />
+            {search && (
+              <button type="button" onClick={() => setSearch("")}>
+                <X size={12} className="text-muted-foreground hover:text-foreground" />
+              </button>
+            )}
+          </div>
+
+          <div className="max-h-60 overflow-y-auto py-1">
+            {filtered.length === 0 ? (
+              <p className="px-3 py-4 text-center text-sm text-muted-foreground">Nenhuma categoria encontrada.</p>
+            ) : (
+              filtered.map(g => (
+                <div key={g.grupo}>
+                  <p className="sticky top-0 bg-muted/60 px-2 py-1 text-xs font-semibold text-muted-foreground">
+                    {g.grupo}
+                  </p>
+                  {g.itens.map(item => (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => select(item)}
+                      className={`w-full px-4 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground ${
+                        value === item ? "bg-accent/60 font-medium" : ""
+                      }`}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const schema = z.object({
   descricao: z.string().min(1, "Descrição é obrigatória"),
   valor: z.coerce.number().min(0.01, "Valor deve ser maior que zero"),
   categoria: z.string().optional(),
+  data: z.string().optional(),
 });
 type FormValues = z.infer<typeof schema>;
-const defaultValues: FormValues = { descricao: "", valor: 0, categoria: "" };
+const defaultValues: FormValues = { descricao: "", valor: 0, categoria: "", data: "" };
 
 export default function Despesas() {
   const qc = useQueryClient();
@@ -105,12 +224,16 @@ export default function Despesas() {
   }
   function openEdit(d: NonNullable<typeof data>[0]) {
     setEditingId(d.id);
-    form.reset({ descricao: d.descricao, valor: d.valor, categoria: d.categoria ?? "" });
+    form.reset({ descricao: d.descricao, valor: d.valor, categoria: d.categoria ?? "", data: d.data ?? "" });
     setOpen(true);
   }
 
   async function onSubmit(values: FormValues) {
-    const payload = { ...values, categoria: values.categoria || null };
+    const payload = {
+      ...values,
+      categoria: values.categoria || null,
+      data: values.data || null,
+    };
     try {
       if (editingId) {
         await updateMutation.mutateAsync({ id: editingId, data: payload });
@@ -213,31 +336,23 @@ export default function Despesas() {
                 <FormItem><FormLabel>Valor (R$) *</FormLabel><FormControl><Input type="number" step="0.01" {...field} data-testid="input-despesa-valor" /></FormControl><FormMessage /></FormItem>
               )} />
 
-              {/* Categoria — grouped select */}
+              <FormField control={form.control} name="data" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Data</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} data-testid="input-despesa-data" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              {/* Categoria com busca */}
               <FormField control={form.control} name="categoria" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Categoria</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                    <FormControl>
-                      <SelectTrigger data-testid="input-despesa-categoria">
-                        <SelectValue placeholder="Selecione uma categoria..." />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="max-h-72 overflow-y-auto">
-                      {CATEGORIAS.map(grupo => (
-                        <SelectGroup key={grupo.grupo}>
-                          <SelectLabel className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/40 sticky top-0">
-                            {grupo.grupo}
-                          </SelectLabel>
-                          {grupo.itens.map(item => (
-                            <SelectItem key={item} value={item} className="pl-4">
-                              {item}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <CategoriaCombobox value={field.value ?? ""} onChange={field.onChange} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )} />

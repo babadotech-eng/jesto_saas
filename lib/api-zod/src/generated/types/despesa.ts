@@ -12,6 +12,11 @@ export interface Despesa {
   valor: number;
   /** @nullable */
   categoria?: string | null;
+  /**
+     * Data da despesa (YYYY-MM-DD)
+     * @nullable
+     */
+  data?: string | null;
   /** @nullable */
   created_at?: string | null;
 }

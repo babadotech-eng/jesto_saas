@@ -994,6 +994,9 @@ components:
           type: number
         categoria:
           type: ["string", "null"]
+        data:
+          type: ["string", "null"]
+          description: "Data da despesa (YYYY-MM-DD)"
         created_at:
           type: ["string", "null"]
       required: [id, descricao, valor]
@@ -1007,6 +1010,9 @@ components:
           type: number
         categoria:
           type: ["string", "null"]
+        data:
+          type: ["string", "null"]
+          description: "Data da despesa (YYYY-MM-DD)"
       required: [descricao, valor]
 
     Funcionario:
