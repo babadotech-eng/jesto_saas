@@ -1,0 +1,419 @@
+ALTERAÇÃO EXCLUSIVA DA PÁGINA DE AUTENTICAÇÃO DO PRECIFICA
+
+ATENÇÃO MÁXIMA:
+Faça SOMENTE a alteração descrita neste prompt.
+
+NÃO alterar:
+- Dashboard
+- Landing Page
+- Rotas principais
+- Banco de dados
+- APIs existentes
+- Regras de negócio
+- Sistema de autenticação existente
+- Menu lateral
+- Componentes internos do sistema
+- Tema global
+- Paleta global
+- Tipografia global
+- Responsividade das outras páginas
+- Funcionalidades já existentes
+
+O objetivo é alterar APENAS a experiência visual e de navegação interna da área de autenticação.
+
+---
+
+OBJETIVO
+
+Criar uma nova tela de autenticação premium, moderna, acolhedora e responsiva para o Precifica.
+
+A nova tela deve manter a identidade visual atual do SaaS e transmitir:
+
+- Gestão profissional
+- Controle financeiro
+- Crescimento para negócios de alimentação
+- Organização
+- Clareza nos números
+- Confiança
+- Vontade de voltar ao sistema
+
+---
+
+IMPORTANTE SOBRE O FLUXO
+
+A autenticação deve ter 4 estados dentro do mesmo card:
+
+1. Login
+2. Cadastro
+3. Confirmar cadastro por e-mail
+4. Recuperação de senha
+
+NÃO criar páginas separadas.
+
+NÃO mudar rota.
+
+NÃO alterar URL.
+
+NÃO recarregar a aplicação.
+
+NÃO fazer refresh.
+
+NÃO abrir nova página.
+
+Apenas trocar o conteúdo interno do card com animação leve:
+
+- Fade-out 200ms
+- Troca do conteúdo
+- Fade-in 200ms
+
+A transição deve ser suave, rápida e elegante.
+
+---
+
+LAYOUT DESKTOP
+
+Criar layout em duas colunas.
+
+COLUNA ESQUERDA:
+- Ocupa aproximadamente 58% a 62% da largura.
+- Exibe uma imagem aleatória.
+- Imagem com bordas arredondadas de 24px.
+- Usar object-fit: cover.
+- Não distorcer a imagem.
+- Aplicar overlay escuro suave entre 25% e 35%.
+- Exibir texto sobreposto na parte inferior esquerda.
+
+COLUNA DIREITA:
+- Ocupa aproximadamente 38% a 42% da largura.
+- Exibe o card de autenticação.
+- Card centralizado verticalmente.
+- Largura máxima entre 460px e 500px.
+- Manter campos, validações, integrações e autenticação já existentes.
+
+---
+
+IMAGENS
+
+Vou adicionar 8 imagens ao projeto.
+
+Criar um array local com os caminhos dessas imagens.
+
+As imagens devem mudar automaticamente e aleatoriamente apenas a cada novo acesso ou carregamento da página.
+
+Durante a sessão:
+- Manter a mesma imagem.
+- Manter a mesma frase.
+- Não trocar automaticamente.
+
+NÃO permitir que o usuário escolha, troque ou controle imagem/frase.
+
+NÃO criar:
+- Setas
+- Bolinhas
+- Paginação
+- Carrossel
+- Botão de próxima imagem
+- Botão de trocar frase
+- Indicador 1/8
+- Controles visuais
+- Configuração de personalização
+
+---
+
+TAMANHO RECOMENDADO DAS IMAGENS
+
+As imagens terão:
+
+1920 x 1440 px
+
+Proporção:
+
+4:3
+
+Usar object-fit: cover para adaptar ao layout.
+
+---
+
+TEXTO SOBRE A IMAGEM
+
+Adicionar o seguinte bloco na parte inferior esquerda da imagem:
+
+1. Título:
+"Seja bem-vindo!"
+
+Estilo:
+- Fonte: Playfair Display
+- Peso: 600 ou 700
+- Cor: branco
+- Tamanho desktop: 56px
+- Tamanho tablet: 42px
+- Tamanho mobile: 32px
+- Line-height elegante
+
+2. Badge:
+"INSIGHT DO DIA"
+
+Estilo:
+- Caixa alta
+- Fonte atual do sistema
+- Tamanho pequeno
+- Peso 600
+- Cor branca com leve transparência
+- Letter spacing sutil
+
+3. Frase aleatória
+
+Estilo:
+- Cor branca
+- Fonte atual do sistema
+- Tamanho desktop entre 22px e 26px
+- Peso 500
+- Máximo 2 linhas
+- Largura máxima de 520px
+
+---
+
+FRASES DO INSIGHT DO DIA
+
+Criar um array local com estas frases.
+
+As frases não devem ter tom de coach, espiritual, religioso ou político.
+
+Elas devem ser profissionais e relacionadas a gestão, crescimento e negócios de alimentação.
+
+[
+"Bem-vindo de volta.",
+"Grandes resultados começam nos detalhes.",
+"O próximo capítulo do seu negócio começa hoje.",
+"Todo crescimento nasce de decisões consistentes.",
+"Há valor em cada pequena evolução.",
+"O trabalho de hoje constrói os resultados de amanhã.",
+"Algumas conquistas levam tempo. Todas começam com um passo.",
+"O extraordinário é construído diariamente.",
+"Crescer é continuar avançando, mesmo nos dias comuns.",
+"O futuro é criado pelas escolhas feitas hoje.",
+"O progresso raramente faz barulho.",
+"Toda história de sucesso é escrita aos poucos.",
+"Grandes jornadas são feitas de pequenos avanços.",
+"O tempo recompensa quem continua evoluindo.",
+"Nem toda evolução é visível no primeiro dia.",
+"Há força na constância.",
+"As melhores construções acontecem passo a passo.",
+"Cada dia oferece uma nova oportunidade para evoluir.",
+"Boas escolhas criam bons caminhos.",
+"O sucesso costuma nascer da repetição do que funciona.",
+"Todo avanço merece ser reconhecido.",
+"Construir algo duradouro exige paciência e direção.",
+"Há beleza nas coisas feitas com atenção.",
+"O crescimento acontece antes de aparecer.",
+"Pequenos ajustes podem gerar grandes transformações.",
+"Algumas mudanças começam de forma quase imperceptível.",
+"Os melhores resultados costumam amadurecer com o tempo.",
+"Todo caminho relevante é construído aos poucos.",
+"Consistência é uma forma silenciosa de progresso.",
+"O que é construído com cuidado tende a durar.",
+"Clareza ajuda a enxergar novas possibilidades.",
+"Cada decisão carrega o potencial de um novo resultado.",
+"Hoje é uma boa oportunidade para seguir em frente.",
+"Os detalhes moldam aquilo que se torna extraordinário.",
+"O futuro é influenciado pelas escolhas de agora.",
+"Nem sempre é preciso acelerar para continuar evoluindo.",
+"O progresso acontece mesmo quando ainda não é percebido.",
+"Toda conquista começou como uma intenção.",
+"Há valor em continuar, mesmo quando o avanço parece pequeno.",
+"As melhores histórias são construídas dia após dia.",
+"Alguns resultados levam tempo para revelar seu valor.",
+"Cada etapa faz parte de algo maior.",
+"Persistir também é uma forma de avançar.",
+"Existe potencial em tudo o que é feito com propósito.",
+"O crescimento sustentável acontece um dia de cada vez.",
+"Os próximos resultados começam nas ações de hoje.",
+"Grandes realizações raramente acontecem de uma só vez.",
+"Seguir em frente também é uma conquista.",
+"Todo recomeço traz novas possibilidades.",
+"Você está construindo algo que vale a pena."
+]
+
+---
+
+ESTADO 1: LOGIN
+
+Manter a lógica de login já existente.
+
+Conteúdo:
+- Logo atual do Precifica
+- Título de boas-vindas ao usuário
+- Campo de e-mail
+- Campo de senha
+- Botão principal de login
+- Link para criar conta
+- Link "Esqueci minha senha"
+
+Ao clicar em "Criar conta":
+- Trocar para o estado CADASTRO
+- Usar fade-out/fade-in
+- Não mudar rota
+- Não recarregar
+
+Ao clicar em "Esqueci minha senha":
+- Trocar para o estado RECUPERAÇÃO DE SENHA
+- Usar fade-out/fade-in
+- Não mudar rota
+- Não recarregar
+
+---
+
+ESTADO 2: CADASTRO
+
+Manter a lógica de cadastro já existente.
+
+Conteúdo:
+- Logo atual do Precifica
+- Título de cadastro
+- Campos atuais de cadastro
+- Botão principal de cadastro
+- Link para voltar ao login
+
+Após cadastro bem-sucedido:
+- Trocar para o estado CONFIRMAR CADASTRO POR E-MAIL
+- Usar fade-out/fade-in
+- Não mudar rota
+- Não recarregar
+
+Ao clicar em voltar para login:
+- Trocar para LOGIN
+- Usar fade-out/fade-in
+- Não mudar rota
+- Não recarregar
+
+---
+
+ESTADO 3: CONFIRMAR CADASTRO POR E-MAIL
+
+Manter os dados já existentes desta tela.
+
+Conteúdo:
+- Ícone de envelope
+- Título: "Confirme seu e-mail"
+- Texto informando que foi enviado um link de confirmação
+- Exibir o e-mail do usuário cadastrado
+- Botão: "Ir para Login"
+- Link: "Voltar e corrigir e-mail"
+
+Texto sugerido:
+"Enviamos um link de confirmação para o e-mail informado. Clique no link recebido para ativar sua conta."
+
+O botão "Ir para Login":
+- Troca para LOGIN
+- Usa fade-out/fade-in
+- Não muda rota
+- Não recarrega
+
+O link "Voltar e corrigir e-mail":
+- Troca para CADASTRO
+- Usa fade-out/fade-in
+- Não muda rota
+- Não recarrega
+
+Ajustar apenas o visual para combinar com o novo layout premium.
+
+---
+
+ESTADO 4: RECUPERAÇÃO DE SENHA
+
+Criar este estado dentro do mesmo card.
+
+Adicionar o link "Esqueci minha senha" na tela de Login.
+
+Ao clicar:
+- Não mudar rota
+- Não carregar nova página
+- Não recarregar a aplicação
+- Apenas trocar para o estado RECUPERAÇÃO DE SENHA com fade-out/fade-in
+
+Conteúdo:
+- Logo atual do Precifica
+- Título: "Recuperar senha"
+- Subtítulo: "Informe seu e-mail e enviaremos um link para redefinir sua senha."
+- Campo de e-mail
+- Botão principal: "Enviar link de recuperação"
+- Link secundário: "Voltar para login"
+
+Após enviar:
+- Manter no mesmo card
+- Exibir mensagem de sucesso:
+"Enviamos um link de recuperação para o e-mail informado."
+
+O link "Voltar para login":
+- Troca para LOGIN
+- Usa fade-out/fade-in
+- Não muda rota
+- Não recarrega
+
+---
+
+RESPONSIVIDADE
+
+DESKTOP:
+- Layout em duas colunas.
+- Imagem à esquerda.
+- Card à direita.
+
+TABLET:
+- Imagem no topo.
+- Card abaixo.
+- Espaçamento confortável.
+- Layout sem quebra visual.
+
+MOBILE:
+- Ocultar a imagem grande.
+- Exibir "Seja bem-vindo!" no topo do formulário.
+- Exibir uma frase aleatória acima do card.
+- Layout 100% em coluna.
+- Sem scroll horizontal.
+- Card com largura adaptada à tela.
+
+---
+
+ESTILO VISUAL
+
+Manter a identidade visual atual do Precifica:
+
+- Fundo claro sofisticado
+- Cards arredondados
+- Roxo principal já existente
+- Botões atuais
+- Inputs atuais
+- Sombras suaves
+- Tipografia atual do sistema
+- Playfair Display somente no texto "Seja bem-vindo!"
+- Visual alinhado com a Landing Page e Dashboard
+
+Não criar um visual completamente diferente do sistema atual.
+
+---
+
+ANIMAÇÕES
+
+Usar apenas:
+- Fade-in
+- Fade-out
+- Transições suaves
+
+Não usar:
+- Parallax
+- Vídeo
+- Zoom contínuo
+- Carrossel automático
+- Movimento excessivo
+- Animações pesadas
+
+---
+
+REGRA FINAL
+
+Entregar somente a nova experiência visual da página de autenticação.
+
+As funcionalidades de login, cadastro, confirmação de e-mail e recuperação de senha devem continuar funcionando corretamente.
+
+Não modificar nenhuma outra parte do SaaS.

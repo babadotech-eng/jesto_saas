@@ -10,9 +10,8 @@ import { useEffect } from "react";
 
 import Layout from "@/components/Layout";
 import Painel from "@/pages/Painel";
-import Login from "@/pages/Login";
+import Auth from "@/pages/Auth";
 import Landing from "@/pages/Landing";
-import Cadastro from "@/pages/Cadastro";
 import Planos from "@/pages/Planos";
 import Produtos from "@/pages/Produtos";
 import Insumos from "@/pages/Insumos";
@@ -105,8 +104,8 @@ function Router() {
   return (
     <Switch>
       <Route path="/"><PublicRoute component={Landing} /></Route>
-      <Route path="/login"><PublicRoute component={Login} restricted /></Route>
-      <Route path="/cadastro"><PublicRoute component={Cadastro} restricted /></Route>
+      <Route path="/login"><PublicRoute component={Auth} restricted /></Route>
+      <Route path="/cadastro"><PublicRoute component={Auth} restricted /></Route>
       <Route path="/planos"><PublicRoute component={Planos} /></Route>
       <Route path="/onboarding"><OnboardingRoute /></Route>
       <Route path="/painel"><ProtectedRoute component={Painel} /></Route>
