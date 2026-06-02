@@ -8,8 +8,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
 const PLAN_PRICES: Record<string, { mensal: number; anual: number }> = {
-  pro: { mensal: 19.90, anual: 199.00 },
-  premium: { mensal: 39.90, anual: 399.00 },
+  pro: { mensal: 24.90, anual: 207.50 },
+  premium: { mensal: 49.90, anual: 416.00 },
 };
 
 type CupomInfo = {
@@ -290,16 +290,18 @@ export default function Planos() {
             <div className="mb-6">
               {cupom && descontoPro > 0 ? (
                 <div>
-                  <span className="text-2xl font-black line-through text-muted-foreground/60">R$ {formatarPreco(precoPro)}</span>
+                  <span className="text-2xl font-black line-through text-muted-foreground/60">R$ {formatarPreco(anual ? precoPro / 10 : precoPro)}</span>
                   <div>
-                    <span className="text-4xl font-black text-emerald-500">R$ {formatarPreco(finalPro)}</span>
-                    <span className="text-muted-foreground">{anual ? "/ano" : "/mês"}</span>
+                    <span className="text-4xl font-black text-emerald-500">R$ {formatarPreco(anual ? finalPro / 10 : finalPro)}</span>
+                    <span className="text-muted-foreground">/mês</span>
                   </div>
+                  {anual && <p className="text-xs text-muted-foreground mt-1">Plano anual · cobrado em 10×</p>}
                 </div>
               ) : (
                 <div>
-                  <span className="text-4xl font-black">R$ {formatarPreco(precoPro)}</span>
-                  <span className="text-muted-foreground">{anual ? "/ano" : "/mês"}</span>
+                  <span className="text-4xl font-black">R$ {formatarPreco(anual ? precoPro / 10 : precoPro)}</span>
+                  <span className="text-muted-foreground">/mês</span>
+                  {anual && <p className="text-xs text-muted-foreground mt-1">Plano anual · cobrado em 10×</p>}
                 </div>
               )}
             </div>
@@ -324,16 +326,18 @@ export default function Planos() {
             <div className="mb-6">
               {cupom && descontoPremium > 0 ? (
                 <div>
-                  <span className="text-2xl font-black line-through text-muted-foreground/60">R$ {formatarPreco(precoPremium)}</span>
+                  <span className="text-2xl font-black line-through text-muted-foreground/60">R$ {formatarPreco(anual ? precoPremium / 10 : precoPremium)}</span>
                   <div>
-                    <span className="text-4xl font-black text-emerald-500">R$ {formatarPreco(finalPremium)}</span>
-                    <span className="text-muted-foreground">{anual ? "/ano" : "/mês"}</span>
+                    <span className="text-4xl font-black text-emerald-500">R$ {formatarPreco(anual ? finalPremium / 10 : finalPremium)}</span>
+                    <span className="text-muted-foreground">/mês</span>
                   </div>
+                  {anual && <p className="text-xs text-muted-foreground mt-1">Plano anual · cobrado em 10×</p>}
                 </div>
               ) : (
                 <div>
-                  <span className="text-4xl font-black">R$ {formatarPreco(precoPremium)}</span>
-                  <span className="text-muted-foreground">{anual ? "/ano" : "/mês"}</span>
+                  <span className="text-4xl font-black">R$ {formatarPreco(anual ? precoPremium / 10 : precoPremium)}</span>
+                  <span className="text-muted-foreground">/mês</span>
+                  {anual && <p className="text-xs text-muted-foreground mt-1">Plano anual · cobrado em 10×</p>}
                 </div>
               )}
             </div>
