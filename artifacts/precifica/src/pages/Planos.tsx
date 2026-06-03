@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Link, useLocation } from "wouter";
-import { Check, ArrowLeft, Tag, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { Check, ArrowLeft, Tag, Loader2, CheckCircle2, AlertCircle, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -110,6 +110,7 @@ export default function Planos() {
   const [cupom, setCupom] = useState<CupomInfo | null>(null);
   const [cupomErro, setCupomErro] = useState("");
   const [validando, setValidando] = useState(false);
+  const [showCupom, setShowCupom] = useState(false);
   const [assinando, setAssinando] = useState(false);
   const [, navigate] = useLocation();
   const { session } = useAuth();
@@ -207,7 +208,7 @@ export default function Planos() {
         </Link>
 
         {/* Header */}
-        <div style={{ textAlign: "center", maxWidth: 640, margin: "0 auto 3.5rem" }}>
+        <div style={{ textAlign: "center", maxWidth: 640, margin: "0 auto 1.5rem" }}>
           <p style={{ fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.24em", color: C.muted, marginBottom: "1.25rem" }}>Planos</p>
           <h1 style={{ fontSize: "clamp(2rem, 4.5vw, 3.4rem)", fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: C.text, marginBottom: "0.75rem" }}>
             Preços simples para pequenos negócios
@@ -235,47 +236,61 @@ export default function Planos() {
             </button>
           </div>
 
-          {/* Cupom */}
-          <div style={{ maxWidth: 340, margin: "0 auto" }}>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Tag size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: C.muted }} />
-                <Input
-                  className="pl-8 uppercase placeholder:normal-case"
-                  style={{ background: C.surface, border: `1px solid ${C.border}`, color: C.text }}
-                  placeholder="Código promocional"
-                  value={codigoCupom}
-                  onChange={(e) => {
-                    setCodigoCupom(e.target.value.toUpperCase());
-                    if (cupom || cupomErro) { setCupom(null); setCupomErro(""); }
-                  }}
-                  onKeyDown={(e) => { if (e.key === "Enter") validarCupom(); }}
-                  disabled={validando}
-                />
-              </div>
-              <button
-                onClick={validarCupom}
-                disabled={validando || !codigoCupom.trim()}
-                className="shrink-0 px-4 rounded-lg text-sm font-semibold transition-all disabled:opacity-40"
-                style={{ background: C.surface, border: `1px solid ${C.border}`, color: C.text }}
-              >
-                {validando ? <Loader2 size={15} className="animate-spin" /> : "Aplicar"}
-              </button>
-            </div>
+        </div>
 
-            {cupom && (
-              <div className="mt-2 flex items-center gap-2 text-sm" style={{ color: "#16a34a" }}>
-                <CheckCircle2 size={15} className="shrink-0" />
-                <span>Cupom válido: {formatarDesconto(cupom)} — será aplicado ao confirmar</span>
+        {/* Cupom — acesso discreto pré-checkout */}
+        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+          <button
+            onClick={() => setShowCupom(v => !v)}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: "0.8rem", color: C.muted, background: "none", border: "none", cursor: "pointer", fontWeight: 500 }}
+          >
+            <Tag size={13} />
+            Tenho um código promocional
+            <ChevronDown size={13} style={{ transition: "transform 0.2s", transform: showCupom ? "rotate(180deg)" : "rotate(0deg)" }} />
+          </button>
+
+          {showCupom && (
+            <div style={{ maxWidth: 340, margin: "0.75rem auto 0" }}>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Tag size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: C.muted }} />
+                  <Input
+                    className="pl-8 uppercase placeholder:normal-case"
+                    style={{ background: C.surface, border: `1px solid ${C.border}`, color: C.text }}
+                    placeholder="Código promocional"
+                    value={codigoCupom}
+                    onChange={(e) => {
+                      setCodigoCupom(e.target.value.toUpperCase());
+                      if (cupom || cupomErro) { setCupom(null); setCupomErro(""); }
+                    }}
+                    onKeyDown={(e) => { if (e.key === "Enter") validarCupom(); }}
+                    disabled={validando}
+                  />
+                </div>
+                <button
+                  onClick={validarCupom}
+                  disabled={validando || !codigoCupom.trim()}
+                  className="shrink-0 px-4 rounded-lg text-sm font-semibold transition-all disabled:opacity-40"
+                  style={{ background: C.surface, border: `1px solid ${C.border}`, color: C.text }}
+                >
+                  {validando ? <Loader2 size={15} className="animate-spin" /> : "Aplicar"}
+                </button>
               </div>
-            )}
-            {cupomErro && (
-              <div className="mt-2 flex items-center gap-2 text-sm" style={{ color: "#dc2626" }}>
-                <AlertCircle size={15} className="shrink-0" />
-                <span>{cupomErro}</span>
-              </div>
-            )}
-          </div>
+
+              {cupom && (
+                <div className="mt-2 flex items-center gap-2 text-sm" style={{ color: "#16a34a" }}>
+                  <CheckCircle2 size={15} className="shrink-0" />
+                  <span>Cupom válido: {formatarDesconto(cupom)} — será aplicado ao confirmar</span>
+                </div>
+              )}
+              {cupomErro && (
+                <div className="mt-2 flex items-center gap-2 text-sm" style={{ color: "#dc2626" }}>
+                  <AlertCircle size={15} className="shrink-0" />
+                  <span>{cupomErro}</span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Cards */}
