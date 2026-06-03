@@ -1,0 +1,27 @@
+Faça APENAS as alterações de texto e layout descritas abaixo. 
+NÃO altere fontes, tamanhos, cores, espaçamentos, componentes nem nenhum outro elemento além do especificado.
+
+ALTERAÇÕES:
+
+1. HERO — Altere o título para duas linhas:
+Linha 1: "Pare de adivinhar."
+Linha 2: "Lucre de verdade." — aplicar a fonte Parfait Display APENAS nas palavras "Lucre de verdade.", mantendo todos os outros estilos (tamanho, cor, peso) idênticos ao restante do título.
+
+2. BLOCO DA DOR — Altere o título para duas linhas:
+Linha 1: "Você vende."
+Linha 2: "Mas ganha dinheiro?" — aplicar a fonte Parfait Display APENAS nas palavras "Mas ganha dinheiro?", mantendo todos os outros estilos idênticos ao restante do título.
+
+3. BLOCO "TUDO O QUE VOCÊ PRECISA" — Altere o título para duas linhas:
+Linha 1: "Do estoque"
+Linha 2: "ao lucro." — aplicar a fonte Parfait Display APENAS nas palavras "ao lucro.", mantendo todos os outros estilos idênticos.
+Alterar o layout deste bloco para: título e subtítulo alinhados à ESQUERDA, e os cards posicionados à DIREITA, em grid de duas colunas lado a lado. Manter o fundo escuro atual.
+
+4. BLOCO MOCKUP DA DASHBOARD — Adicionar separação visual clara entre este bloco e o bloco anterior (ex: padding-top maior ou border/divider). Alterar o fundo deste bloco para cor clara (use a cor de fundo clara já existente no projeto).
+
+5. BLOCO "FEITO PARA O SEU TIPO DE NEGÓCIO" — Altere o título para:
+"Uma plataforma criada para quem vive da alimentação." — aplicar a fonte Parfait Display APENAS nas palavras "vive da alimentação.", mantendo todos os outros estilos idênticos.
+Alterar o subtítulo para: "Seja um restaurante, cafeteria, confeitaria ou delivery, a Precifica se adapta à sua operação."
+
+6. BLOCO FAQ — Alterar a largura do acordeão para que o lado ESQUERDO do acordeão fique alinhado com o lado esquerdo do título do bloco. O lado direito permanece no mesmo lugar que está hoje.
+
+7. BLOCO CTA FINAL — Quebrar o título atual em duas linhas, sem alterar nenhuma palavra, fonte, cor ou tamanho. Apenas inserir uma quebra de linha (<br>) no meio do título para que ele ocupe duas linhas.
