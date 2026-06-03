@@ -1,4 +1,4 @@
-import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
+import { Switch, Route, Router as WouterRouter, Redirect, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,6 +23,8 @@ import Funcionarios from "@/pages/Funcionarios";
 import Onboarding from "@/pages/Onboarding";
 import AdminPanel from "@/pages/admin/AdminPanel";
 import RedefinirSenha from "@/pages/RedefinirSenha";
+import CheckoutPage from "@/pages/CheckoutPage";
+import PagamentoRetorno from "@/pages/PagamentoRetorno";
 import { usePerfil } from "@/hooks/usePerfil";
 
 const queryClient = new QueryClient({
@@ -69,6 +71,26 @@ function PendingCupomApplier() {
   return null;
 }
 
+function PendingCheckoutRedirector() {
+  const { session } = useAuth();
+  const [, navigate] = useLocation();
+
+  useEffect(() => {
+    if (!session?.access_token) return;
+    const plano = sessionStorage.getItem("pendingCheckoutPlano");
+    if (!plano) return;
+    const ciclo = sessionStorage.getItem("pendingCheckoutCiclo") ?? "mensal";
+    const cupom = sessionStorage.getItem("pendingCheckoutCupom") ?? "";
+    sessionStorage.removeItem("pendingCheckoutPlano");
+    sessionStorage.removeItem("pendingCheckoutCiclo");
+    sessionStorage.removeItem("pendingCheckoutCupom");
+    const cupomParam = cupom ? `&cupom=${encodeURIComponent(cupom)}` : "";
+    navigate(`/checkout?plano=${plano}&ciclo=${ciclo}${cupomParam}`);
+  }, [session]);
+
+  return null;
+}
+
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
   const { session, loading } = useAuth();
   const { data: perfil, isLoading: perfilLoading } = usePerfil(!!session);
@@ -107,6 +129,8 @@ function Router() {
       <Route path="/login"><PublicRoute component={Auth} restricted /></Route>
       <Route path="/cadastro"><PublicRoute component={Auth} restricted /></Route>
       <Route path="/planos"><PublicRoute component={Planos} /></Route>
+      <Route path="/checkout"><PublicRoute component={CheckoutPage} /></Route>
+      <Route path="/pagamento/retorno"><PublicRoute component={PagamentoRetorno} /></Route>
       <Route path="/onboarding"><OnboardingRoute /></Route>
       <Route path="/painel"><ProtectedRoute component={Painel} /></Route>
       {/* Legacy redirect */}
@@ -137,6 +161,7 @@ function App() {
       <TooltipProvider>
         <AuthProvider>
           <PendingCupomApplier />
+          <PendingCheckoutRedirector />
           <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
             <Router />
           </WouterRouter>

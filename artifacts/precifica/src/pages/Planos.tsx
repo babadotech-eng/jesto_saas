@@ -143,30 +143,45 @@ export default function Planos() {
   }
 
   async function assinar(plano: string) {
+    // Paid plans → checkout page
+    if (plano !== "gratis") {
+      const ciclo = anual ? "anual" : "mensal";
+      const cupomParam = cupom && codigoCupom.trim()
+        ? `&cupom=${encodeURIComponent(codigoCupom.trim())}`
+        : "";
+      if (session?.access_token) {
+        navigate(`/checkout?plano=${plano}&ciclo=${ciclo}${cupomParam}`);
+      } else {
+        sessionStorage.setItem("pendingCheckoutPlano", plano);
+        sessionStorage.setItem("pendingCheckoutCiclo", ciclo);
+        if (cupom && codigoCupom.trim()) {
+          sessionStorage.setItem("pendingCheckoutCupom", codigoCupom.trim());
+        }
+        navigate("/login");
+      }
+      return;
+    }
+
+    // Gratis flow
     if (session?.access_token) {
       setAssinando(true);
       try {
-        const body: { plano: string; cupomCode?: string } = { plano };
-        if (cupom && codigoCupom.trim()) {
-          body.cupomCode = codigoCupom.trim();
-        }
-
         const res = await fetch("/api/assinaturas", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${session.access_token}`,
           },
-          body: JSON.stringify(body),
+          body: JSON.stringify({ plano }),
         });
 
         if (!res.ok) {
           const data = await res.json() as { error?: string };
-          toast.error(data.error ?? "Erro ao assinar plano");
+          toast.error(data.error ?? "Erro ao ativar plano");
           return;
         }
 
-        toast.success("Plano atualizado com sucesso!");
+        toast.success("Plano Grátis ativado!");
         navigate("/painel");
       } catch {
         toast.error("Erro ao processar assinatura. Tente novamente.");
@@ -174,11 +189,7 @@ export default function Planos() {
         setAssinando(false);
       }
     } else {
-      if (cupom && codigoCupom.trim()) {
-        sessionStorage.setItem("pendingCupomCode", codigoCupom.trim());
-        sessionStorage.setItem("pendingPlano", plano);
-      }
-      navigate(`/cadastro?plano=${plano}${anual ? "&periodo=anual" : ""}`);
+      navigate("/cadastro");
     }
   }
 
@@ -304,12 +315,15 @@ export default function Planos() {
               <span style={{ fontSize: "2.4rem", fontWeight: 900, color: C.text }}>R$ 0</span>
               <span style={{ fontSize: "0.85rem", color: C.muted, marginLeft: 4 }}>/mês</span>
             </div>
-            <Link href="/cadastro">
-              <button className="w-full transition-all hover:bg-black/[0.06] active:scale-[0.97]"
-                style={{ height: 44, borderRadius: 999, fontWeight: 600, fontSize: "0.875rem", border: `1px solid ${C.border}`, color: C.text, background: "transparent", marginBottom: "1.75rem", cursor: "pointer" }}>
-                Começar Grátis
-              </button>
-            </Link>
+            <button
+              className="w-full transition-all hover:bg-black/[0.06] active:scale-[0.97]"
+              style={{ height: 44, borderRadius: 999, fontWeight: 600, fontSize: "0.875rem", border: `1px solid ${C.border}`, color: C.text, background: "transparent", marginBottom: "1.75rem", cursor: "pointer" }}
+              onClick={() => assinar("gratis")}
+              disabled={assinando}
+            >
+              {assinando ? <Loader2 size={15} className="animate-spin inline mr-2" /> : null}
+              Começar Grátis
+            </button>
             <div className="space-y-3 flex-1">
               <Feature text="Até 5 produtos" />
               <Feature text="Até 10 fichas técnicas" />

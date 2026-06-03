@@ -1,0 +1,136 @@
+Do not touch the Planos page except what is strictly necessary to trigger the payment flow.
+
+Execute only. No plan mode. No long explanation.
+
+Do not respond with a plan.
+Implement the changes immediately.
+
+Read the current code first, then implement only the payment flow described below.
+Do not redesign anything.
+Do not touch dashboard/painel.
+Do not touch home.
+Do not touch admin pages.
+Do not touch pricing card design.
+Do not touch coupon logic.
+Do not modify unrelated working features.
+Do not refactor unrelated components.
+Do not change global styles unless absolutely required for this exact flow.
+
+GOAL
+Implement only the payment/subscription flow for:
+- Gratis
+- Pro
+- Premium
+
+Use Asaas as the payment gateway for paid plans.
+
+CURRENT PLAN RULES
+- Gratis = no payment
+- Pro = paid
+- Premium = paid
+
+CURRENT PRICES
+- Pro monthly: R$ 24,90
+- Premium monthly: R$ 49,90
+- If annual billing logic already exists, preserve it
+- Do not change existing pricing rules outside the payment flow
+
+REQUIRED FLOW
+
+1. PLAN CLICK
+When user clicks:
+- "Começar Grátis" -> start Gratis activation flow
+- "Assinar Pró" -> start Pro payment flow
+- "Assinar Premium" -> start Premium payment flow
+
+2. AUTH CHECK
+If user is not logged in:
+- redirect to login/register
+- after successful authentication, automatically return to the selected plan flow
+
+If user is already logged in:
+- continue directly
+
+3. GRATIS FLOW
+- Do not send Gratis to Asaas
+- Activate Gratis directly for the authenticated user
+- Save plan/subscription status in database
+- If first access, redirect to onboarding
+- Otherwise redirect to painel
+
+4. PRO AND PREMIUM FLOW
+- Open checkout with the clicked plan already selected
+- Do not force the user to choose the plan again
+- Preserve monthly/annual selection if it already exists before click
+- Show checkout summary with selected plan, billing cycle, and final amount
+- Use Asaas as payment gateway
+- Create payment/subscription record in the system
+- Store gateway reference returned by Asaas
+
+5. PAYMENT RESULT
+If payment is approved:
+- activate the correct subscription
+- save selected plan
+- save billing cycle
+- save subscription status
+- save gateway name = Asaas
+- save transaction_id and/or subscription_id
+- save start date
+- save next billing date if available
+- if first access, redirect to onboarding
+- otherwise redirect to painel
+
+If payment is pending:
+- save pending status
+- show clear pending message
+- allow user to return or track payment status
+
+If payment fails:
+- show friendly error
+- allow retry
+- keep selected plan in checkout
+
+6. MINIMUM DATABASE PERSISTENCE
+Save at minimum:
+- user_id
+- plano
+- ciclo
+- status
+- gateway
+- transaction_id or subscription_id
+- data_inicio
+- proxima_cobranca
+
+7. STRICT SCOPE RULES
+Do not change:
+- pricing page visual design
+- plan card order
+- plan benefits text
+- landing page copy
+- coupon field
+- dashboard widgets
+- admin area
+- unrelated routes
+- unrelated database structure
+- unrelated auth logic
+
+Only make the minimum UI and backend changes required to:
+- detect selected plan
+- continue after login
+- open checkout
+- create payment with Asaas
+- handle approved/pending/failed states
+- persist subscription data
+
+FINAL RESPONSE
+Return only:
+1. Files changed
+2. Database/schema changes
+3. Payment flow implemented
+4. Manual test results for:
+   - Gratis activation
+   - Pro checkout
+   - Premium checkout
+   - payment approved
+   - payment pending
+   - payment failed
