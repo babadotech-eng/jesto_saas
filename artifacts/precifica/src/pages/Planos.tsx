@@ -203,7 +203,7 @@ export default function Planos() {
         <Link href="/" className="inline-flex items-center gap-2 mb-12"
           style={{ fontSize: "0.875rem", fontWeight: 500, color: C.muted, textDecoration: "none" }}>
           <ArrowLeft size={16} />
-          Voltar para Home
+          Voltar para o Início
         </Link>
 
         {/* Header */}
