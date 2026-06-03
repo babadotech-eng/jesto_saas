@@ -37,16 +37,18 @@ export default function AdminPanel() {
   return (
     <div className="min-h-screen flex bg-background">
       {/* Sidebar */}
-      <aside className="w-56 shrink-0 bg-zinc-950 text-zinc-100 flex flex-col border-r border-zinc-800">
+      <aside className="w-56 shrink-0 flex flex-col"
+        style={{ background: "#161722", borderRight: "1px solid rgba(255,255,255,0.06)" }}>
         {/* Logo */}
-        <div className="px-5 py-5 border-b border-zinc-800">
+        <div className="px-5 py-5" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-amber-500 flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+              style={{ background: "linear-gradient(135deg, #6E4B97, #8D74B3)" }}>
               <ShieldCheck size={16} className="text-white" />
             </div>
             <div>
               <p className="font-bold text-sm leading-tight text-white">Precifica</p>
-              <p className="text-xs text-zinc-400 leading-tight">Admin</p>
+              <p className="text-xs leading-tight" style={{ color: "#C7BED6" }}>Admin</p>
             </div>
           </div>
         </div>
@@ -59,13 +61,12 @@ export default function AdminPanel() {
               <button
                 key={id}
                 onClick={() => setLocation(path)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left ${
-                  isActive
-                    ? "bg-amber-500 text-white"
-                    : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
-                }`}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left"
+                style={isActive
+                  ? { background: "#7A4FB2", color: "#ffffff", fontWeight: 600 }
+                  : { color: "#D9D2E3" }}
               >
-                <Icon size={16} />
+                <Icon size={16} style={{ color: isActive ? "#ffffff" : "#C7BED6" }} />
                 {label}
               </button>
             );
@@ -73,17 +74,18 @@ export default function AdminPanel() {
         </nav>
 
         {/* Footer */}
-        <div className="px-3 py-4 border-t border-zinc-800 space-y-3">
+        <div className="px-3 py-4 space-y-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
           <div className="px-3">
-            <p className="text-xs text-zinc-400 truncate">{user?.email}</p>
+            <p className="text-xs truncate" style={{ color: "#C7BED6" }}>{user?.email}</p>
           </div>
           <Button
             variant="ghost"
             size="sm"
-            className="w-full justify-start gap-2 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800"
+            className="w-full justify-start gap-2 hover:bg-white/[0.06]"
+            style={{ color: "#D9D2E3" }}
             onClick={handleSignOut}
           >
-            <LogOut size={14} />
+            <LogOut size={14} style={{ color: "#C7BED6" }} />
             Sair
           </Button>
         </div>
@@ -96,7 +98,8 @@ export default function AdminPanel() {
           <h1 className="font-semibold text-foreground">
             {NAV_ITEMS.find(n => n.id === activeTab)?.label ?? "Admin"}
           </h1>
-          <span className="text-xs bg-amber-100 text-amber-700 border border-amber-200 px-2 py-0.5 rounded font-medium">
+          <span className="text-xs px-2 py-0.5 rounded font-medium"
+            style={{ background: "rgba(122,79,178,0.10)", color: "#A37ED8", border: "1px solid rgba(122,79,178,0.22)" }}>
             Acesso Administrativo
           </span>
         </header>
