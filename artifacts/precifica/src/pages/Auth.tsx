@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { Check, X, Mail } from "lucide-react";
+import { Check, X, Mail, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -527,7 +527,17 @@ export default function Auth() {
   const frase = FRASES[fraseIdx];
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-white">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-white relative">
+
+      {/* ── Back to home ── */}
+      <button
+        type="button"
+        onClick={() => setLocation("/")}
+        className="absolute top-5 left-5 z-10 flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors"
+      >
+        <ArrowLeft size={18} />
+        <span className="hidden sm:inline">Início</span>
+      </button>
 
       {/* ── Image panel: hidden mobile, top tablet (order-first), right desktop (lg:order-2) ── */}
       <div className="hidden md:block relative overflow-hidden order-first lg:order-2 md:h-72 md:mx-4 md:mt-4 md:rounded-3xl lg:flex-1 lg:h-auto lg:min-h-screen lg:mx-6 lg:my-6 lg:rounded-[24px]">
