@@ -639,7 +639,7 @@ export default function Landing() {
                 <BarChart3 size={20} className="text-white" />
               </div>
               <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: "#fff", marginBottom: "1.5rem" }}>
-                Descubra quanto seu negócio<br/><It dark>realmente lucra.</It>
+                Descubra<br/>quanto seu negócio<br/><It dark>realmente lucra.</It>
               </h2>
               <p style={{ fontSize: "1rem", lineHeight: 1.82, color: "rgba(255,255,255,0.5)", marginBottom: "2.5rem" }}>
                 Pare de trabalhar sem visibilidade financeira. Controle custos,<br/>defina preços corretos e tome decisões com confiança.
