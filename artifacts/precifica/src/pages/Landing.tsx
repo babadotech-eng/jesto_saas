@@ -666,7 +666,7 @@ export default function Landing() {
             </span>
             Precifica
           </a>
-          <p style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.25)" }}>© 2025 Precifica. Todos os direitos reservados.</p>
+          <p style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.25)" }}>© 2025 Precifica. Todos os direitos reservados. · CNPJ 63.029.108/0001-27</p>
           <div className="flex items-center gap-6">
             <Link href="/login" style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.35)" }} className="hover:text-white transition-colors">Entrar</Link>
             <Link href="/cadastro" style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.35)" }} className="hover:text-white transition-colors">Criar conta</Link>
