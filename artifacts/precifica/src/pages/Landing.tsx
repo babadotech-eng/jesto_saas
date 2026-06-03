@@ -486,9 +486,9 @@ export default function Landing() {
           <div className="max-w-6xl mx-auto">
             <Reveal>
               <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: "#fff", marginBottom: "1.25rem", maxWidth: 640 }}>
-                Decisões melhores começam<br/>com <It dark>números confiáveis.</It>
+                Decisões melhores começam com<br/><It dark>números confiáveis.</It>
               </h2>
-              <p style={{ fontSize: "1rem", lineHeight: 1.8, color: "rgba(255,255,255,0.5)", maxWidth: 500, marginBottom: "3.5rem" }}>
+              <p style={{ fontSize: "1rem", lineHeight: 1.8, color: "rgba(255,255,255,0.5)", marginBottom: "3.5rem", whiteSpace: "nowrap" }}>
                 Transforme informações dispersas em indicadores claros para crescer com segurança.
               </p>
             </Reveal>
