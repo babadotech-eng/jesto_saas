@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Link, useLocation } from "wouter";
@@ -7,8 +6,19 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
+const C = {
+  bg:        "#ECEAE5",
+  bg2:       "#E6E2DB",
+  surface:   "#F5F4F1",
+  text:      "#1A1A1A",
+  muted:     "#6B6864",
+  border:    "#C8C3BB",
+  accent:    "#4B2B69",
+  accentAlt: "#FDC203",
+};
+
 const PLAN_PRICES: Record<string, { mensal: number; anual: number }> = {
-  pro: { mensal: 24.90, anual: 207.50 },
+  pro:     { mensal: 24.90, anual: 207.50 },
   premium: { mensal: 49.90, anual: 416.00 },
 };
 
@@ -186,72 +196,81 @@ export default function Planos() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-12 px-4 md:px-8">
-      <div className="max-w-7xl mx-auto">
-        <Link href="/" className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground mb-12">
-          <ArrowLeft size={16} className="mr-2" />
+    <div style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "'Satoshi', sans-serif" }}>
+      <div style={{ maxWidth: 1152, margin: "0 auto", padding: "3rem 2.5rem 0" }}>
+
+        {/* Back link */}
+        <Link href="/" className="inline-flex items-center gap-2 mb-12"
+          style={{ fontSize: "0.875rem", fontWeight: 500, color: C.muted, textDecoration: "none" }}>
+          <ArrowLeft size={16} />
           Voltar para Home
         </Link>
 
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-6 text-foreground">Preços simples para pequenos negócios</h1>
-          <p className="text-xl text-muted-foreground mb-8">
+        {/* Header */}
+        <div style={{ textAlign: "center", maxWidth: 640, margin: "0 auto 3.5rem" }}>
+          <p style={{ fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.24em", color: C.muted, marginBottom: "1.25rem" }}>Planos</p>
+          <h1 style={{ fontSize: "clamp(2rem, 4.5vw, 3.4rem)", fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: C.text, marginBottom: "0.75rem" }}>
+            Preços simples para pequenos negócios
+          </h1>
+          <p style={{ fontSize: "1rem", color: C.muted, maxWidth: 440, margin: "0 auto 2.5rem" }}>
             Escolha o plano ideal para a sua operação. Sem surpresas.
           </p>
 
-          <div className="inline-flex items-center bg-card border border-border p-1 rounded-xl shadow-sm mb-8">
+          {/* Toggle */}
+          <div className="inline-flex items-center p-1 rounded-full mb-8"
+            style={{ background: C.bg2, border: `1px solid ${C.border}` }}>
             <button
-              className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${!anual ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+              className="px-5 py-2 rounded-full text-sm font-semibold transition-all"
+              style={!anual ? { background: C.text, color: "#fff" } : { color: C.muted }}
               onClick={() => { setAnual(false); setCupom(null); setCupomErro(""); }}
             >
               Mensal
             </button>
             <button
-              className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${anual ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+              className="px-5 py-2 rounded-full text-sm font-semibold transition-all"
+              style={anual ? { background: C.text, color: "#fff" } : { color: C.muted }}
               onClick={() => { setAnual(true); setCupom(null); setCupomErro(""); }}
             >
-              Anual <span className="ml-1 text-xs opacity-80">2 meses grátis</span>
+              Anual <span style={{ marginLeft: 4, fontSize: "0.75rem", opacity: 0.7 }}>— 2 meses grátis</span>
             </button>
           </div>
 
-          {/* Coupon input */}
-          <div className="max-w-sm mx-auto">
+          {/* Cupom */}
+          <div style={{ maxWidth: 340, margin: "0 auto" }}>
             <div className="flex gap-2">
               <div className="relative flex-1">
-                <Tag size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Tag size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: C.muted }} />
                 <Input
-                  className="pl-8 uppercase placeholder:normal-case placeholder:text-muted-foreground"
+                  className="pl-8 uppercase placeholder:normal-case"
+                  style={{ background: C.surface, border: `1px solid ${C.border}`, color: C.text }}
                   placeholder="Código promocional"
                   value={codigoCupom}
                   onChange={(e) => {
                     setCodigoCupom(e.target.value.toUpperCase());
-                    if (cupom || cupomErro) {
-                      setCupom(null);
-                      setCupomErro("");
-                    }
+                    if (cupom || cupomErro) { setCupom(null); setCupomErro(""); }
                   }}
                   onKeyDown={(e) => { if (e.key === "Enter") validarCupom(); }}
                   disabled={validando}
                 />
               </div>
-              <Button
-                variant="outline"
+              <button
                 onClick={validarCupom}
                 disabled={validando || !codigoCupom.trim()}
-                className="shrink-0"
+                className="shrink-0 px-4 rounded-lg text-sm font-semibold transition-all disabled:opacity-40"
+                style={{ background: C.surface, border: `1px solid ${C.border}`, color: C.text }}
               >
                 {validando ? <Loader2 size={15} className="animate-spin" /> : "Aplicar"}
-              </Button>
+              </button>
             </div>
 
             {cupom && (
-              <div className="mt-2 flex items-center gap-2 text-sm text-emerald-500">
+              <div className="mt-2 flex items-center gap-2 text-sm" style={{ color: "#16a34a" }}>
                 <CheckCircle2 size={15} className="shrink-0" />
                 <span>Cupom válido: {formatarDesconto(cupom)} — será aplicado ao confirmar</span>
               </div>
             )}
             {cupomErro && (
-              <div className="mt-2 flex items-center gap-2 text-sm text-destructive">
+              <div className="mt-2 flex items-center gap-2 text-sm" style={{ color: "#dc2626" }}>
                 <AlertCircle size={15} className="shrink-0" />
                 <span>{cupomErro}</span>
               </div>
@@ -259,19 +278,24 @@ export default function Planos() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        {/* Cards */}
+        <div className="grid md:grid-cols-3 gap-5 items-end">
+
           {/* Grátis */}
-          <div className="bg-card rounded-2xl border border-border p-8 shadow-sm flex flex-col">
-            <h3 className="text-xl font-bold mb-2">Grátis</h3>
-            <p className="text-muted-foreground text-sm mb-6">Para começar com organização, clareza e mais segurança nas primeiras decisões.</p>
-            <div className="mb-6">
-              <span className="text-4xl font-black">R$ 0</span>
-              <span className="text-muted-foreground">/mês</span>
+          <div className="rounded-2xl flex flex-col" style={{ background: C.surface, border: `1px solid ${C.border}`, padding: "1.75rem", minHeight: 520 }}>
+            <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: C.text, marginBottom: 4 }}>Grátis</h3>
+            <p style={{ fontSize: "0.85rem", color: C.muted, marginBottom: "1.5rem" }}>Para começar com organização, clareza e mais segurança nas primeiras decisões.</p>
+            <div style={{ marginBottom: "1.5rem" }}>
+              <span style={{ fontSize: "2.4rem", fontWeight: 900, color: C.text }}>R$ 0</span>
+              <span style={{ fontSize: "0.85rem", color: C.muted, marginLeft: 4 }}>/mês</span>
             </div>
-            <Link href="/cadastro" className="w-full mb-8">
-              <Button variant="outline" className="w-full">Começar Grátis</Button>
+            <Link href="/cadastro">
+              <button className="w-full transition-all hover:bg-black/[0.06] active:scale-[0.97]"
+                style={{ height: 44, borderRadius: 999, fontWeight: 600, fontSize: "0.875rem", border: `1px solid ${C.border}`, color: C.text, background: "transparent", marginBottom: "1.75rem", cursor: "pointer" }}>
+                Começar Grátis
+              </button>
             </Link>
-            <div className="space-y-4 flex-1">
+            <div className="space-y-3 flex-1">
               <Feature text="Estruture seus primeiros produtos com mais confiança" />
               <Feature text="Padronize receitas e ganhe consistência na operação" />
               <Feature text="Organize insumos sem depender de planilhas soltas" />
@@ -280,77 +304,82 @@ export default function Planos() {
             </div>
           </div>
 
-          {/* Pro */}
-          <div className="bg-card rounded-2xl border-2 border-primary p-8 shadow-md relative flex flex-col transform md:-translate-y-4">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-bold shadow-sm">
+          {/* Pro — destaque */}
+          <div className="rounded-2xl flex flex-col relative" style={{ background: "#1A1A1A", border: `2px solid ${C.accent}`, padding: "2.5rem 1.75rem", minHeight: 560, boxShadow: "0 20px 60px rgba(0,0,0,0.18)" }}>
+            <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", fontSize: "0.68rem", fontWeight: 700, padding: "3px 14px", borderRadius: 99, background: C.accentAlt, color: "#1A1A1A", whiteSpace: "nowrap" }}>
               Mais Popular
             </div>
-            <h3 className="text-xl font-bold mb-2 text-primary">Pro</h3>
-            <p className="text-muted-foreground text-sm mb-6">Para quem quer precificar melhor, proteger a margem e crescer com mais controle.</p>
-            <div className="mb-6">
+            <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#fff", marginBottom: 4 }}>Pro</h3>
+            <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.45)", marginBottom: "1.5rem" }}>Para quem quer precificar melhor, proteger a margem e crescer com mais controle.</p>
+            <div style={{ marginBottom: "1.5rem" }}>
               {cupom && descontoPro > 0 ? (
                 <div>
-                  <span className="text-2xl font-black line-through text-muted-foreground/60">R$ {formatarPreco(anual ? precoPro / 10 : precoPro)}</span>
+                  <span style={{ fontSize: "1.5rem", fontWeight: 900, color: "rgba(255,255,255,0.35)", textDecoration: "line-through" }}>R$ {formatarPreco(anual ? precoPro / 10 : precoPro)}</span>
                   <div>
-                    <span className="text-4xl font-black text-emerald-500">R$ {formatarPreco(anual ? finalPro / 10 : finalPro)}</span>
-                    <span className="text-muted-foreground">/mês</span>
+                    <span style={{ fontSize: "2.4rem", fontWeight: 900, color: "#4ade80" }}>R$ {formatarPreco(anual ? finalPro / 10 : finalPro)}</span>
+                    <span style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.4)", marginLeft: 4 }}>/mês</span>
                   </div>
-                  {anual && <p className="text-xs text-muted-foreground mt-1">Plano anual · cobrado em 10×</p>}
+                  {anual && <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)", marginTop: 4 }}>Plano anual · cobrado em 10×</p>}
                 </div>
               ) : (
                 <div>
-                  <span className="text-4xl font-black">R$ {formatarPreco(anual ? precoPro / 10 : precoPro)}</span>
-                  <span className="text-muted-foreground">/mês</span>
-                  {anual && <p className="text-xs text-muted-foreground mt-1">Plano anual · cobrado em 10×</p>}
+                  <span style={{ fontSize: "2.4rem", fontWeight: 900, color: "#fff" }}>R$ {formatarPreco(anual ? precoPro / 10 : precoPro)}</span>
+                  <span style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.4)", marginLeft: 4 }}>/mês</span>
+                  {anual && <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)", marginTop: 4 }}>Plano anual · cobrado em 10×</p>}
                 </div>
               )}
             </div>
-            <Button className="w-full mb-8" onClick={() => assinar("pro")} disabled={assinando}>
-              {assinando ? <Loader2 size={15} className="animate-spin mr-2" /> : null}
+            <button
+              className="w-full transition-all hover:opacity-90 active:scale-[0.97]"
+              style={{ height: 44, borderRadius: 999, fontWeight: 600, fontSize: "0.875rem", background: C.accentAlt, color: "#1A1A1A", border: "none", marginBottom: "1.75rem", cursor: "pointer" }}
+              onClick={() => assinar("pro")}
+              disabled={assinando}
+            >
+              {assinando ? <Loader2 size={15} className="animate-spin inline mr-2" /> : null}
               Assinar Pro
-            </Button>
-            <div className="space-y-4 flex-1">
-              <Feature text="Cadastre toda a sua operação sem limites desnecessários" />
-              <Feature text="Enxergue a margem real de cada item com mais precisão" />
-              <Feature text="Tenha uma visão mais clara dos custos no dia a dia" />
-              <Feature text="Identifique rapidamente produtos com margem abaixo do ideal" />
-              <Feature text="Tome decisões de preço com mais confiança e menos achismo" />
-              <Feature text="Ganhe agilidade para ajustar cardápio, custos e rentabilidade" />
+            </button>
+            <div className="space-y-3 flex-1">
+              <FeatureDark text="Cadastre toda a sua operação sem limites desnecessários" />
+              <FeatureDark text="Enxergue a margem real de cada item com mais precisão" />
+              <FeatureDark text="Tenha uma visão mais clara dos custos no dia a dia" />
+              <FeatureDark text="Identifique rapidamente produtos com margem abaixo do ideal" />
+              <FeatureDark text="Tome decisões de preço com mais confiança e menos achismo" />
+              <FeatureDark text="Ganhe agilidade para ajustar cardápio, custos e rentabilidade" />
             </div>
           </div>
 
           {/* Premium */}
-          <div className="bg-card rounded-2xl border border-border p-8 shadow-sm flex flex-col">
-            <h3 className="text-xl font-bold mb-2">Premium</h3>
-            <p className="text-muted-foreground text-sm mb-6">Para negócios que querem uma visão completa da operação e decisões mais estratégicas.</p>
-            <div className="mb-6">
+          <div className="rounded-2xl flex flex-col" style={{ background: C.surface, border: `1px solid ${C.border}`, padding: "1.75rem", minHeight: 520 }}>
+            <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: C.text, marginBottom: 4 }}>Premium</h3>
+            <p style={{ fontSize: "0.85rem", color: C.muted, marginBottom: "1.5rem" }}>Para negócios que querem uma visão completa da operação e decisões mais estratégicas.</p>
+            <div style={{ marginBottom: "1.5rem" }}>
               {cupom && descontoPremium > 0 ? (
                 <div>
-                  <span className="text-2xl font-black line-through text-muted-foreground/60">R$ {formatarPreco(anual ? precoPremium / 10 : precoPremium)}</span>
+                  <span style={{ fontSize: "1.5rem", fontWeight: 900, color: `${C.muted}88`, textDecoration: "line-through" }}>R$ {formatarPreco(anual ? precoPremium / 10 : precoPremium)}</span>
                   <div>
-                    <span className="text-4xl font-black text-emerald-500">R$ {formatarPreco(anual ? finalPremium / 10 : finalPremium)}</span>
-                    <span className="text-muted-foreground">/mês</span>
+                    <span style={{ fontSize: "2.4rem", fontWeight: 900, color: "#16a34a" }}>R$ {formatarPreco(anual ? finalPremium / 10 : finalPremium)}</span>
+                    <span style={{ fontSize: "0.85rem", color: C.muted, marginLeft: 4 }}>/mês</span>
                   </div>
-                  {anual && <p className="text-xs text-muted-foreground mt-1">Plano anual · cobrado em 10×</p>}
+                  {anual && <p style={{ fontSize: "0.75rem", color: C.muted, marginTop: 4 }}>Plano anual · cobrado em 10×</p>}
                 </div>
               ) : (
                 <div>
-                  <span className="text-4xl font-black">R$ {formatarPreco(anual ? precoPremium / 10 : precoPremium)}</span>
-                  <span className="text-muted-foreground">/mês</span>
-                  {anual && <p className="text-xs text-muted-foreground mt-1">Plano anual · cobrado em 10×</p>}
+                  <span style={{ fontSize: "2.4rem", fontWeight: 900, color: C.text }}>R$ {formatarPreco(anual ? precoPremium / 10 : precoPremium)}</span>
+                  <span style={{ fontSize: "0.85rem", color: C.muted, marginLeft: 4 }}>/mês</span>
+                  {anual && <p style={{ fontSize: "0.75rem", color: C.muted, marginTop: 4 }}>Plano anual · cobrado em 10×</p>}
                 </div>
               )}
             </div>
-            <Button
-              variant="outline"
-              className="w-full mb-8 bg-sidebar text-sidebar-foreground hover:bg-sidebar/90 hover:text-sidebar-foreground border-transparent"
+            <button
+              className="w-full transition-all hover:bg-[#2d2d2d] active:scale-[0.97]"
+              style={{ height: 44, borderRadius: 999, fontWeight: 600, fontSize: "0.875rem", background: C.text, color: "#fff", border: "none", marginBottom: "1.75rem", cursor: "pointer" }}
               onClick={() => assinar("premium")}
               disabled={assinando}
             >
-              {assinando ? <Loader2 size={15} className="animate-spin mr-2" /> : null}
+              {assinando ? <Loader2 size={15} className="animate-spin inline mr-2" /> : null}
               Assinar Premium
-            </Button>
-            <div className="space-y-4 flex-1">
+            </button>
+            <div className="space-y-3 flex-1">
               <Feature text="Tudo do plano Pro para elevar o controle da sua operação" />
               <Feature text="Acompanhe despesas fixas com mais profundidade" />
               <Feature text="Tenha mais clareza sobre entradas, saídas e fluxo de caixa" />
@@ -361,17 +390,36 @@ export default function Planos() {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* FAQ */}
-        <div className="max-w-2xl mx-auto mt-24">
-          <h2 className="text-2xl font-bold text-center mb-8 text-foreground">Perguntas frequentes</h2>
-          <Accordion type="single" collapsible className="w-full space-y-2">
+      {/* FAQ */}
+      <div style={{ background: C.bg2, marginTop: "6rem", padding: "5rem 2.5rem" }}>
+        <div style={{ maxWidth: 640, margin: "0 auto" }}>
+          <p style={{ fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.24em", color: C.muted, marginBottom: "1.25rem" }}>Dúvidas</p>
+          <h2 style={{ fontSize: "clamp(1.5rem, 3vw, 2.2rem)", fontWeight: 900, letterSpacing: "-0.02em", color: C.text, marginBottom: "0.75rem" }}>
+            Perguntas frequentes
+          </h2>
+          <p style={{ fontSize: "1rem", lineHeight: 1.8, color: C.muted, marginBottom: "2.75rem" }}>
+            Tudo o que você precisa saber para começar a usar a Precifica.
+          </p>
+          <Accordion type="single" collapsible className="space-y-2">
             {FAQ_ITEMS.map((item, i) => (
-              <AccordionItem key={i} value={`item-${i}`} className="border border-border rounded-xl px-4 bg-card shadow-sm">
-                <AccordionTrigger className="text-sm font-medium text-left py-4 hover:no-underline">
+              <AccordionItem
+                key={i}
+                value={`item-${i}`}
+                className="rounded-xl px-5 overflow-hidden"
+                style={{ background: C.surface, border: `1px solid ${C.border}` }}
+              >
+                <AccordionTrigger
+                  className="text-sm font-semibold text-left py-4 hover:no-underline"
+                  style={{ color: C.text }}
+                >
                   {item.pergunta}
                 </AccordionTrigger>
-                <AccordionContent className="text-sm text-muted-foreground pb-4 leading-relaxed">
+                <AccordionContent
+                  className="text-sm pb-4 leading-relaxed"
+                  style={{ color: C.muted }}
+                >
                   {item.resposta}
                 </AccordionContent>
               </AccordionItem>
@@ -385,9 +433,18 @@ export default function Planos() {
 
 function Feature({ text }: { text: string }) {
   return (
-    <div className="flex items-start gap-3">
-      <Check size={18} className="text-primary mt-0.5 shrink-0" />
-      <span className="text-sm text-foreground">{text}</span>
+    <div className="flex items-start gap-2.5 text-sm" style={{ color: "#1A1A1A" }}>
+      <Check size={13} style={{ color: "#4B2B69", flexShrink: 0, marginTop: 2 }} />
+      {text}
+    </div>
+  );
+}
+
+function FeatureDark({ text }: { text: string }) {
+  return (
+    <div className="flex items-start gap-2.5 text-sm" style={{ color: "#fff" }}>
+      <Check size={13} style={{ color: "#4B2B69", flexShrink: 0, marginTop: 2 }} />
+      {text}
     </div>
   );
 }
