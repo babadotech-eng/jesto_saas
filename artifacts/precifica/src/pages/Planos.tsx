@@ -313,18 +313,18 @@ export default function Planos() {
             <div style={{ marginBottom: "1.5rem" }}>
               {cupom && descontoPro > 0 ? (
                 <div>
-                  <span style={{ fontSize: "1.5rem", fontWeight: 900, color: "rgba(255,255,255,0.35)", textDecoration: "line-through" }}>R$ {formatarPreco(anual ? precoPro / 10 : precoPro)}</span>
+                  <span style={{ fontSize: "1.5rem", fontWeight: 900, color: "rgba(255,255,255,0.35)", textDecoration: "line-through" }}>R$ {formatarPreco(anual ? precosPro.mensal * 0.8 : precoPro)}</span>
                   <div>
-                    <span style={{ fontSize: "2.4rem", fontWeight: 900, color: "#4ade80" }}>R$ {formatarPreco(anual ? finalPro / 10 : finalPro)}</span>
+                    <span style={{ fontSize: "2.4rem", fontWeight: 900, color: "#4ade80" }}>R$ {formatarPreco(anual ? precosPro.mensal * 0.8 * (finalPro / precoPro) : finalPro)}</span>
                     <span style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.4)", marginLeft: 4 }}>/mês</span>
                   </div>
-                  {anual && <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)", marginTop: 4 }}>Plano anual · cobrado em 10×</p>}
+                  {anual && <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)", marginTop: 4 }}>cobrado anualmente.</p>}
                 </div>
               ) : (
                 <div>
-                  <span style={{ fontSize: "2.4rem", fontWeight: 900, color: "#fff" }}>R$ {formatarPreco(anual ? precoPro / 10 : precoPro)}</span>
+                  <span style={{ fontSize: "2.4rem", fontWeight: 900, color: "#fff" }}>R$ {formatarPreco(anual ? precosPro.mensal * 0.8 : precoPro)}</span>
                   <span style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.4)", marginLeft: 4 }}>/mês</span>
-                  {anual && <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)", marginTop: 4 }}>Plano anual · cobrado em 10×</p>}
+                  {anual && <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)", marginTop: 4 }}>cobrado anualmente.</p>}
                 </div>
               )}
             </div>
@@ -355,18 +355,18 @@ export default function Planos() {
             <div style={{ marginBottom: "1.5rem" }}>
               {cupom && descontoPremium > 0 ? (
                 <div>
-                  <span style={{ fontSize: "1.5rem", fontWeight: 900, color: `${C.muted}88`, textDecoration: "line-through" }}>R$ {formatarPreco(anual ? precoPremium / 10 : precoPremium)}</span>
+                  <span style={{ fontSize: "1.5rem", fontWeight: 900, color: `${C.muted}88`, textDecoration: "line-through" }}>R$ {formatarPreco(anual ? precosPremium.mensal * 0.8 : precoPremium)}</span>
                   <div>
-                    <span style={{ fontSize: "2.4rem", fontWeight: 900, color: "#16a34a" }}>R$ {formatarPreco(anual ? finalPremium / 10 : finalPremium)}</span>
+                    <span style={{ fontSize: "2.4rem", fontWeight: 900, color: "#16a34a" }}>R$ {formatarPreco(anual ? precosPremium.mensal * 0.8 * (finalPremium / precoPremium) : finalPremium)}</span>
                     <span style={{ fontSize: "0.85rem", color: C.muted, marginLeft: 4 }}>/mês</span>
                   </div>
-                  {anual && <p style={{ fontSize: "0.75rem", color: C.muted, marginTop: 4 }}>Plano anual · cobrado em 10×</p>}
+                  {anual && <p style={{ fontSize: "0.75rem", color: C.muted, marginTop: 4 }}>cobrado anualmente.</p>}
                 </div>
               ) : (
                 <div>
-                  <span style={{ fontSize: "2.4rem", fontWeight: 900, color: C.text }}>R$ {formatarPreco(anual ? precoPremium / 10 : precoPremium)}</span>
+                  <span style={{ fontSize: "2.4rem", fontWeight: 900, color: C.text }}>R$ {formatarPreco(anual ? precosPremium.mensal * 0.8 : precoPremium)}</span>
                   <span style={{ fontSize: "0.85rem", color: C.muted, marginLeft: 4 }}>/mês</span>
-                  {anual && <p style={{ fontSize: "0.75rem", color: C.muted, marginTop: 4 }}>Plano anual · cobrado em 10×</p>}
+                  {anual && <p style={{ fontSize: "0.75rem", color: C.muted, marginTop: 4 }}>cobrado anualmente.</p>}
                 </div>
               )}
             </div>
