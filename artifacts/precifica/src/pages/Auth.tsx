@@ -176,7 +176,7 @@ function LoginContent({ goTo, setLocation, frase }: { goTo: GoTo; setLocation: (
 
   return (
     <div>
-      <h1 className="text-foreground mb-2" style={{ ...playfairItalic, fontSize: "clamp(28px, 3vw, 38px)", lineHeight: 1.2 }}>
+      <h1 className="text-foreground mb-2" style={{ ...playfairItalic, fontSize: "clamp(40px, 5vw, 52px)", lineHeight: 1.15 }}>
         Seja bem-vindo(a)
       </h1>
       <p className="text-sm text-muted-foreground mb-8 leading-relaxed">{frase}</p>
@@ -539,7 +539,7 @@ export default function Auth() {
       </div>
 
       {/* ── Form panel: left on desktop (lg:order-1), below image on tablet ── */}
-      <div className="lg:order-1 lg:flex-none lg:w-[42%] flex flex-col items-center justify-center min-h-screen py-12 px-6 sm:px-10 lg:px-14 bg-white">
+      <div className="lg:order-1 lg:flex-none lg:w-[42%] flex-1 flex flex-col items-center justify-center py-12 px-6 sm:px-10 lg:px-14 bg-white">
 
         {/* Form content */}
         <div
