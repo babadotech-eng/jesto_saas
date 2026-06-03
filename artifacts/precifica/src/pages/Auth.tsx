@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { BarChart3, Check, X, Mail } from "lucide-react";
+import { Check, X, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -98,7 +98,7 @@ function PasswordChecklist({ password }: { password: string }) {
   return (
     <div className="mt-2 space-y-1">
       {checks.map((c) => (
-        <div key={c.label} className={`flex items-center gap-1.5 text-xs ${c.ok ? "text-white" : "text-zinc-400"}`}>
+        <div key={c.label} className={`flex items-center gap-1.5 text-xs ${c.ok ? "text-gray-700" : "text-gray-400"}`}>
           {c.ok ? <Check size={12} /> : <X size={12} />}
           {c.label}
         </div>
@@ -118,31 +118,26 @@ function GoogleIcon() {
   );
 }
 
-function AuthLogo() {
+function LightDivider() {
   return (
-    <div className="flex flex-col items-center mb-5">
-      <div className="bg-purple-700 text-white p-3 rounded-xl mb-3 shadow-md">
-        <BarChart3 size={28} />
-      </div>
-      <span className="text-2xl font-bold text-foreground">Precifica</span>
-    </div>
-  );
-}
-
-function Divider() {
-  return (
-    <div className="relative my-4">
+    <div className="relative my-5">
       <div className="absolute inset-0 flex items-center">
-        <span className="w-full border-t border-white/10" />
+        <span className="w-full border-t border-gray-200" />
       </div>
       <div className="relative flex justify-center text-xs">
-        <span className="bg-[#161722] px-2 text-zinc-500">ou</span>
+        <span className="bg-white px-3 text-gray-400">ou</span>
       </div>
     </div>
   );
 }
 
-function LoginContent({ goTo, setLocation }: { goTo: GoTo; setLocation: (p: string) => void }) {
+const playfairItalic: React.CSSProperties = {
+  fontFamily: "'Playfair Display', Georgia, serif",
+  fontStyle: "italic",
+  fontWeight: 600,
+};
+
+function LoginContent({ goTo, setLocation, frase }: { goTo: GoTo; setLocation: (p: string) => void; frase: string }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -181,26 +176,14 @@ function LoginContent({ goTo, setLocation }: { goTo: GoTo; setLocation: (p: stri
 
   return (
     <div>
-      <AuthLogo />
-      <h2 className="text-xl font-semibold text-foreground text-center mb-1">Entre na sua conta</h2>
-      <p className="text-sm text-muted-foreground text-center mb-6">Bem-vindo de volta ao Precifica</p>
-
-      <Button
-        type="button"
-        variant="outline"
-        className="w-full h-11 gap-2 bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
-        onClick={handleGoogleLogin}
-        disabled={googleLoading}
-      >
-        <GoogleIcon />
-        {googleLoading ? "Redirecionando..." : "Entrar com Google"}
-      </Button>
-
-      <Divider />
+      <h1 className="text-foreground mb-2" style={{ ...playfairItalic, fontSize: "clamp(28px, 3vw, 38px)", lineHeight: 1.2 }}>
+        Seja bem-vindo(a)
+      </h1>
+      <p className="text-sm text-muted-foreground mb-8 leading-relaxed">{frase}</p>
 
       <form onSubmit={handleLogin} className="space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="login-email" className="text-zinc-300">Email</Label>
+          <Label htmlFor="login-email" className="text-gray-700 text-sm font-medium">Email</Label>
           <Input
             id="login-email"
             type="email"
@@ -208,16 +191,16 @@ function LoginContent({ goTo, setLocation }: { goTo: GoTo; setLocation: (p: stri
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="bg-white/5 border-white/15 text-white placeholder:text-zinc-500 focus-visible:ring-yellow-400/40 focus-visible:border-yellow-400/60"
+            className="h-11 border-gray-200 bg-gray-50 text-gray-900 placeholder:text-gray-400 focus-visible:ring-gray-300 focus-visible:border-gray-400"
           />
         </div>
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <Label htmlFor="login-password" className="text-zinc-300">Senha</Label>
+            <Label htmlFor="login-password" className="text-gray-700 text-sm font-medium">Senha</Label>
             <button
               type="button"
               onClick={() => goTo("recuperar")}
-              className="text-xs text-zinc-400 hover:text-white transition-colors"
+              className="text-xs text-gray-400 hover:text-gray-700 transition-colors"
             >
               Esqueci minha senha
             </button>
@@ -228,22 +211,34 @@ function LoginContent({ goTo, setLocation }: { goTo: GoTo; setLocation: (p: stri
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="bg-white/5 border-white/15 text-white placeholder:text-zinc-500 focus-visible:ring-yellow-400/40 focus-visible:border-yellow-400/60"
+            className="h-11 border-gray-200 bg-gray-50 text-gray-900 placeholder:text-gray-400 focus-visible:ring-gray-300 focus-visible:border-gray-400"
           />
-          <PasswordChecklist password={password} />
         </div>
         <Button
           type="submit"
-          className="w-full h-11 text-base bg-yellow-400 hover:bg-yellow-300 text-[#1A1A1A] font-semibold"
+          className="w-full h-11 text-base bg-[#1a1a1a] hover:bg-zinc-800 text-white font-semibold mt-2"
           disabled={loading}
         >
           {loading ? "Entrando..." : "Entrar"}
         </Button>
       </form>
 
-      <p className="text-center text-sm text-zinc-500 mt-5">
+      <LightDivider />
+
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full h-11 gap-2.5 border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-gray-900 font-medium"
+        onClick={handleGoogleLogin}
+        disabled={googleLoading}
+      >
+        <GoogleIcon />
+        {googleLoading ? "Redirecionando..." : "Entrar com Google"}
+      </Button>
+
+      <p className="text-center text-sm text-gray-400 mt-7">
         Não tem conta?{" "}
-        <button type="button" onClick={() => goTo("cadastro")} className="text-white font-medium hover:underline">
+        <button type="button" onClick={() => goTo("cadastro")} className="text-gray-900 font-semibold hover:underline">
           Criar conta grátis
         </button>
       </p>
@@ -288,14 +283,15 @@ function CadastroContent({ goTo, setLocation }: { goTo: GoTo; setLocation: (p: s
 
   return (
     <div>
-      <AuthLogo />
-      <h2 className="text-xl font-semibold text-foreground text-center mb-1">Criar conta grátis</h2>
-      <p className="text-sm text-muted-foreground text-center mb-6">Comece a organizar seu negócio hoje</p>
+      <h1 className="text-foreground mb-2" style={{ ...playfairItalic, fontSize: "clamp(26px, 3vw, 34px)", lineHeight: 1.2 }}>
+        Criar conta grátis
+      </h1>
+      <p className="text-sm text-muted-foreground mb-7">Comece a organizar seu negócio hoje.</p>
 
       <Button
         type="button"
         variant="outline"
-        className="w-full h-11 gap-2 bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
+        className="w-full h-11 gap-2.5 border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-gray-900 font-medium"
         onClick={handleGoogleLogin}
         disabled={googleLoading}
       >
@@ -303,11 +299,11 @@ function CadastroContent({ goTo, setLocation }: { goTo: GoTo; setLocation: (p: s
         {googleLoading ? "Redirecionando..." : "Cadastrar com Google"}
       </Button>
 
-      <Divider />
+      <LightDivider />
 
       <form onSubmit={handleSignup} className="space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="cad-email" className="text-zinc-300">Email</Label>
+          <Label htmlFor="cad-email" className="text-gray-700 text-sm font-medium">Email</Label>
           <Input
             id="cad-email"
             type="email"
@@ -315,11 +311,11 @@ function CadastroContent({ goTo, setLocation }: { goTo: GoTo; setLocation: (p: s
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="bg-white/5 border-white/15 text-white placeholder:text-zinc-500 focus-visible:ring-yellow-400/40 focus-visible:border-yellow-400/60"
+            className="h-11 border-gray-200 bg-gray-50 text-gray-900 placeholder:text-gray-400 focus-visible:ring-gray-300 focus-visible:border-gray-400"
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="cad-password" className="text-zinc-300">Senha</Label>
+          <Label htmlFor="cad-password" className="text-gray-700 text-sm font-medium">Senha</Label>
           <Input
             id="cad-password"
             type="password"
@@ -327,36 +323,33 @@ function CadastroContent({ goTo, setLocation }: { goTo: GoTo; setLocation: (p: s
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="bg-white/5 border-white/15 text-white placeholder:text-zinc-500 focus-visible:ring-yellow-400/40 focus-visible:border-yellow-400/60"
+            className="h-11 border-gray-200 bg-gray-50 text-gray-900 placeholder:text-gray-400 focus-visible:ring-gray-300 focus-visible:border-gray-400"
           />
           <PasswordChecklist password={password} />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="cad-confirm" className="text-zinc-300">Confirmar Senha</Label>
+          <Label htmlFor="cad-confirm" className="text-gray-700 text-sm font-medium">Confirmar Senha</Label>
           <Input
             id="cad-confirm"
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
-            className="bg-white/5 border-white/15 text-white placeholder:text-zinc-500 focus-visible:ring-yellow-400/40 focus-visible:border-yellow-400/60"
+            className="h-11 border-gray-200 bg-gray-50 text-gray-900 placeholder:text-gray-400 focus-visible:ring-gray-300 focus-visible:border-gray-400"
           />
         </div>
         <Button
           type="submit"
-          className="w-full h-11 text-base font-semibold text-[#1A1A1A]"
-          style={{ backgroundColor: "#FFDF20" }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#FDC700")}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#FFDF20")}
+          className="w-full h-11 text-base font-semibold bg-[#1a1a1a] hover:bg-zinc-800 text-white"
           disabled={loading || !passwordValid(password)}
         >
           {loading ? "Criando..." : "Criar Conta Grátis"}
         </Button>
       </form>
 
-      <p className="text-center text-sm text-zinc-500 mt-5">
+      <p className="text-center text-sm text-gray-400 mt-6">
         Já tem uma conta?{" "}
-        <button type="button" onClick={() => goTo("login")} className="text-white font-medium hover:underline">
+        <button type="button" onClick={() => goTo("login")} className="text-gray-900 font-semibold hover:underline">
           Fazer login
         </button>
       </p>
@@ -400,31 +393,24 @@ function ConfirmarContent({ email, goTo }: { email: string; goTo: GoTo }) {
   return (
     <div className="text-center">
       <div className="flex justify-center mb-5">
-        <div className="bg-yellow-400/10 text-yellow-400 p-4 rounded-full">
+        <div className="bg-amber-50 text-amber-500 p-4 rounded-full">
           <Mail size={36} />
         </div>
       </div>
       <h2 className="text-xl font-semibold text-foreground mb-2">Confirme seu e-mail</h2>
-      <p className="text-sm text-muted-foreground mb-2">
-        Enviamos um link de confirmação para
-      </p>
-      <p className="text-sm font-medium text-white mb-5 break-all">{email}</p>
-      <p className="text-xs text-zinc-500 mb-6">
-        Clique no link recebido para ativar sua conta.
-      </p>
+      <p className="text-sm text-muted-foreground mb-1">Enviamos um link de confirmação para</p>
+      <p className="text-sm font-semibold text-foreground mb-4 break-all">{email}</p>
+      <p className="text-xs text-gray-400 mb-7">Clique no link recebido para ativar sua conta.</p>
       <div className="space-y-3">
         <Button
-          className="w-full font-semibold text-[#1A1A1A]"
-          style={{ backgroundColor: "#FFDF20" }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#FDC700")}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#FFDF20")}
+          className="w-full h-11 font-semibold bg-[#1a1a1a] hover:bg-zinc-800 text-white"
           onClick={() => goTo("login")}
         >
           Ir para Login
         </Button>
         <Button
           variant="outline"
-          className="w-full bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
+          className="w-full h-11 border-gray-200 text-gray-600 hover:bg-gray-50"
           onClick={handleResend}
           disabled={countdown > 0 || resending}
         >
@@ -432,7 +418,7 @@ function ConfirmarContent({ email, goTo }: { email: string; goTo: GoTo }) {
         </Button>
         <button
           type="button"
-          className="w-full text-sm text-zinc-500 hover:text-white transition-colors py-1"
+          className="w-full text-sm text-gray-400 hover:text-gray-700 transition-colors py-1"
           onClick={() => goTo("cadastro")}
         >
           ← Voltar e corrigir e-mail
@@ -460,28 +446,29 @@ function RecuperarContent({ goTo }: { goTo: GoTo }) {
 
   return (
     <div>
-      <AuthLogo />
-      <h2 className="text-xl font-semibold text-foreground text-center mb-1">Recuperar senha</h2>
-      <p className="text-sm text-muted-foreground text-center mb-6">
+      <h1 className="text-foreground mb-2" style={{ ...playfairItalic, fontSize: "clamp(26px, 3vw, 34px)", lineHeight: 1.2 }}>
+        Recuperar senha
+      </h1>
+      <p className="text-sm text-muted-foreground mb-8">
         Informe seu e-mail e enviaremos um link para redefinir sua senha.
       </p>
 
       {sent ? (
-        <div className="bg-white/5 border border-white/10 rounded-xl p-5 text-center">
+        <div className="bg-amber-50 border border-amber-100 rounded-xl p-6 text-center">
           <div className="flex justify-center mb-3">
-            <div className="bg-yellow-400/10 text-yellow-400 p-3 rounded-full">
+            <div className="bg-amber-100 text-amber-500 p-3 rounded-full">
               <Mail size={28} />
             </div>
           </div>
-          <p className="text-sm text-white font-medium mb-1">Link enviado!</p>
-          <p className="text-xs text-zinc-400">
+          <p className="text-sm font-semibold text-gray-800 mb-1">Link enviado!</p>
+          <p className="text-xs text-gray-500">
             Enviamos um link de recuperação para o e-mail informado.
           </p>
         </div>
       ) : (
         <form onSubmit={handleSend} className="space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="rec-email" className="text-zinc-300">Email</Label>
+            <Label htmlFor="rec-email" className="text-gray-700 text-sm font-medium">Email</Label>
             <Input
               id="rec-email"
               type="email"
@@ -489,12 +476,12 @@ function RecuperarContent({ goTo }: { goTo: GoTo }) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="bg-white/5 border-white/15 text-white placeholder:text-zinc-500 focus-visible:ring-yellow-400/40 focus-visible:border-yellow-400/60"
+              className="h-11 border-gray-200 bg-gray-50 text-gray-900 placeholder:text-gray-400 focus-visible:ring-gray-300 focus-visible:border-gray-400"
             />
           </div>
           <Button
             type="submit"
-            className="w-full h-11 text-base bg-yellow-400 hover:bg-yellow-300 text-[#1A1A1A] font-semibold"
+            className="w-full h-11 text-base bg-[#1a1a1a] hover:bg-zinc-800 text-white font-semibold"
             disabled={loading}
           >
             {loading ? "Enviando..." : "Enviar link de recuperação"}
@@ -502,11 +489,11 @@ function RecuperarContent({ goTo }: { goTo: GoTo }) {
         </form>
       )}
 
-      <p className="text-center mt-5">
+      <p className="text-center mt-6">
         <button
           type="button"
           onClick={() => goTo("login")}
-          className="text-sm text-zinc-500 hover:text-white transition-colors"
+          className="text-sm text-gray-400 hover:text-gray-700 transition-colors"
         >
           ← Voltar para login
         </button>
@@ -540,72 +527,35 @@ export default function Auth() {
   const frase = FRASES[fraseIdx];
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-background">
-      {/* ── Image panel: hidden on mobile, top on tablet, left on desktop ── */}
-      <div className="hidden md:block relative overflow-hidden md:h-72 md:mx-4 md:mt-4 md:rounded-3xl lg:flex-none lg:w-[60%] lg:h-auto lg:min-h-screen lg:mx-0 lg:mt-0 lg:rounded-none lg:rounded-r-[32px]">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-white">
+
+      {/* ── Image panel: hidden mobile, top tablet (order-first), right desktop (lg:order-2) ── */}
+      <div className="hidden md:block relative overflow-hidden order-first lg:order-2 md:h-72 md:mx-4 md:mt-4 md:rounded-3xl lg:flex-1 lg:h-auto lg:min-h-screen lg:mx-6 lg:my-6 lg:rounded-[24px]">
         <img
           src={image}
           alt=""
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-black/10" />
-
-        <div className="absolute bottom-8 left-8 right-8 lg:bottom-12 lg:left-12 lg:right-12">
-          <h1
-            className="text-white mb-3 leading-tight"
-            style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
-              fontWeight: 700,
-              fontSize: "clamp(32px, 4vw, 56px)",
-              lineHeight: 1.15,
-            }}
-          >
-            Seja bem-vindo!
-          </h1>
-          <div className="inline-flex items-center mb-3">
-            <span
-              className="text-[10px] font-semibold tracking-widest text-white/70 uppercase border border-white/25 rounded-full px-3 py-1"
-            >
-              Insight do dia
-            </span>
-          </div>
-          <p
-            className="text-white/90 font-medium leading-snug max-w-[520px]"
-            style={{ fontSize: "clamp(16px, 1.6vw, 24px)" }}
-          >
-            {frase}
-          </p>
-        </div>
       </div>
 
-      {/* ── Form panel ── */}
-      <div className="flex-1 flex flex-col items-center justify-center py-10 px-6 lg:px-12">
-        {/* Mobile only: welcome text */}
-        <div className="md:hidden text-center mb-8 w-full max-w-[480px]">
-          <h1
-            className="text-foreground mb-2"
-            style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
-              fontWeight: 700,
-              fontSize: "32px",
-              lineHeight: 1.2,
-            }}
-          >
-            Seja bem-vindo!
+      {/* ── Form panel: left on desktop (lg:order-1), below image on tablet ── */}
+      <div className="lg:order-1 lg:flex-none lg:w-[42%] flex flex-col items-center justify-center py-12 px-8 lg:px-14 bg-white">
+
+        {/* Mobile: welcome text (no image on mobile) */}
+        <div className="md:hidden w-full max-w-[440px] mb-8">
+          <h1 className="text-foreground mb-1" style={{ ...playfairItalic, fontSize: "32px", lineHeight: 1.2 }}>
+            Seja bem-vindo(a)
           </h1>
-          <p className="text-sm text-muted-foreground font-medium">{frase}</p>
+          <p className="text-sm text-muted-foreground">{frase}</p>
         </div>
 
-        {/* Card */}
+        {/* Form content */}
         <div
-          className="w-full max-w-[480px] rounded-2xl shadow-xl border border-white/10 bg-[#161722] px-7 py-8"
-          style={{
-            opacity: visible ? 1 : 0,
-            transition: "opacity 200ms ease",
-          }}
+          className="w-full max-w-[440px]"
+          style={{ opacity: visible ? 1 : 0, transition: "opacity 200ms ease" }}
         >
           {view === "login" && (
-            <LoginContent goTo={goTo} setLocation={setLocation} />
+            <LoginContent goTo={goTo} setLocation={setLocation} frase={frase} />
           )}
           {view === "cadastro" && (
             <CadastroContent goTo={goTo} setLocation={setLocation} />
@@ -618,6 +568,7 @@ export default function Auth() {
           )}
         </div>
       </div>
+
     </div>
   );
 }
