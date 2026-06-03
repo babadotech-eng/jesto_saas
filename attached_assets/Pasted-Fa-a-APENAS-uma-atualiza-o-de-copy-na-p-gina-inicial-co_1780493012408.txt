@@ -1,0 +1,113 @@
+Faça APENAS uma atualização de copy na página inicial com os textos abaixo.
+
+OBJETIVO
+Alterar somente os títulos e subtítulos da landing page/home conforme a nova copy abaixo, preservando o layout atual, a estrutura da página, a configuração visual, o tamanho das fontes, o tipo das fontes e o estilo já existente.
+
+REGRAS VISUAIS IMPORTANTES
+- preservar o layout atual da página
+- preservar a hierarquia visual existente
+- preservar configuração, espaçamentos e estilo geral
+- preservar tamanho de fonte já usado em cada bloco
+- preservar o tipo de fonte já existente
+- manter a fonte **Playfair Display** exatamente no mesmo estilo já usado hoje
+- aplicar Playfair Display apenas nas palavras indicadas em cada bloco
+- manter a diagramação coerente com a página
+- deixar o resultado o mais harmônico possível
+- não alterar cores, botões, imagens, ilustrações ou estrutura dos componentes além do necessário para encaixar os novos textos
+- não alterar responsividade, lógica, animações, links, navegação ou qualquer funcionalidade
+
+ESCOPO
+- alterar somente os textos da página inicial
+- excluir apenas o bloco escuro indicado abaixo
+- quando eu pedir para um bloco “ficar com layout igual ao bloco escuro”, usar o mesmo padrão visual/estético do bloco escuro atual, sem criar um novo estilo fora do padrão da página
+
+TEXTOS NOVOS
+
+1) HERO
+Título:
+Pare de adivinhar seus preços. Comece a lucrar.
+- aplicar Playfair Display somente em: “Comece a lucrar.”
+
+Subtítulo:
+Centralize fichas técnicas, controle custos, acompanhe margens e descubra onde seu negócio realmente ganha ou perde dinheiro.
+
+2) BLOCO DA DOR
+Título:
+O problema não é vender. É não saber se sobra dinheiro.
+- aplicar Playfair Display somente em: “sobra dinheiro.”
+
+Subtítulo:
+Sem controle de custos, cada venda pode parecer um sucesso enquanto o lucro desaparece nos detalhes.
+
+3) BLOCO “TUDO O QUE VOCÊ PRECISA”
+Título:
+Da compra dos insumos ao lucro no caixa.
+- aplicar Playfair Display somente em: “lucro no caixa.”
+- deixar este bloco com layout igual ao bloco escuro atual
+
+4) MOCKUP DA DASHBOARD
+Título:
+Tenha clareza sobre cada número do seu negócio.
+
+Subtítulo:
+Visualize custos, faturamento, margem e resultados em tempo real, sem planilhas complicadas.
+
+5) BLOCO ESCURO
+- excluir este bloco completamente
+
+6) BLOCO FEITO PARA O SEU TIPO DE NEGÓCIO
+Título:
+Uma plataforma criada para quem vive da alimentação.
+- aplicar Playfair Display somente em: “vive da alimentação.”
+
+Subtítulo:
+Seja um restaurante, cafeteria, confeitaria ou delivery, a Precifica se adapta à sua operação.
+
+7) BLOCO MAIS ORGANIZAÇÃO
+Título:
+Decisões melhores começam com números confiáveis.
+- aplicar Playfair Display somente em: “números confiáveis.”
+- subtítulo:
+Transforme informações dispersas em indicadores claros para crescer com segurança.
+- deixar este bloco com layout igual ao bloco escuro atual
+
+8) BLOCO FAQ
+Título:
+Perguntas frequentes
+
+Subtítulo:
+Tudo o que você precisa saber para começar a usar a Precifica.
+
+9) BLOCO CTA FINAL
+Título:
+Descubra quanto seu negócio realmente lucra.
+- aplicar Playfair Display somente em: “realmente lucra.”
+
+Subtítulo:
+Pare de trabalhar sem visibilidade financeira. Controle custos, defina preços corretos e tome decisões com confiança.
+
+REGRAS ABSOLUTAS
+- não mexer em outras páginas
+- não alterar textos fora da página inicial
+- não alterar componentes além do necessário para atualizar esta copy
+- não trocar fonte global do site
+- não mudar pesos, tamanhos ou estilos tipográficos fora do que já existe
+- não reinventar o layout
+- não criar nova seção
+- não alterar a ordem dos blocos, exceto pela exclusão do bloco escuro solicitado
+- não alterar CTA, navegação ou lógica de conversão fora do texto pedido
+
+VALIDAÇÃO FINAL
+Antes de encerrar, verificar:
+- todos os títulos e subtítulos foram atualizados exatamente conforme o texto acima
+- as palavras indicadas estão em Playfair Display
+- o restante da tipografia permaneceu igual
+- o layout foi preservado
+- o bloco escuro foi removido
+- os blocos “Tudo o que você precisa” e “Mais organização” ficaram com layout igual ao bloco escuro atual
+- nenhuma outra parte do site foi alterada
+
+AO FINAL
+Pare e informe apenas:
+- o que foi alterado
+- os arquivos alterados

@@ -191,11 +191,11 @@ export default function Landing() {
               </div>
 
               <h1 style={{ fontSize: T.hero, fontWeight: 900, lineHeight: 1.02, letterSpacing: "-0.03em", color: C.text, marginBottom: "1.5rem" }}>
-                Saiba o preço<br/>certo. Venda<br/>com <It>lucro real.</It>
+                Pare de adivinhar<br/>seus preços.<br/><It>Comece a lucrar.</It>
               </h1>
 
               <p style={{ fontSize: "clamp(0.97rem, 1.5vw, 1.08rem)", lineHeight: 1.8, color: C.muted, maxWidth: 420, marginBottom: "2.5rem" }}>
-                Descubra quanto custa cada prato, organize fichas técnicas, controle gastos e entenda se o seu negócio está dando lucro de verdade.
+                Centralize fichas técnicas, controle custos, acompanhe margens e descubra onde seu negócio realmente ganha ou perde dinheiro.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 mb-9">
@@ -268,19 +268,15 @@ export default function Landing() {
         </section>
 
         {/* ══ 2. O PROBLEMA REAL ══════════════════════════════════ */}
-        {/* [1] Title line breaks updated; [1] Playfair on "ganhando ou perdendo." */}
         <section style={{ background: C.bg2 }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-start">
             <Reveal>
               <Eyebrow label="O problema real" />
               <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: C.text, marginBottom: "2rem" }}>
-                Muita gente vende<br/>todos os dias<br/>sem saber se está <It>ganhando ou perdendo.</It>
+                O problema não é vender.<br/>É não saber se <It>sobra dinheiro.</It>
               </h2>
-              <p style={{ fontSize: "1rem", lineHeight: 1.82, color: C.muted, marginBottom: "1.1rem" }}>
-                Quando os custos dos insumos, as despesas do mês e o preço de venda ficam espalhados, a operação segue no improviso. O caixa entra, mas o lucro real continua escondido.
-              </p>
               <p style={{ fontSize: "1rem", lineHeight: 1.82, color: C.muted }}>
-                O Precifica reúne tudo em um só lugar: fichas técnicas, custos, despesas fixas e precificação. Você vê o que entra, o que sai e o que realmente sobra.
+                Sem controle de custos, cada venda pode parecer um sucesso enquanto o lucro desaparece nos detalhes.
               </p>
             </Reveal>
 
@@ -304,38 +300,35 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ══ 3. COMO FUNCIONA ════════════════════════════════════ */}
-        {/* [2] Title updated: comma→period, Playfair on "fluxo simples." */}
-        {/* [3] Support text line break after "organiza" */}
-        {/* [4][5][6] Card text line breaks */}
-        <section id="como-funciona" style={{ background: C.bg }} className="py-28 md:py-36 px-10 md:px-14">
+        {/* ══ 3. TUDO O QUE VOCÊ PRECISA (dark) ══════════════════ */}
+        <section id="como-funciona" style={{ background: "#1A1A1A" }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-6xl mx-auto">
             <Reveal>
-              <Eyebrow label="Como funciona" />
-              <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: C.text, marginBottom: "1.25rem", maxWidth: 580 }}>
-                Tudo o que você<br/>precisa, em um<br/><It>fluxo simples.</It>
+              <Eyebrow label="Como funciona" dark />
+              <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: "#fff", marginBottom: "1.25rem", maxWidth: 580 }}>
+                Da compra dos insumos<br/>ao <It dark>lucro no caixa.</It>
               </h2>
-              <p style={{ fontSize: "1rem", lineHeight: 1.8, color: C.muted, maxWidth: 500, marginBottom: "3.5rem" }}>
+              <p style={{ fontSize: "1rem", lineHeight: 1.8, color: "rgba(255,255,255,0.5)", maxWidth: 500, marginBottom: "3.5rem" }}>
                 Do cadastro à margem final, o Precifica organiza<br/>a rotina financeira do seu negócio em etapas claras.
               </p>
               <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full mb-12"
-                style={{ background: C.bg2, border: `1px solid ${C.border}` }}>
-                <FileSpreadsheet size={13} style={{ color: C.accent }} />
-                <span style={{ fontSize: "0.78rem", fontWeight: 600, color: C.muted }}>Importação facilitada via Excel</span>
+                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                <FileSpreadsheet size={13} style={{ color: C.accentAlt }} />
+                <span style={{ fontSize: "0.78rem", fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>Importação facilitada via Excel</span>
               </div>
             </Reveal>
 
             <div className="grid md:grid-cols-2 gap-4 mb-16">
               {/* Card 01 */}
               <Reveal delay={0} className="h-full">
-                <div className="rounded-2xl p-7 h-full transition-all hover:shadow-md cursor-default"
-                  style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+                <div className="rounded-2xl p-7 h-full transition-all hover:bg-white/[0.06] cursor-default"
+                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
                   <div className="flex items-start gap-5">
-                    <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: C.border, userSelect: "none" }}>01</span>
+                    <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: "rgba(255,255,255,0.12)", userSelect: "none" }}>01</span>
                     <div>
-                      <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: C.bg2, color: C.accent }}><LayoutDashboard size={17} /></div>
-                      <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 6 }}>Cadastre produtos e insumos</h3>
-                      <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: C.muted }}>
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: "rgba(255,255,255,0.08)", color: C.accentAlt }}><LayoutDashboard size={17} /></div>
+                      <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: "#fff", marginBottom: 6 }}>Cadastre produtos e insumos</h3>
+                      <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: "rgba(255,255,255,0.45)" }}>
                         Registre o que você vende e o que usa na produção. Organize ingredientes, unidades e valores para começar com uma base confiável.
                       </p>
                     </div>
@@ -343,16 +336,16 @@ export default function Landing() {
                 </div>
               </Reveal>
 
-              {/* Card 02 — [4] line break */}
+              {/* Card 02 */}
               <Reveal delay={60} className="h-full">
-                <div className="rounded-2xl p-7 h-full transition-all hover:shadow-md cursor-default"
-                  style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+                <div className="rounded-2xl p-7 h-full transition-all hover:bg-white/[0.06] cursor-default"
+                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
                   <div className="flex items-start gap-5">
-                    <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: C.border, userSelect: "none" }}>02</span>
+                    <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: "rgba(255,255,255,0.12)", userSelect: "none" }}>02</span>
                     <div>
-                      <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: C.bg2, color: C.accent }}><BookOpen size={17} /></div>
-                      <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 6 }}>Monte fichas técnicas</h3>
-                      <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: C.muted }}>
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: "rgba(255,255,255,0.08)", color: C.accentAlt }}><BookOpen size={17} /></div>
+                      <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: "#fff", marginBottom: 6 }}>Monte fichas técnicas</h3>
+                      <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: "rgba(255,255,255,0.45)" }}>
                         Defina ingredientes, quantidades, rendimento e custo por receita.<br/>Tenha mais consistência para precificar cada item.
                       </p>
                     </div>
@@ -360,16 +353,16 @@ export default function Landing() {
                 </div>
               </Reveal>
 
-              {/* Card 03 — [5] line break */}
+              {/* Card 03 */}
               <Reveal delay={120} className="h-full">
-                <div className="rounded-2xl p-7 h-full transition-all hover:shadow-md cursor-default"
-                  style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+                <div className="rounded-2xl p-7 h-full transition-all hover:bg-white/[0.06] cursor-default"
+                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
                   <div className="flex items-start gap-5">
-                    <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: C.border, userSelect: "none" }}>03</span>
+                    <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: "rgba(255,255,255,0.12)", userSelect: "none" }}>03</span>
                     <div>
-                      <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: C.bg2, color: C.accent }}><Wallet size={17} /></div>
-                      <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 6 }}>Registre gastos e lançamentos</h3>
-                      <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: C.muted }}>
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: "rgba(255,255,255,0.08)", color: C.accentAlt }}><Wallet size={17} /></div>
+                      <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: "#fff", marginBottom: 6 }}>Registre gastos e lançamentos</h3>
+                      <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: "rgba(255,255,255,0.45)" }}>
                         Acompanhe despesas, entradas e saídas do dia a dia<br/>sem depender de anotações soltas ou contas feitas na pressa.
                       </p>
                     </div>
@@ -377,16 +370,16 @@ export default function Landing() {
                 </div>
               </Reveal>
 
-              {/* Card 04 — [6] line break */}
+              {/* Card 04 */}
               <Reveal delay={180} className="h-full">
-                <div className="rounded-2xl p-7 h-full transition-all hover:shadow-md cursor-default"
-                  style={{ background: C.surface, border: `1px solid ${C.border}` }}>
+                <div className="rounded-2xl p-7 h-full transition-all hover:bg-white/[0.06] cursor-default"
+                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
                   <div className="flex items-start gap-5">
-                    <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: C.border, userSelect: "none" }}>04</span>
+                    <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: "rgba(255,255,255,0.12)", userSelect: "none" }}>04</span>
                     <div>
-                      <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: C.bg2, color: C.accent }}><TrendingUp size={17} /></div>
-                      <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 6 }}>Veja margem e resultado</h3>
-                      <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: C.muted }}>
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: "rgba(255,255,255,0.08)", color: C.accentAlt }}><TrendingUp size={17} /></div>
+                      <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: "#fff", marginBottom: 6 }}>Veja margem e resultado</h3>
+                      <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: "rgba(255,255,255,0.45)" }}>
                         Entenda o que dá retorno, onde estão os excessos<br/>e quais ajustes fazem mais sentido para aumentar o lucro.
                       </p>
                     </div>
@@ -397,11 +390,16 @@ export default function Landing() {
 
             {/* Dashboard mockup */}
             <Reveal delay={80}>
-              <Eyebrow label="O painel na prática" />
-              <div className="rounded-2xl overflow-hidden shadow-xl" style={{ border: `1.5px solid ${C.border}` }}>
-                <div className="flex items-center gap-1.5 px-4 h-9" style={{ background: C.bg2, borderBottom: `1px solid ${C.border}` }}>
+              <h2 style={{ fontSize: "clamp(1.5rem, 3vw, 2.2rem)", fontWeight: 900, lineHeight: 1.12, letterSpacing: "-0.02em", color: "#fff", marginBottom: "0.75rem" }}>
+                Tenha clareza sobre cada número do seu negócio.
+              </h2>
+              <p style={{ fontSize: "1rem", lineHeight: 1.8, color: "rgba(255,255,255,0.5)", marginBottom: "2rem" }}>
+                Visualize custos, faturamento, margem e resultados em tempo real, sem planilhas complicadas.
+              </p>
+              <div className="rounded-2xl overflow-hidden shadow-xl" style={{ border: "1.5px solid rgba(255,255,255,0.1)" }}>
+                <div className="flex items-center gap-1.5 px-4 h-9" style={{ background: "rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
                   <span className="w-2.5 h-2.5 rounded-full bg-red-400" /><span className="w-2.5 h-2.5 rounded-full bg-yellow-400" /><span className="w-2.5 h-2.5 rounded-full bg-green-400" />
-                  <span className="mx-auto text-[11px] font-medium px-12 rounded h-5 flex items-center" style={{ background: C.surface, color: C.muted }}>precifica.app/painel</span>
+                  <span className="mx-auto text-[11px] font-medium px-12 rounded h-5 flex items-center" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.4)" }}>precifica.app/painel</span>
                 </div>
                 <img src={dashboardImg} alt="Painel do Precifica — receita, custos, margem e ponto de equilíbrio" className="w-full block" draggable={false} />
               </div>
@@ -409,57 +407,20 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ══ 4. O PAINEL (dark) ══════════════════════════════════ */}
-        {/* [7] Title: Playfair on "em um só lugar." — bullets removed */}
-        <section id="painel" style={{ background: "#1A1A1A" }} className="py-28 md:py-36 px-10 md:px-14">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-start">
-            <Reveal>
-              <Eyebrow label="O painel na prática" dark />
-              <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: "#fff", marginBottom: "1.5rem" }}>
-                Todos os números<br/>do seu negócio,<br/><It dark>em um só lugar.</It>
-              </h2>
-              <p style={{ fontSize: "1rem", lineHeight: 1.82, color: "rgba(255,255,255,0.5)" }}>
-                Receita, custos, margem, ponto de equilíbrio, despesas e produtos mais rentáveis. O painel mostra o que importa para você entender o negócio com rapidez e agir com mais segurança.
-              </p>
-            </Reveal>
-
-            <Reveal delay={80}>
-              <div className="grid grid-cols-2 gap-3 pt-2 md:pt-10">
-                {[
-                  { t: "Receita",             s: "Veja quanto entrou no período e acompanhe a evolução do faturamento." },
-                  { t: "Margem Média",        s: "Entenda se os preços atuais estão sustentando um lucro saudável." },
-                  { t: "Ponto de Equilíbrio", s: "Saiba quanto o negócio precisa faturar para cobrir os custos do mês." },
-                  { t: "Top Produtos",        s: "Descubra quais itens contribuem mais para o lucro e merecem atenção." },
-                ].map(({ t, s }) => (
-                  <div key={t} className="rounded-2xl p-5 transition-all hover:bg-white/[0.06]"
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                    <p style={{ fontSize: "0.875rem", fontWeight: 700, color: "#fff", marginBottom: 6 }}>{t}</p>
-                    <p style={{ fontSize: "0.78rem", lineHeight: 1.6, color: "rgba(255,255,255,0.35)" }}>{s}</p>
-                  </div>
-                ))}
-              </div>
-            </Reveal>
-          </div>
-        </section>
-
-        {/* ══ 5. PARA O SEU NEGÓCIO ═══════════════════════════════ */}
-        {/* [8] Title line break, Playfair on "tipo de negócio." */}
-        {/* [9] Support text line break */}
-        {/* [10][11][12][13] Card text line breaks */}
+        {/* ══ 4. FEITO PARA O SEU TIPO DE NEGÓCIO ════════════════ */}
         <section style={{ background: C.bg }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-6xl mx-auto">
             <Reveal>
               <Eyebrow label="Para o seu negócio" />
               <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: C.text, marginBottom: "1.25rem", maxWidth: 520 }}>
-                Feito para o seu<br/><It>tipo de negócio.</It>
+                Uma plataforma criada para quem<br/><It>vive da alimentação.</It>
               </h2>
               <p style={{ fontSize: "1rem", lineHeight: 1.8, color: C.muted, maxWidth: 460, marginBottom: "3.5rem" }}>
-                Funciona na rotina de quem precisa controlar custo,<br/>produção e preço com mais consistência.
+                Seja um restaurante, cafeteria, confeitaria ou delivery, a Precifica se adapta à sua operação.
               </p>
             </Reveal>
 
             <div className="grid md:grid-cols-2 gap-4 items-stretch">
-              {/* [10] Restaurantes */}
               <Reveal delay={0} className="flex">
                 <div className="rounded-2xl p-7 flex gap-5 items-start transition-all hover:shadow-md cursor-default w-full"
                   style={{ background: C.surface, border: `1px solid ${C.border}` }}>
@@ -473,7 +434,6 @@ export default function Landing() {
                 </div>
               </Reveal>
 
-              {/* [11] Marmitarias */}
               <Reveal delay={60} className="flex">
                 <div className="rounded-2xl p-7 flex gap-5 items-start transition-all hover:shadow-md cursor-default w-full"
                   style={{ background: C.surface, border: `1px solid ${C.border}` }}>
@@ -487,7 +447,6 @@ export default function Landing() {
                 </div>
               </Reveal>
 
-              {/* [12] Confeitarias */}
               <Reveal delay={120} className="flex">
                 <div className="rounded-2xl p-7 flex gap-5 items-start transition-all hover:shadow-md cursor-default w-full"
                   style={{ background: C.surface, border: `1px solid ${C.border}` }}>
@@ -501,7 +460,6 @@ export default function Landing() {
                 </div>
               </Reveal>
 
-              {/* [13] Lanchonetes */}
               <Reveal delay={180} className="flex">
                 <div className="rounded-2xl p-7 flex gap-5 items-start transition-all hover:shadow-md cursor-default w-full"
                   style={{ background: C.surface, border: `1px solid ${C.border}` }}>
@@ -518,51 +476,49 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ══ BENEFÍCIOS ══════════════════════════════════════════ */}
-        {/* [14] Title: add period, Playfair on "para decidir melhor." */}
-        {/* [15][16][17] Text line breaks */}
-        <section style={{ background: C.bg2 }} className="py-28 md:py-36 px-10 md:px-14">
+        {/* ══ 5. MAIS ORGANIZAÇÃO (dark) ══════════════════════════ */}
+        <section style={{ background: "#1A1A1A" }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-6xl mx-auto">
             <Reveal>
-              <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: C.text, marginBottom: "3.5rem", maxWidth: 640 }}>
-                Mais organização<br/><It>para decidir melhor.</It>
+              <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: "#fff", marginBottom: "1.25rem", maxWidth: 640 }}>
+                Decisões melhores começam<br/>com <It dark>números confiáveis.</It>
               </h2>
+              <p style={{ fontSize: "1rem", lineHeight: 1.8, color: "rgba(255,255,255,0.5)", maxWidth: 500, marginBottom: "3.5rem" }}>
+                Transforme informações dispersas em indicadores claros para crescer com segurança.
+              </p>
             </Reveal>
             <div className="grid md:grid-cols-2 gap-x-20 gap-y-10 max-w-3xl">
 
-              {/* [15] line break */}
               <Reveal delay={0}>
                 <div className="flex gap-4 items-start">
-                  <span style={{ width: 3, height: 28, borderRadius: 99, background: C.accent, display: "block", flexShrink: 0, marginTop: 4 }} />
+                  <span style={{ width: 3, height: 28, borderRadius: 99, background: C.accentAlt, display: "block", flexShrink: 0, marginTop: 4 }} />
                   <div>
-                    <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 6 }}>Menos planilhas confusas</h3>
-                    <p style={{ fontSize: "0.875rem", lineHeight: 1.75, color: C.muted }}>
+                    <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: "#fff", marginBottom: 6 }}>Menos planilhas confusas</h3>
+                    <p style={{ fontSize: "0.875rem", lineHeight: 1.75, color: "rgba(255,255,255,0.45)" }}>
                       Centralize informações<br/>em uma plataforma mais simples e fácil de acompanhar.
                     </p>
                   </div>
                 </div>
               </Reveal>
 
-              {/* [16] line break */}
               <Reveal delay={70}>
                 <div className="flex gap-4 items-start">
-                  <span style={{ width: 3, height: 28, borderRadius: 99, background: C.accent, display: "block", flexShrink: 0, marginTop: 4 }} />
+                  <span style={{ width: 3, height: 28, borderRadius: 99, background: C.accentAlt, display: "block", flexShrink: 0, marginTop: 4 }} />
                   <div>
-                    <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 6 }}>Preço formado com base real</h3>
-                    <p style={{ fontSize: "0.875rem", lineHeight: 1.75, color: C.muted }}>
+                    <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: "#fff", marginBottom: 6 }}>Preço formado com base real</h3>
+                    <p style={{ fontSize: "0.875rem", lineHeight: 1.75, color: "rgba(255,255,255,0.45)" }}>
                       Saiba quanto custa produzir<br/>e forme o preço com mais segurança,<br/>sem chute e sem prejuízo escondido.
                     </p>
                   </div>
                 </div>
               </Reveal>
 
-              {/* [17] line break */}
               <Reveal delay={140}>
                 <div className="flex gap-4 items-start">
-                  <span style={{ width: 3, height: 28, borderRadius: 99, background: C.accent, display: "block", flexShrink: 0, marginTop: 4 }} />
+                  <span style={{ width: 3, height: 28, borderRadius: 99, background: C.accentAlt, display: "block", flexShrink: 0, marginTop: 4 }} />
                   <div>
-                    <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 6 }}>Margem visível por produto</h3>
-                    <p style={{ fontSize: "0.875rem", lineHeight: 1.75, color: C.muted }}>
+                    <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: "#fff", marginBottom: 6 }}>Margem visível por produto</h3>
+                    <p style={{ fontSize: "0.875rem", lineHeight: 1.75, color: "rgba(255,255,255,0.45)" }}>
                       Veja qual produto está gerando mais lucro<br/>e qual está pesando no custo — com dados,<br/>não com suposição.
                     </p>
                   </div>
@@ -571,10 +527,10 @@ export default function Landing() {
 
               <Reveal delay={210}>
                 <div className="flex gap-4 items-start">
-                  <span style={{ width: 3, height: 28, borderRadius: 99, background: C.accent, display: "block", flexShrink: 0, marginTop: 4 }} />
+                  <span style={{ width: 3, height: 28, borderRadius: 99, background: C.accentAlt, display: "block", flexShrink: 0, marginTop: 4 }} />
                   <div>
-                    <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: C.text, marginBottom: 6 }}>Menos desperdício de tempo</h3>
-                    <p style={{ fontSize: "0.875rem", lineHeight: 1.75, color: C.muted }}>
+                    <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: "#fff", marginBottom: 6 }}>Menos desperdício de tempo</h3>
+                    <p style={{ fontSize: "0.875rem", lineHeight: 1.75, color: "rgba(255,255,255,0.45)" }}>
                       Ganhe tempo na rotina com uma base de dados organizada e pare de refazer cálculos toda semana.
                     </p>
                   </div>
@@ -586,9 +542,6 @@ export default function Landing() {
         </section>
 
         {/* ══ PLANOS ══════════════════════════════════════════════ */}
-        {/* [18] Title: Playfair on "Evolua no seu ritmo." */}
-        {/* [19] Support text line break */}
-        {/* [20] All base cards same height; popular card slightly taller */}
         <section id="precos" style={{ background: C.bg }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-6xl mx-auto">
             <Reveal>
@@ -609,7 +562,6 @@ export default function Landing() {
               </div>
             </Reveal>
 
-            {/* [20] Grid: align-items stretch; popular card gets extra top/bottom padding */}
             <div className="grid md:grid-cols-3 gap-5 items-end">
               <Reveal className="flex">
                 <div className="rounded-2xl p-7 flex flex-col w-full" style={{ background: C.surface, border: `1px solid ${C.border}`, minHeight: 520 }}>
@@ -652,14 +604,16 @@ export default function Landing() {
         </section>
 
         {/* ══ FAQ ═════════════════════════════════════════════════ */}
-        {/* [21] +5 accordions; title left-aligned; accordion block centered */}
         <section id="duvidas" style={{ background: C.bg2 }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-6xl mx-auto">
             <Reveal>
               <Eyebrow label="Dúvidas" />
-              <h2 style={{ fontSize: T.section, fontWeight: 900, letterSpacing: "-0.02em", color: C.text, marginBottom: "2.75rem" }}>
-                Dúvidas frequentes
+              <h2 style={{ fontSize: T.section, fontWeight: 900, letterSpacing: "-0.02em", color: C.text, marginBottom: "0.75rem" }}>
+                Perguntas frequentes
               </h2>
+              <p style={{ fontSize: "1rem", lineHeight: 1.8, color: C.muted, maxWidth: 480, marginBottom: "2.75rem" }}>
+                Tudo o que você precisa saber para começar a usar a Precifica.
+              </p>
             </Reveal>
             <Reveal delay={60}>
               <div className="max-w-2xl mx-auto">
@@ -677,9 +631,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ══ 6. CTA FINAL ════════════════════════════════════════ */}
-        {/* [22] Title line breaks, Playfair on "dinheiro de verdade." */}
-        {/* [23] Subtitle updated, "Grátis para começar." removed */}
+        {/* ══ CTA FINAL ═══════════════════════════════════════════ */}
         <section style={{ background: "#1A1A1A" }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-2xl mx-auto text-center">
             <Reveal>
@@ -687,10 +639,10 @@ export default function Landing() {
                 <BarChart3 size={20} className="text-white" />
               </div>
               <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: "#fff", marginBottom: "1.5rem" }}>
-                Saiba o lucro real<br/>e comece a ganhar<br/><It dark>dinheiro de verdade.</It>
+                Descubra quanto seu negócio<br/><It dark>realmente lucra.</It>
               </h2>
               <p style={{ fontSize: "1rem", lineHeight: 1.82, color: "rgba(255,255,255,0.5)", marginBottom: "2.5rem" }}>
-                Organize custos, controle gastos e forme preços<br/>com base no que sobra no negócio — não no chute.
+                Pare de trabalhar sem visibilidade financeira. Controle custos,<br/>defina preços corretos e tome decisões com confiança.
               </p>
               <Link href="/cadastro">
                 <button className="hover:opacity-85 active:scale-[0.97]" style={{ height: 50, padding: "0 40px", borderRadius: 999, background: "#fff", color: "#1A1A1A", fontWeight: 700, fontSize: "0.95rem", display: "inline-flex", alignItems: "center", gap: 8, cursor: "pointer", border: "none", transition: "opacity 0.2s, transform 0.15s" }}>
@@ -708,19 +660,20 @@ export default function Landing() {
       {/* ══ FOOTER ══════════════════════════════════════════════ */}
       <footer style={{ background: "#111", borderTop: "1px solid rgba(255,255,255,0.05)" }} className="py-10 px-10 md:px-14">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
-          <div className="flex items-center gap-2 font-black text-base text-white">
-            <span className="w-6 h-6 rounded-lg flex items-center justify-center" style={{ background: C.accent }}><BarChart3 size={12} className="text-white" /></span>
+          <a href="#inicio" className="flex items-center gap-2 font-black text-[15px] text-white">
+            <span className="w-6 h-6 rounded-md flex items-center justify-center text-white" style={{ background: C.accent }}>
+              <BarChart3 size={12} />
+            </span>
             Precifica
+          </a>
+          <p style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.25)" }}>© 2025 Precifica. Todos os direitos reservados.</p>
+          <div className="flex items-center gap-6">
+            <Link href="/login" style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.35)" }} className="hover:text-white transition-colors">Entrar</Link>
+            <Link href="/cadastro" style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.35)" }} className="hover:text-white transition-colors">Criar conta</Link>
           </div>
-          <div className="flex items-center gap-7 text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>
-            <a href="#como-funciona" className="hover:text-white transition-colors">Como funciona</a>
-            <a href="#precos" className="hover:text-white transition-colors">Preços</a>
-            <a href="#duvidas" className="hover:text-white transition-colors">Dúvidas</a>
-            <Link href="/login" className="hover:text-white transition-colors">Entrar</Link>
-          </div>
-          <p style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.2)" }}>© {new Date().getFullYear()} Precifica. Todos os direitos reservados.</p>
         </div>
       </footer>
+
     </div>
   );
 }
