@@ -64,7 +64,7 @@ function useScrolled(threshold = 400) {
 }
 
 /* ── pricing ── */
-const PRICES = { pro: { m: 24.90, a: 249.00 }, premium: { m: 49.90, a: 499.00 } };
+const PRICES = { pro: { m: 24.90, a: 207.50 }, premium: { m: 49.90, a: 416.00 } };
 function fmt(v: number) { return v.toLocaleString("pt-BR", { minimumFractionDigits: 2 }); }
 
 /* ── FAQ ── */
