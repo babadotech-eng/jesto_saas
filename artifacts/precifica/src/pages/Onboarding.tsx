@@ -4,7 +4,8 @@ import { useUpdatePerfil } from "@/hooks/usePerfil";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { BarChart3, ChevronRight, Check } from "lucide-react";
+import { ChevronRight, Check } from "lucide-react";
+import iconjestoBlack from "@assets/iconjesto_black_1780519861187.png";
 
 type StepDef = {
   field: "nome_completo" | "nome_negocio" | "tipo_negocio" | "volume_mensal" | "cidade_estado" | "whatsapp" | "origem";
@@ -23,7 +24,7 @@ const STEPS: readonly StepDef[] = [
     options: ["Até R$ 1.000", "R$ 1.000 a R$ 3.000", "R$ 3.000 a R$ 7.000", "R$ 7.000 a R$ 15.000", "Acima de R$ 15.000", "Ainda não vendo"] },
   { field: "cidade_estado", label: "Qual é a sua cidade e estado?", placeholder: "Ex: São Paulo, SP", required: false, type: "text" },
   { field: "whatsapp", label: "Qual é o seu WhatsApp?", placeholder: "Ex: (11) 99999-9999", required: false, type: "tel" },
-  { field: "origem", label: "Como você ficou sabendo do Precifica?", placeholder: "", required: false, type: "select",
+  { field: "origem", label: "Como você ficou sabendo do Jesto?", placeholder: "", required: false, type: "select",
     options: ["Instagram", "Facebook", "TikTok", "Google", "Indicação de amigo", "YouTube", "Outro"] },
 ] as const;
 
@@ -75,7 +76,7 @@ export default function Onboarding() {
         whatsapp: values.whatsapp || null,
         origem: values.origem || null,
       });
-      toast.success("Tudo pronto! Bem-vindo ao Precifica.");
+      toast.success("Tudo pronto! Bem-vindo ao Jesto.");
       setLocation("/painel");
     } catch {
       toast.error("Erro ao salvar. Tente novamente.");
@@ -95,10 +96,8 @@ export default function Onboarding() {
       </div>
 
       <div className="flex items-center gap-2 p-6">
-        <div className="bg-[#FF6C3A] text-white p-2 rounded-lg">
-          <BarChart3 size={20} />
-        </div>
-        <span className="font-bold text-zinc-800">Precifica</span>
+        <img src={iconjestoBlack} alt="Jesto" className="w-9 h-9 rounded-lg" />
+        <span className="font-bold text-zinc-800">Jesto</span>
         <span className="ml-auto text-sm text-zinc-400">{step + 1} / {STEPS.length}</span>
       </div>
 

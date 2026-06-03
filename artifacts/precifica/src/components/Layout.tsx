@@ -4,10 +4,11 @@ import { getDicaDoDia } from "@/data/dicas";
 import { Link, useLocation } from "wouter";
 import {
   LayoutDashboard, Package, Carrot, FileText,
-  Wallet, ArrowRightLeft, BarChart3, Settings,
+  Wallet, ArrowRightLeft, BarChart3, Settings, // BarChart3 used for Relatórios nav icon
   Users, LogOut, Lightbulb, ArrowRight, Menu, X,
 } from "lucide-react";
 import { ReactNode, useState } from "react";
+import iconjestoWhite from "@assets/iconjesto_white_1780519861186.png";
 
 const navigation = [
   { name: "Painel",        href: "/painel",       icon: LayoutDashboard },
@@ -38,11 +39,8 @@ function SidebarContent({
       <div className="h-16 flex items-center px-5 shrink-0"
         style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
-            style={{ background: "linear-gradient(135deg, #6E4B97, #8D74B3)" }}>
-            <span className="text-white font-black text-sm leading-none">P</span>
-          </div>
-          <span className="font-bold text-base text-white tracking-tight">Precifica</span>
+          <img src={iconjestoWhite} alt="Jesto" className="w-7 h-7 rounded-lg shrink-0" />
+          <span className="font-bold text-base text-white tracking-tight">Jesto</span>
         </div>
       </div>
 
@@ -154,11 +152,8 @@ export default function Layout({ children }: { children: ReactNode }) {
         <header className="h-14 flex items-center justify-between px-5 md:hidden shrink-0"
           style={{ background: "#161722", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-              style={{ background: "linear-gradient(135deg,#6E4B97,#8D74B3)" }}>
-              <span className="text-white font-black text-xs">P</span>
-            </div>
-            <span className="font-bold text-white text-sm">Precifica</span>
+            <img src={iconjestoWhite} alt="Jesto" className="w-7 h-7 rounded-lg" />
+            <span className="font-bold text-white text-sm">Jesto</span>
           </div>
           <button
             onClick={() => setMobileOpen(true)}

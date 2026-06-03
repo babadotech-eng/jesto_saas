@@ -1,5 +1,6 @@
 import { useLocation } from "wouter";
-import { LayoutDashboard, Users, CreditCard, TrendingUp, Tag, LogOut, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Users, CreditCard, TrendingUp, Tag, LogOut } from "lucide-react";
+import iconjestoWhite from "@assets/iconjesto_white_1780519861186.png";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import AdminOverview from "./AdminOverview";
@@ -42,12 +43,9 @@ export default function AdminPanel() {
         {/* Logo */}
         <div className="px-5 py-5" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-              style={{ background: "linear-gradient(135deg, #6E4B97, #8D74B3)" }}>
-              <ShieldCheck size={16} className="text-white" />
-            </div>
+            <img src={iconjestoWhite} alt="Jesto" className="w-8 h-8 rounded-lg shrink-0" />
             <div>
-              <p className="font-bold text-sm leading-tight text-white">Precifica</p>
+              <p className="font-bold text-sm leading-tight text-white">Jesto</p>
               <p className="text-xs leading-tight" style={{ color: "#C7BED6" }}>Admin</p>
             </div>
           </div>

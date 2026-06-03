@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { BarChart3, Check, TrendingUp, BookOpen, Wallet, LayoutDashboard, UtensilsCrossed, Coffee, ShoppingBag, Sandwich, ArrowRight, FileSpreadsheet } from "lucide-react";
+import { Check, TrendingUp, BookOpen, Wallet, LayoutDashboard, UtensilsCrossed, Coffee, ShoppingBag, Sandwich, ArrowRight, FileSpreadsheet } from "lucide-react";
 import dashboardImg from "@assets/Captura_de_tela_27-5-2026_182552_d4272d6d-2b36-4ab1-adf1-6048_1779919697917.jpeg";
 import chefImg from "@assets/file_00000000bfc471f58b48209158bd14c0_1779979641753.png";
+import logoBlack from "@assets/logo-black_1780519870384.png";
+import logoWhite from "@assets/logo-white_1780519870384.png";
+import iconjestoWhite from "@assets/iconjesto_white_1780519861186.png";
 
 /* ── palette ── */
 const C = {
@@ -69,15 +72,15 @@ function fmt(v: number) { return v.toLocaleString("pt-BR", { minimumFractionDigi
 
 /* ── FAQ ── */
 const FAQ = [
-  { q: "Preciso entender de finanças para usar?",  a: "Não. O Precifica foi pensado para quem trabalha com alimentação no dia a dia, não para especialistas em finanças. Os números aparecem de forma simples e direta." },
+  { q: "Preciso entender de finanças para usar?",  a: "Não. O Jesto foi pensado para quem trabalha com alimentação no dia a dia, não para especialistas em finanças. Os números aparecem de forma simples e direta." },
   { q: "Serve para pequeno negócio?",               a: "Sim. A plataforma foi pensada para a realidade de marmitarias, confeitarias, restaurantes e lanchonetes que precisam organizar custos e fichas técnicas de forma prática." },
   { q: "Posso testar grátis?",                      a: "Sim. Você pode começar no plano grátis e conhecer tudo antes de decidir avançar para um plano pago." },
   { q: "Funciona no celular?",                      a: "Sim. A plataforma funciona bem em diferentes dispositivos, facilitando o acesso mesmo na correria do dia a dia." },
   { q: "Posso cancelar quando quiser?",             a: "Sim. Você gerencia sua assinatura de forma simples, sem burocracia." },
-  { q: "Preciso instalar algum aplicativo?",        a: "Não. O Precifica funciona direto no navegador, sem necessidade de instalação. Basta acessar com login e senha em qualquer dispositivo." },
+  { q: "Preciso instalar algum aplicativo?",        a: "Não. O Jesto funciona direto no navegador, sem necessidade de instalação. Basta acessar com login e senha em qualquer dispositivo." },
   { q: "Meus dados ficam salvos com segurança?",    a: "Sim. Todas as informações são armazenadas de forma segura na nuvem, com acesso exclusivo pela sua conta." },
   { q: "Posso usar para mais de um negócio?",       a: "Hoje cada conta está associada a um negócio. Se você precisar gerenciar mais de um, entre em contato e podemos avaliar sua situação." },
-  { q: "Como funciona o cálculo de margem?",        a: "O Precifica considera o custo dos insumos via ficha técnica, despesas fixas rateadas e o preço de venda. Com isso, você vê a margem real de cada produto." },
+  { q: "Como funciona o cálculo de margem?",        a: "O Jesto considera o custo dos insumos via ficha técnica, despesas fixas rateadas e o preço de venda. Com isso, você vê a margem real de cada produto." },
   { q: "Como faço para importar meus dados?",       a: "Você pode cadastrar produtos e insumos manualmente ou usar a importação facilitada via Excel disponível na plataforma." },
 ];
 
@@ -141,11 +144,8 @@ export default function Landing() {
       {/* ══ HEADER ═══════════════════════════════════════════════ */}
       <header className="sticky top-0 z-50 h-16 flex items-center justify-between px-10 md:px-14"
         style={{ background: "rgba(236,234,229,0.9)", borderBottom: `1px solid ${C.border}`, backdropFilter: "blur(14px)" }}>
-        <a href="#inicio" className="flex items-center gap-2 font-black text-[17px]" style={{ color: C.text }}>
-          <span className="w-7 h-7 rounded-lg flex items-center justify-center text-white" style={{ background: C.accent }}>
-            <BarChart3 size={14} />
-          </span>
-          Precifica
+        <a href="#inicio" className="flex items-center gap-2">
+          <img src={logoBlack} alt="Jesto" style={{ height: 28 }} />
         </a>
         <nav className="hidden md:flex items-center gap-9 text-sm font-medium" style={{ color: C.muted }}>
           {[["#como-funciona","Como funciona"],["#painel","Painel"],["#precos","Preços"],["#duvidas","Dúvidas"]].map(([h,l]) => (
@@ -227,7 +227,7 @@ export default function Landing() {
               <div style={{ position: "absolute", top: "12%", left: "8%", right: "8%", height: 1, background: `linear-gradient(to right, transparent, ${C.border} 20%, ${C.border} 80%, transparent)`, pointerEvents: "none", zIndex: 1 }} />
 
               <div style={{ position: "relative", width: "100%", maxWidth: 460, borderRadius: 20, overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,0.14)", border: `2px solid ${C.border}`, aspectRatio: "1/1", zIndex: 2 }}>
-                <img src={chefImg} alt="Chef conferindo custos e fichas técnicas no Precifica" draggable={false}
+                <img src={chefImg} alt="Chef conferindo custos e fichas técnicas no Jesto" draggable={false}
                   style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", display: "block" }} />
                 <div style={{ position: "absolute", inset: 0, pointerEvents: "none", background: "linear-gradient(to top, rgba(26,26,26,0.18) 0%, transparent 55%)" }} />
               </div>
@@ -309,7 +309,7 @@ export default function Landing() {
                 Do estoque<br/><It dark>ao lucro.</It>
               </h2>
               <p style={{ fontSize: "1rem", lineHeight: 1.8, color: "rgba(255,255,255,0.5)", maxWidth: 500, marginBottom: "3.5rem" }}>
-                Do cadastro à margem final, o Precifica organiza a rotina financeira do seu negócio em etapas claras.
+                Do cadastro à margem final, o Jesto organiza a rotina financeira do seu negócio em etapas claras.
               </p>
               <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full mb-12"
                 style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
@@ -401,7 +401,7 @@ export default function Landing() {
                   <span className="w-2.5 h-2.5 rounded-full bg-red-400" /><span className="w-2.5 h-2.5 rounded-full bg-yellow-400" /><span className="w-2.5 h-2.5 rounded-full bg-green-400" />
                   <span className="mx-auto text-[11px] font-medium px-12 rounded h-5 flex items-center" style={{ background: C.surface, color: C.muted }}>precifica.app/painel</span>
                 </div>
-                <img src={dashboardImg} alt="Painel do Precifica — receita, custos, margem e ponto de equilíbrio" className="w-full block" draggable={false} />
+                <img src={dashboardImg} alt="Painel do Jesto — receita, custos, margem e ponto de equilíbrio" className="w-full block" draggable={false} />
               </div>
             </Reveal>
           </div>
@@ -416,7 +416,7 @@ export default function Landing() {
                 Uma plataforma criada para quem<br/><It>vive da alimentação.</It>
               </h2>
               <p style={{ fontSize: "1rem", lineHeight: 1.8, color: C.muted, maxWidth: 460, marginBottom: "3.5rem" }}>
-                Seja um restaurante, cafeteria, confeitaria ou delivery, a Precifica se adapta à sua operação.
+                Seja um restaurante, cafeteria, confeitaria ou delivery, o Jesto se adapta à sua operação.
               </p>
             </Reveal>
 
@@ -612,7 +612,7 @@ export default function Landing() {
                 Perguntas frequentes
               </h2>
               <p style={{ fontSize: "1rem", lineHeight: 1.8, color: C.muted, maxWidth: 480, marginBottom: "2.75rem" }}>
-                Tudo o que você precisa saber para começar a usar a Precifica.
+                Tudo o que você precisa saber para começar a usar o Jesto.
               </p>
             </Reveal>
             <Reveal delay={60}>
@@ -635,9 +635,7 @@ export default function Landing() {
         <section style={{ background: "#1A1A1A" }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-2xl mx-auto text-center">
             <Reveal>
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-10" style={{ background: C.accent }}>
-                <BarChart3 size={20} className="text-white" />
-              </div>
+              <img src={iconjestoWhite} alt="Jesto" className="w-11 h-11 rounded-xl mx-auto mb-10" />
               <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: "#fff", marginBottom: "1.5rem" }}>
                 Descubra<br/>quanto seu negócio<br/><It dark>realmente lucra.</It>
               </h2>
@@ -660,13 +658,10 @@ export default function Landing() {
       {/* ══ FOOTER ══════════════════════════════════════════════ */}
       <footer style={{ background: "#111", borderTop: "1px solid rgba(255,255,255,0.05)" }} className="py-10 px-10 md:px-14">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
-          <a href="#inicio" className="flex items-center gap-2 font-black text-[15px] text-white">
-            <span className="w-6 h-6 rounded-md flex items-center justify-center text-white" style={{ background: C.accent }}>
-              <BarChart3 size={12} />
-            </span>
-            Precifica
+          <a href="#inicio" className="flex items-center gap-2">
+            <img src={logoWhite} alt="Jesto" style={{ height: 24 }} />
           </a>
-          <p style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.25)" }}>© 2025 Precifica. Todos os direitos reservados. · CNPJ 63.029.108/0001-27</p>
+          <p style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.25)" }}>© 2025 Jesto. Todos os direitos reservados. · CNPJ 63.029.108/0001-27</p>
           <div className="flex items-center gap-6">
             <Link href="/login" style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.35)" }} className="hover:text-white transition-colors">Entrar</Link>
             <Link href="/cadastro" style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.35)" }} className="hover:text-white transition-colors">Criar conta</Link>

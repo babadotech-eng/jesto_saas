@@ -414,7 +414,7 @@ export default function Planos() {
             Perguntas frequentes
           </h2>
           <p style={{ fontSize: "1rem", lineHeight: 1.8, color: C.muted, marginBottom: "2.75rem" }}>
-            Tudo o que você precisa saber para começar a usar a Precifica.
+            Tudo o que você precisa saber para começar a usar o Jesto.
           </p>
           <Accordion type="single" collapsible className="space-y-2">
             {FAQ_ITEMS.map((item, i) => (

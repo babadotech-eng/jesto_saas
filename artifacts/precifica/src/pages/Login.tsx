@@ -5,7 +5,8 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { BarChart3, Check, X } from "lucide-react";
+import { Check, X } from "lucide-react";
+import iconjestoBlack from "@assets/iconjesto_black_1780519861187.png";
 import { Link, useLocation } from "wouter";
 
 // NOTE: To enable Google Login, go to your Supabase dashboard:
@@ -85,10 +86,10 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
         <div className="flex flex-col items-center mb-8">
-          <Link href="/" className="bg-purple-700 text-white p-3 rounded-xl mb-4 shadow-md hover:scale-105 transition-transform">
-            <BarChart3 size={32} />
+          <Link href="/" className="mb-4 hover:scale-105 transition-transform inline-block">
+            <img src={iconjestoBlack} alt="Jesto" className="w-16 h-16 rounded-xl shadow-md" />
           </Link>
-          <h1 className="text-3xl font-bold text-foreground">Precifica</h1>
+          <h1 className="text-3xl font-bold text-foreground">Jesto</h1>
           <p className="text-muted-foreground mt-2">Entre para começar seu dia com mais controle</p>
         </div>
 
