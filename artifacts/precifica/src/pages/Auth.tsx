@@ -539,19 +539,11 @@ export default function Auth() {
       </div>
 
       {/* ── Form panel: left on desktop (lg:order-1), below image on tablet ── */}
-      <div className="lg:order-1 lg:flex-none lg:w-[42%] flex flex-col items-center justify-center py-12 px-8 lg:px-14 bg-white">
-
-        {/* Mobile: welcome text (no image on mobile) */}
-        <div className="md:hidden w-full max-w-[440px] mb-8">
-          <h1 className="text-foreground mb-1" style={{ ...playfairItalic, fontSize: "32px", lineHeight: 1.2 }}>
-            Seja bem-vindo(a)
-          </h1>
-          <p className="text-sm text-muted-foreground">{frase}</p>
-        </div>
+      <div className="lg:order-1 lg:flex-none lg:w-[42%] flex flex-col items-center justify-center min-h-screen py-12 px-6 sm:px-10 lg:px-14 bg-white">
 
         {/* Form content */}
         <div
-          className="w-full max-w-[440px]"
+          className="w-full max-w-sm sm:max-w-[440px]"
           style={{ opacity: visible ? 1 : 0, transition: "opacity 200ms ease" }}
         >
           {view === "login" && (
