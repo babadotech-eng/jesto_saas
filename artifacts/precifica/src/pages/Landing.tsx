@@ -303,90 +303,85 @@ export default function Landing() {
         {/* ══ 3. TUDO O QUE VOCÊ PRECISA (dark) ══════════════════ */}
         <section id="como-funciona" style={{ background: "#1A1A1A" }} className="py-28 md:py-36 px-10 md:px-14">
           <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-16 items-start">
+            <Reveal>
+              <Eyebrow label="Como funciona" dark />
+              <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: "#fff", marginBottom: "1.25rem", maxWidth: 580 }}>
+                Do estoque<br/><It dark>ao lucro.</It>
+              </h2>
+              <p style={{ fontSize: "1rem", lineHeight: 1.8, color: "rgba(255,255,255,0.5)", maxWidth: 500, marginBottom: "3.5rem" }}>
+                Do cadastro à margem final, o Precifica organiza a rotina financeira do seu negócio em etapas claras.
+              </p>
+              <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full mb-12"
+                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                <FileSpreadsheet size={13} style={{ color: C.accentAlt }} />
+                <span style={{ fontSize: "0.78rem", fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>Importação facilitada via Excel</span>
+              </div>
+            </Reveal>
 
-              {/* LEFT: title + subtitle */}
-              <Reveal>
-                <Eyebrow label="Como funciona" dark />
-                <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: "#fff", marginBottom: "1.25rem" }}>
-                  Do estoque<br/><It dark>ao lucro.</It>
-                </h2>
-                <p style={{ fontSize: "1rem", lineHeight: 1.8, color: "rgba(255,255,255,0.5)", marginBottom: "3rem" }}>
-                  Do cadastro à margem final, o Precifica organiza a rotina financeira do seu negócio em etapas claras.
-                </p>
-                <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full"
-                  style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
-                  <FileSpreadsheet size={13} style={{ color: C.accentAlt }} />
-                  <span style={{ fontSize: "0.78rem", fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>Importação facilitada via Excel</span>
+            <div className="grid md:grid-cols-2 gap-4">
+              <Reveal delay={0} className="h-full">
+                <div className="rounded-2xl p-7 h-full transition-all hover:bg-white/[0.06] cursor-default"
+                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                  <div className="flex items-start gap-5">
+                    <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: "rgba(255,255,255,0.12)", userSelect: "none" }}>01</span>
+                    <div>
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: "rgba(255,255,255,0.08)", color: C.accentAlt }}><LayoutDashboard size={17} /></div>
+                      <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: "#fff", marginBottom: 6 }}>Cadastre produtos e insumos</h3>
+                      <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: "rgba(255,255,255,0.45)" }}>
+                        Registre o que você vende e o que usa na produção. Organize ingredientes, unidades e valores para começar com uma base confiável.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </Reveal>
 
-              {/* RIGHT: 4 cards in 2×2 grid */}
-              <div className="grid grid-cols-2 gap-4">
-                <Reveal delay={0} className="h-full">
-                  <div className="rounded-2xl p-7 h-full transition-all hover:bg-white/[0.06] cursor-default"
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                    <div className="flex items-start gap-5">
-                      <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: "rgba(255,255,255,0.12)", userSelect: "none" }}>01</span>
-                      <div>
-                        <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: "rgba(255,255,255,0.08)", color: C.accentAlt }}><LayoutDashboard size={17} /></div>
-                        <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: "#fff", marginBottom: 6 }}>Cadastre produtos e insumos</h3>
-                        <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: "rgba(255,255,255,0.45)" }}>
-                          Registre o que você vende e o que usa na produção. Organize ingredientes, unidades e valores para começar com uma base confiável.
-                        </p>
-                      </div>
+              <Reveal delay={60} className="h-full">
+                <div className="rounded-2xl p-7 h-full transition-all hover:bg-white/[0.06] cursor-default"
+                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                  <div className="flex items-start gap-5">
+                    <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: "rgba(255,255,255,0.12)", userSelect: "none" }}>02</span>
+                    <div>
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: "rgba(255,255,255,0.08)", color: C.accentAlt }}><BookOpen size={17} /></div>
+                      <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: "#fff", marginBottom: 6 }}>Monte fichas técnicas</h3>
+                      <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: "rgba(255,255,255,0.45)" }}>
+                        Defina ingredientes, quantidades, rendimento e custo por receita. Tenha mais consistência para precificar cada item.
+                      </p>
                     </div>
                   </div>
-                </Reveal>
+                </div>
+              </Reveal>
 
-                <Reveal delay={60} className="h-full">
-                  <div className="rounded-2xl p-7 h-full transition-all hover:bg-white/[0.06] cursor-default"
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                    <div className="flex items-start gap-5">
-                      <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: "rgba(255,255,255,0.12)", userSelect: "none" }}>02</span>
-                      <div>
-                        <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: "rgba(255,255,255,0.08)", color: C.accentAlt }}><BookOpen size={17} /></div>
-                        <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: "#fff", marginBottom: 6 }}>Monte fichas técnicas</h3>
-                        <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: "rgba(255,255,255,0.45)" }}>
-                          Defina ingredientes, quantidades, rendimento e custo por receita. Tenha mais consistência para precificar cada item.
-                        </p>
-                      </div>
+              <Reveal delay={120} className="h-full">
+                <div className="rounded-2xl p-7 h-full transition-all hover:bg-white/[0.06] cursor-default"
+                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                  <div className="flex items-start gap-5">
+                    <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: "rgba(255,255,255,0.12)", userSelect: "none" }}>03</span>
+                    <div>
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: "rgba(255,255,255,0.08)", color: C.accentAlt }}><Wallet size={17} /></div>
+                      <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: "#fff", marginBottom: 6 }}>Registre gastos e lançamentos</h3>
+                      <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: "rgba(255,255,255,0.45)" }}>
+                        Acompanhe despesas, entradas e saídas do dia a dia sem depender de anotações soltas ou contas feitas na pressa.
+                      </p>
                     </div>
                   </div>
-                </Reveal>
+                </div>
+              </Reveal>
 
-                <Reveal delay={120} className="h-full">
-                  <div className="rounded-2xl p-7 h-full transition-all hover:bg-white/[0.06] cursor-default"
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                    <div className="flex items-start gap-5">
-                      <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: "rgba(255,255,255,0.12)", userSelect: "none" }}>03</span>
-                      <div>
-                        <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: "rgba(255,255,255,0.08)", color: C.accentAlt }}><Wallet size={17} /></div>
-                        <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: "#fff", marginBottom: 6 }}>Registre gastos e lançamentos</h3>
-                        <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: "rgba(255,255,255,0.45)" }}>
-                          Acompanhe despesas, entradas e saídas do dia a dia sem depender de anotações soltas ou contas feitas na pressa.
-                        </p>
-                      </div>
+              <Reveal delay={180} className="h-full">
+                <div className="rounded-2xl p-7 h-full transition-all hover:bg-white/[0.06] cursor-default"
+                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                  <div className="flex items-start gap-5">
+                    <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: "rgba(255,255,255,0.12)", userSelect: "none" }}>04</span>
+                    <div>
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: "rgba(255,255,255,0.08)", color: C.accentAlt }}><TrendingUp size={17} /></div>
+                      <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: "#fff", marginBottom: 6 }}>Veja margem e resultado</h3>
+                      <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: "rgba(255,255,255,0.45)" }}>
+                        Entenda o que dá retorno, onde estão os excessos e quais ajustes fazem mais sentido para aumentar o lucro.
+                      </p>
                     </div>
                   </div>
-                </Reveal>
-
-                <Reveal delay={180} className="h-full">
-                  <div className="rounded-2xl p-7 h-full transition-all hover:bg-white/[0.06] cursor-default"
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                    <div className="flex items-start gap-5">
-                      <span style={{ fontSize: "2.1rem", fontWeight: 900, lineHeight: 1, flexShrink: 0, marginTop: 2, color: "rgba(255,255,255,0.12)", userSelect: "none" }}>04</span>
-                      <div>
-                        <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: "rgba(255,255,255,0.08)", color: C.accentAlt }}><TrendingUp size={17} /></div>
-                        <h3 style={{ fontSize: "0.97rem", fontWeight: 700, color: "#fff", marginBottom: 6 }}>Veja margem e resultado</h3>
-                        <p style={{ fontSize: "0.875rem", lineHeight: 1.7, color: "rgba(255,255,255,0.45)" }}>
-                          Entenda o que dá retorno, onde estão os excessos e quais ajustes fazem mais sentido para aumentar o lucro.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </Reveal>
-              </div>
+                </div>
+              </Reveal>
             </div>
           </div>
         </section>
