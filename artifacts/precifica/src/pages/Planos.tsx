@@ -282,7 +282,7 @@ export default function Planos() {
         <div className="grid md:grid-cols-3 gap-5 items-end">
 
           {/* Grátis */}
-          <div className="rounded-2xl flex flex-col" style={{ background: C.surface, border: `1px solid ${C.border}`, padding: "1.75rem", minHeight: 520 }}>
+          <div className="rounded-2xl flex flex-col" style={{ background: C.surface, border: `1px solid ${C.border}`, padding: "1.75rem", minHeight: 600 }}>
             <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: C.text, marginBottom: 4 }}>Grátis</h3>
             <p style={{ fontSize: "0.85rem", color: C.muted, marginBottom: "1.5rem" }}>Para começar com organização, clareza e mais segurança nas primeiras decisões.</p>
             <div style={{ marginBottom: "1.5rem" }}>
@@ -305,7 +305,7 @@ export default function Planos() {
           </div>
 
           {/* Pro — destaque */}
-          <div className="rounded-2xl flex flex-col relative" style={{ background: "#1A1A1A", border: `2px solid ${C.accent}`, padding: "2.5rem 1.75rem", minHeight: 560, boxShadow: "0 20px 60px rgba(0,0,0,0.18)" }}>
+          <div className="rounded-2xl flex flex-col relative" style={{ background: "#1A1A1A", border: `2px solid ${C.accent}`, padding: "2.5rem 1.75rem", minHeight: 640, boxShadow: "0 20px 60px rgba(0,0,0,0.18)" }}>
             <div style={{ position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)", fontSize: "0.68rem", fontWeight: 700, padding: "3px 14px", borderRadius: 99, background: C.accentAlt, color: "#1A1A1A", whiteSpace: "nowrap" }}>
               Mais Popular
             </div>
@@ -349,7 +349,7 @@ export default function Planos() {
           </div>
 
           {/* Premium */}
-          <div className="rounded-2xl flex flex-col" style={{ background: C.surface, border: `1px solid ${C.border}`, padding: "1.75rem", minHeight: 520 }}>
+          <div className="rounded-2xl flex flex-col" style={{ background: C.surface, border: `1px solid ${C.border}`, padding: "1.75rem", minHeight: 600 }}>
             <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: C.text, marginBottom: 4 }}>Premium</h3>
             <p style={{ fontSize: "0.85rem", color: C.muted, marginBottom: "1.5rem" }}>Para negócios que querem uma visão completa da operação e decisões mais estratégicas.</p>
             <div style={{ marginBottom: "1.5rem" }}>
