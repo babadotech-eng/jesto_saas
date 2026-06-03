@@ -284,7 +284,7 @@ export default function Planos() {
           {/* Grátis */}
           <div className="rounded-2xl flex flex-col" style={{ background: C.surface, border: `1px solid ${C.border}`, padding: "1.75rem", minHeight: 600 }}>
             <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: C.text, marginBottom: 4 }}>Grátis</h3>
-            <p style={{ fontSize: "0.85rem", color: C.muted, marginBottom: "1.5rem" }}>Para começar com organização, clareza e mais segurança nas primeiras decisões.</p>
+            <p style={{ fontSize: "0.85rem", color: C.muted, marginBottom: "1.5rem" }}>Para começar e entender se o produto faz sentido para você.</p>
             <div style={{ marginBottom: "1.5rem" }}>
               <span style={{ fontSize: "2.4rem", fontWeight: 900, color: C.text }}>R$ 0</span>
               <span style={{ fontSize: "0.85rem", color: C.muted, marginLeft: 4 }}>/mês</span>
@@ -296,11 +296,10 @@ export default function Planos() {
               </button>
             </Link>
             <div className="space-y-3 flex-1">
-              <Feature text="Estruture seus primeiros produtos com mais confiança" />
-              <Feature text="Padronize receitas e ganhe consistência na operação" />
-              <Feature text="Organize insumos sem depender de planilhas soltas" />
-              <Feature text="Tenha uma leitura mais clara do CMV dos seus produtos" />
-              <Feature text="Dê os primeiros passos com simplicidade e sem custo" />
+              <Feature text="Até 5 produtos" />
+              <Feature text="Até 10 fichas técnicas" />
+              <Feature text="Até 30 insumos" />
+              <Feature text="Cálculo de custo e CMV" />
             </div>
           </div>
 
@@ -310,7 +309,7 @@ export default function Planos() {
               Mais Popular
             </div>
             <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#fff", marginBottom: 4 }}>Pro</h3>
-            <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.45)", marginBottom: "1.5rem" }}>Para quem quer precificar melhor, proteger a margem e crescer com mais controle.</p>
+            <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.45)", marginBottom: "1.5rem" }}>Para quem precisa de mais controle na operação e na precificação.</p>
             <div style={{ marginBottom: "1.5rem" }}>
               {cupom && descontoPro > 0 ? (
                 <div>
@@ -339,19 +338,20 @@ export default function Planos() {
               Assinar Pro
             </button>
             <div className="space-y-3 flex-1">
-              <FeatureDark text="Cadastre toda a sua operação sem limites desnecessários" />
-              <FeatureDark text="Enxergue a margem real de cada item com mais precisão" />
-              <FeatureDark text="Tenha uma visão mais clara dos custos no dia a dia" />
-              <FeatureDark text="Identifique rapidamente produtos com margem abaixo do ideal" />
-              <FeatureDark text="Tome decisões de preço com mais confiança e menos achismo" />
-              <FeatureDark text="Ganhe agilidade para ajustar cardápio, custos e rentabilidade" />
+              <FeatureDark text="Produtos ilimitados" />
+              <FeatureDark text="Fichas técnicas ilimitadas" />
+              <FeatureDark text="Insumos ilimitados" />
+              <FeatureDark text="Cálculo de margem real" />
+              <FeatureDark text="Cálculo de custo e CMV" />
+              <FeatureDark text="Dashboard de custos" />
+              <FeatureDark text="Alertas de margem baixa" />
             </div>
           </div>
 
           {/* Premium */}
           <div className="rounded-2xl flex flex-col" style={{ background: C.surface, border: `1px solid ${C.border}`, padding: "1.75rem", minHeight: 600 }}>
             <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: C.text, marginBottom: 4 }}>Premium</h3>
-            <p style={{ fontSize: "0.85rem", color: C.muted, marginBottom: "1.5rem" }}>Para negócios que querem uma visão completa da operação e decisões mais estratégicas.</p>
+            <p style={{ fontSize: "0.85rem", color: C.muted, marginBottom: "1.5rem" }}>Para uma gestão mais completa, com visão mais estratégica do negócio.</p>
             <div style={{ marginBottom: "1.5rem" }}>
               {cupom && descontoPremium > 0 ? (
                 <div>
@@ -380,13 +380,12 @@ export default function Planos() {
               Assinar Premium
             </button>
             <div className="space-y-3 flex-1">
-              <Feature text="Tudo do plano Pro para elevar o controle da sua operação" />
-              <Feature text="Acompanhe despesas fixas com mais profundidade" />
-              <Feature text="Tenha mais clareza sobre entradas, saídas e fluxo de caixa" />
-              <Feature text="Visualize seu ponto de equilíbrio com mais segurança" />
-              <Feature text="Acesse relatórios mais completos para decidir melhor" />
-              <Feature text="Organize a estrutura da equipe com mais controle" />
-              <Feature text="Consolide custos, rotina e gestão em um só lugar" />
+              <Feature text="Tudo do plano Pro" />
+              <Feature text="Gestão de despesas fixas" />
+              <Feature text="Fluxo de caixa" />
+              <Feature text="Ponto de equilíbrio" />
+              <Feature text="Relatórios avançados" />
+              <Feature text="Controle de funcionários" />
             </div>
           </div>
         </div>
