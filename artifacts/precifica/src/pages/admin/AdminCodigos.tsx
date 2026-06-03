@@ -630,7 +630,7 @@ export default function AdminCodigos() {
           {showBulk && (
             <form onSubmit={handleBatchSubmit} className="bg-card border border-border rounded-xl p-6 shadow-sm space-y-5">
               <h3 className="font-semibold text-foreground flex items-center gap-2">
-                <Layers size={16} className="text-amber-500" />Criar em Lote
+                <Layers size={16} className="text-primary" />Criar em Lote
               </h3>
 
               <div className="flex gap-1 p-1 bg-muted rounded-lg w-fit">

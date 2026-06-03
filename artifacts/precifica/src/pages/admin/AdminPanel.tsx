@@ -92,7 +92,7 @@ export default function AdminPanel() {
       </aside>
 
       {/* Main */}
-      <main className="flex-1 min-h-screen overflow-auto">
+      <main className="flex-1 min-h-screen overflow-auto inner-pages">
         {/* Top bar */}
         <header className="border-b border-border bg-card px-8 py-4 flex items-center justify-between">
           <h1 className="font-semibold text-foreground">
