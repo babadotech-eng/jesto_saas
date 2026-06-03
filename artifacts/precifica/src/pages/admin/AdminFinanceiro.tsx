@@ -20,7 +20,7 @@ function PlanoBadge({ plano }: { plano: string }) {
   if (plano === "premium")
     return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200"><Crown size={10} />Premium</span>;
   if (plano === "pro")
-    return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200"><Star size={10} />Pro</span>;
+    return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-primary/10 text-primary border border-primary/20"><Star size={10} />Pro</span>;
   return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">Grátis</span>;
 }
 
@@ -60,8 +60,8 @@ export default function AdminFinanceiro() {
       label: "Plano Pro",
       value: data ? `${data.receitaPorPlano.pro.count} assinante${data.receitaPorPlano.pro.count !== 1 ? "s" : ""}` : "—",
       icon: Star,
-      color: "text-blue-600",
-      bg: "bg-blue-50",
+      color: "text-primary",
+      bg: "bg-primary/10",
       sub: data ? brl(data.receitaPorPlano.pro.receita) + "/mês" : "—",
     },
     {
@@ -116,7 +116,7 @@ export default function AdminFinanceiro() {
       {/* MRR Chart */}
       <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
         <div className="flex items-center gap-2 mb-5">
-          <TrendingUp size={18} className="text-amber-500" />
+          <TrendingUp size={18} className="text-primary" />
           <h3 className="font-semibold text-foreground">Receita por Mês (últimos 12 meses)</h3>
         </div>
         {isLoading ? (

@@ -18,7 +18,7 @@ function PlanoBadge({ plano }: { plano: string }) {
   if (plano === "premium")
     return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200"><Crown size={10} />Premium</span>;
   if (plano === "pro")
-    return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200"><Star size={10} />Pro</span>;
+    return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-primary/10 text-primary border border-primary/20"><Star size={10} />Pro</span>;
   return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200"><User2 size={10} />Grátis</span>;
 }
 

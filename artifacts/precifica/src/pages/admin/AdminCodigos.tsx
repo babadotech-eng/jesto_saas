@@ -23,9 +23,9 @@ function fmtDate(d: string | null) {
 type StatusInfo = { label: string; bg: string; text: string };
 
 function getCodigoStatus(code: AdminCodigo): StatusInfo {
-  if (!code.ativo) return { label: "Inativo", bg: "bg-zinc-100 dark:bg-zinc-800", text: "text-zinc-500" };
+  if (!code.ativo) return { label: "Inativo", bg: "bg-muted", text: "text-muted-foreground" };
   const now = new Date();
-  if (new Date(code.dataInicio) > now) return { label: "Agendado", bg: "bg-blue-50 dark:bg-blue-950/40", text: "text-blue-600" };
+  if (new Date(code.dataInicio) > now) return { label: "Agendado", bg: "bg-primary/10", text: "text-primary" };
   if (code.dataExpiracao && new Date(code.dataExpiracao) < now) return { label: "Expirado", bg: "bg-yellow-50 dark:bg-yellow-950/40", text: "text-yellow-600" };
   if (code.limiteUsos !== null && code.usosAtuais >= code.limiteUsos) return { label: "Esgotado", bg: "bg-red-50 dark:bg-red-950/40", text: "text-red-500" };
   return { label: "Ativo", bg: "bg-green-50 dark:bg-green-950/40", text: "text-green-600" };
@@ -495,7 +495,7 @@ export default function AdminCodigos() {
             </Button>
             <Button
               size="sm"
-              className="gap-1.5 bg-amber-500 hover:bg-amber-600 text-white"
+              className="gap-1.5 bg-primary hover:bg-primary/90 text-white"
               onClick={() => { setShowForm(v => !v); setShowBulk(false); }}
             >
               {showForm ? <X size={14} /> : <Plus size={14} />}
@@ -539,7 +539,7 @@ export default function AdminCodigos() {
           {showForm && (
             <form onSubmit={handleSingleSubmit} className="bg-card border border-border rounded-xl p-6 shadow-sm space-y-4">
               <h3 className="font-semibold text-foreground flex items-center gap-2">
-                <Tag size={16} className="text-amber-500" />Novo Cupom
+                <Tag size={16} className="text-primary" />Novo Cupom
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
@@ -619,7 +619,7 @@ export default function AdminCodigos() {
               </div>
               <div className="flex justify-end gap-2 pt-2">
                 <Button type="button" variant="outline" onClick={() => { setShowForm(false); setForm(EMPTY_FORM); }}>Cancelar</Button>
-                <Button type="submit" className="bg-amber-500 hover:bg-amber-600 text-white" disabled={createMutation.isPending}>
+                <Button type="submit" className="bg-primary hover:bg-primary/90 text-white" disabled={createMutation.isPending}>
                   {createMutation.isPending ? "Criando..." : "Criar Cupom"}
                 </Button>
               </div>
@@ -723,7 +723,7 @@ export default function AdminCodigos() {
 
               <div className="flex justify-end gap-2 pt-2">
                 <Button type="button" variant="outline" onClick={() => { setShowBulk(false); setBatchResult(null); }}>Cancelar</Button>
-                <Button type="submit" className="bg-amber-500 hover:bg-amber-600 text-white" disabled={batchMutation.isPending}>
+                <Button type="submit" className="bg-primary hover:bg-primary/90 text-white" disabled={batchMutation.isPending}>
                   {batchMutation.isPending ? "Criando..." : "Criar Lote"}
                 </Button>
               </div>

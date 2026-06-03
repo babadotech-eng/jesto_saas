@@ -11,7 +11,7 @@ function fmtDate(d: string | null) {
 function planoBadge(plano: string) {
   const map: Record<string, string> = {
     premium: "bg-amber-100 text-amber-800 border-amber-200",
-    pro: "bg-blue-100 text-blue-800 border-blue-200",
+    pro: "bg-primary/10 text-primary border-primary/20",
     gratis: "bg-gray-100 text-gray-600 border-gray-200",
   };
   const labels: Record<string, string> = { premium: "Premium", pro: "Pro", gratis: "Grátis" };
@@ -38,22 +38,22 @@ export default function AdminOverview() {
       label: "Total de Usuários",
       value: data?.totalUsuarios ?? 0,
       icon: Users,
-      color: "text-blue-600",
-      bg: "bg-blue-50",
+      color: "text-primary",
+      bg: "bg-primary/10",
     },
     {
       label: "Plano Grátis",
       value: data?.porPlano.gratis ?? 0,
       icon: User2,
-      color: "text-gray-600",
-      bg: "bg-gray-50",
+      color: "text-muted-foreground",
+      bg: "bg-muted",
     },
     {
       label: "Plano Pro",
       value: data?.porPlano.pro ?? 0,
       icon: Star,
-      color: "text-blue-600",
-      bg: "bg-blue-50",
+      color: "text-primary",
+      bg: "bg-primary/10",
     },
     {
       label: "Plano Premium",
@@ -73,8 +73,8 @@ export default function AdminOverview() {
       label: "Novos este Mês",
       value: data?.novosMes ?? 0,
       icon: UserPlus,
-      color: "text-purple-600",
-      bg: "bg-purple-50",
+      color: "text-primary",
+      bg: "bg-primary/10",
     },
   ];
 
@@ -104,7 +104,7 @@ export default function AdminOverview() {
 
       <div>
         <div className="flex items-center gap-2 mb-4">
-          <TrendingUp size={18} className="text-amber-500" />
+          <TrendingUp size={18} className="text-primary" />
           <h3 className="font-semibold text-foreground">Atividade Recente</h3>
         </div>
 

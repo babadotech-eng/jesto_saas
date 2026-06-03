@@ -33,7 +33,7 @@ function PlanoBadge({ plano }: { plano: string }) {
     </span>
   );
   if (plano === "pro") return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-primary/10 text-primary border border-primary/20">
       <Star size={10} />Pro
     </span>
   );
@@ -236,7 +236,7 @@ export default function AdminUsers() {
                       onClick={() => setSelectedUserId(u.userId)}
                       className="text-left group"
                     >
-                      <p className="font-medium truncate max-w-[180px] group-hover:text-amber-600 transition-colors underline-offset-2 group-hover:underline">
+                      <p className="font-medium truncate max-w-[180px] group-hover:text-primary transition-colors underline-offset-2 group-hover:underline">
                         {u.nomeCompleto ?? "—"}
                       </p>
                       <p className="text-xs text-muted-foreground truncate max-w-[180px]">{u.email ?? u.userId}</p>
@@ -441,7 +441,7 @@ export default function AdminUsers() {
 
                 <Button
                   variant="outline" size="sm"
-                  className="gap-1.5 border-blue-200 text-blue-700 hover:bg-blue-50 w-full sm:w-auto"
+                  className="gap-1.5 border-primary/30 text-primary hover:bg-primary/5 w-full sm:w-auto"
                   onClick={() => setResetTarget({ userId: userDetail.userId, email: userDetail.email })}
                 >
                   <KeyRound size={13} />
@@ -491,7 +491,7 @@ export default function AdminUsers() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              <KeyRound size={18} className="text-blue-600" />
+              <KeyRound size={18} className="text-primary" />
               Redefinir Senha
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
@@ -510,7 +510,7 @@ export default function AdminUsers() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-primary hover:bg-primary/90 text-white"
               onClick={() => resetTarget && resetSenhaMutation.mutate(resetTarget.userId)}
               disabled={resetSenhaMutation.isPending}
             >
