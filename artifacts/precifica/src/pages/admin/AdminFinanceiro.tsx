@@ -29,7 +29,7 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
     return (
       <div className="bg-card border border-border rounded-lg px-3 py-2 shadow-sm text-sm">
         <p className="font-medium text-foreground">{label}</p>
-        <p className="text-amber-600 font-semibold">{brl(payload[0].value)}</p>
+        <p className="font-semibold" style={{ color: "#7A4FB2" }}>{brl(payload[0].value)}</p>
       </div>
     );
   }
@@ -138,7 +138,7 @@ export default function AdminFinanceiro() {
                 width={55}
               />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="receita" name="Receita" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="receita" name="Receita" fill="#7A4FB2" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         )}
