@@ -33,8 +33,10 @@ async function asaasRequest<T>(
   const data = (await res.json()) as T & AsaasErrorResponse;
 
   if (!res.ok) {
-    const msg =
-      (data as AsaasErrorResponse).errors?.[0]?.description ?? `Asaas API error (${res.status})`;
+    const firstError = (data as AsaasErrorResponse).errors?.[0];
+    const msg = firstError
+      ? `[${firstError.code}] ${firstError.description}`
+      : `Asaas API error (${res.status})`;
     throw new Error(msg);
   }
 
@@ -45,6 +47,7 @@ export interface AsaasCustomer {
   id: string;
   name: string;
   email: string;
+  cpfCnpj?: string;
 }
 
 interface CustomerListResponse {
@@ -61,9 +64,21 @@ export async function findOrCreateCustomer(
     "GET",
     `/customers?email=${encodeURIComponent(email)}&limit=1`,
   );
+
   if (list.data && list.data.length > 0) {
-    return list.data[0]!;
+    const existing = list.data[0]!;
+    // If existing customer has no cpfCnpj but we have one, update them
+    if (cpfCnpj && !existing.cpfCnpj) {
+      const updated = await asaasRequest<AsaasCustomer>("PUT", `/customers/${existing.id}`, {
+        name: existing.name || name || email.split("@")[0]!,
+        email: existing.email,
+        cpfCnpj,
+      });
+      return updated;
+    }
+    return existing;
   }
+
   const payload: Record<string, string> = {
     name: name || email.split("@")[0]!,
     email,

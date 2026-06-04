@@ -173,13 +173,24 @@ router.post("/assinaturas/checkout", requireAuth, async (req, res): Promise<void
       .limit(1);
 
     const cpfCnpjRaw = perfil?.cpfCnpj ?? null;
+    req.log.info({ hasCpfCnpj: !!cpfCnpjRaw, source: "perfisTable.cpfCnpj" }, "checkout: cpfCnpj check");
     if (!cpfCnpjRaw) {
       res.status(400).json({ error: "CPF ou CNPJ não encontrado. Preencha esse campo em Configurações antes de assinar." });
       return;
     }
     const cpfCnpjClean = cpfCnpjRaw.replace(/\D/g, "");
+    req.log.info({ cpfCnpjLen: cpfCnpjClean.length }, "checkout: cpfCnpj sanitized");
 
-    const customer = await findOrCreateCustomer(email, perfil?.nome ?? undefined, cpfCnpjClean);
+    let customer;
+    try {
+      customer = await findOrCreateCustomer(email, perfil?.nome ?? undefined, cpfCnpjClean);
+      req.log.info({ customerId: customer.id, hasAsaasCpfCnpj: !!customer.cpfCnpj }, "checkout: customer resolved");
+    } catch (custErr) {
+      const msg = custErr instanceof Error ? custErr.message : String(custErr);
+      req.log.error({ asaasError: msg }, "checkout: findOrCreateCustomer failed");
+      res.status(502).json({ error: `Erro ao criar cliente no gateway: ${msg}` });
+      return;
+    }
 
     const today = new Date();
     const nextDueDate = today.toISOString().split("T")[0]!;
