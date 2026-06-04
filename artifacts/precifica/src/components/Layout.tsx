@@ -8,7 +8,7 @@ import {
   Users, LogOut, Lightbulb, ArrowRight, Menu, X,
 } from "lucide-react";
 import { ReactNode, useState } from "react";
-import logoPainel from "@assets/logo-painel_1780572611823.png";
+import logoPainel from "@assets/logo-painel2_1780572910832.png";
 
 const navigation = [
   { name: "Painel",        href: "/painel",       icon: LayoutDashboard },
@@ -39,7 +39,7 @@ function SidebarContent({
       <div className="h-16 flex items-center px-5 shrink-0"
         style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         <div className="flex items-center">
-          <img src={logoPainel} alt="Jesto" className="h-14 w-auto rounded-lg shrink-0" />
+          <img src={logoPainel} alt="Jesto" className="h-10 w-auto rounded-lg shrink-0" />
         </div>
       </div>
 
@@ -151,7 +151,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <header className="h-14 flex items-center justify-between px-5 md:hidden shrink-0"
           style={{ background: "#161722", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
           <div className="flex items-center">
-            <img src={logoPainel} alt="Jesto" className="h-14 w-auto rounded-lg" />
+            <img src={logoPainel} alt="Jesto" className="h-10 w-auto rounded-lg" />
           </div>
           <button
             onClick={() => setMobileOpen(true)}
