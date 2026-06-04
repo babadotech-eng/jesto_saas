@@ -16,8 +16,8 @@ import { Link } from "wouter";
 import {
   TrendingUp, TrendingDown, Info, ArrowRight,
   ShoppingCart, Wallet, Activity,
-  Home, Users, Zap, Wifi, FileText, Settings2,
-  ShoppingBag, Heart, AlertTriangle, AlertCircle,
+  Home, FileText,
+  Heart, AlertTriangle, AlertCircle,
 } from "lucide-react";
 
 /* ── exact design tokens ──────────────────────────────────── */
@@ -141,35 +141,6 @@ function PeriodSelect({ value, onChange }: { value: Period; onChange: (v: Period
 }
 
 /* ── chart data helpers ───────────────────────────────────── */
-const CHART_DATA_7DIAS = [
-  { date: "18/mai", value: 2200 },
-  { date: "19/mai", value: 3400 },
-  { date: "20/mai", value: 2800 },
-  { date: "21/mai", value: 3000 },
-  { date: "22/mai", value: 4800 },
-  { date: "23/mai", value: 6320 },
-  { date: "24/mai", value: 4100 },
-];
-const CHART_DATA_SEMANA_PASSADA = [
-  { date: "11/mai", value: 1800 },
-  { date: "12/mai", value: 2900 },
-  { date: "13/mai", value: 3500 },
-  { date: "14/mai", value: 2100 },
-  { date: "15/mai", value: 4200 },
-  { date: "16/mai", value: 5800 },
-  { date: "17/mai", value: 3700 },
-];
-const CHART_DATA_MES_PASSADO = [
-  { date: "Sem 1", value: 16200 },
-  { date: "Sem 2", value: 21500 },
-  { date: "Sem 3", value: 18900 },
-  { date: "Sem 4", value: 24100 },
-];
-const MOCK_CHART: Record<Period, { date: string; value: number }[]> = {
-  "7dias":          CHART_DATA_7DIAS,
-  "semana_passada": CHART_DATA_SEMANA_PASSADA,
-  "mes_passado":    CHART_DATA_MES_PASSADO,
-};
 
 function dateLabel(d: Date) {
   const months = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
@@ -177,7 +148,15 @@ function dateLabel(d: Date) {
 }
 
 function buildChartData(period: Period, lancamentos: { data: string; tipo: string; valor: number | string }[]): { date: string; value: number }[] {
-  if (!lancamentos.length) return MOCK_CHART[period];
+  if (!lancamentos.length) {
+    if (period === "mes_passado") return [{ date: "Sem 1", value: 0 }, { date: "Sem 2", value: 0 }, { date: "Sem 3", value: 0 }, { date: "Sem 4", value: 0 }];
+    const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+    if (period === "7dias") {
+      return Array.from({ length: 7 }, (_, i) => { const d = new Date(hoje); d.setDate(d.getDate() - (6 - i)); return { date: dateLabel(d), value: 0 }; });
+    }
+    const dow = hoje.getDay(); const startDiff = dow === 0 ? 13 : dow + 6;
+    return Array.from({ length: 7 }, (_, i) => { const d = new Date(hoje); d.setDate(d.getDate() - startDiff + i); return { date: dateLabel(d), value: 0 }; });
+  }
   const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
 
   if (period === "7dias" || period === "semana_passada") {
@@ -219,31 +198,6 @@ function buildChartData(period: Period, lancamentos: { data: string; tipo: strin
 
 /* ── static data ──────────────────────────────────────────── */
 
-const MOCK_TX = [
-  { id: 1, name: "Venda - Balcão",   type: "Receita",      date: "24/mai · 10:42", value:  320.00, pos: true,  Icon: ShoppingCart },
-  { id: 2, name: "Venda - iFood",    type: "Receita",      date: "24/mai · 09:15", value:  185.60, pos: true,  Icon: ShoppingBag  },
-  { id: 3, name: "Compra - Frango",  type: "Insumos",      date: "24/mai · 08:30", value:  154.80, pos: false, Icon: ShoppingCart },
-  { id: 4, name: "Aluguel",          type: "Despesa fixa", date: "24/mai · 07:45", value: 1200.00, pos: false, Icon: Home         },
-  { id: 5, name: "Energia elétrica", type: "Despesa fixa", date: "23/mai · 18:22", value:  320.00, pos: false, Icon: Zap          },
-];
-
-const MOCK_EXP = [
-  { Icon: Home,      label: "Aluguel",          value: 1200 },
-  { Icon: Users,     label: "Salários",          value: 4800 },
-  { Icon: Zap,       label: "Energia elétrica",  value:  320 },
-  { Icon: Wifi,      label: "Internet",          value:  120 },
-  { Icon: FileText,  label: "Contador",          value:  250 },
-  { Icon: Settings2, label: "Outras despesas",   value:  310 },
-];
-
-const MOCK_PROD = [
-  { rank: 1, name: "Marmitex Tradicional", units: 312 },
-  { rank: 2, name: "Coxinha",              units: 285 },
-  { rank: 3, name: "Brigadeiro Gourmet",   units: 210 },
-  { rank: 4, name: "Refrigerante Lata",    units: 198 },
-  { rank: 5, name: "Bolo no Pote",         units: 162 },
-];
-
 /* ── shared card wrapper ─────────────────────────────────── */
 function Card({ children, style = {}, className = "" }: { children: React.ReactNode; style?: React.CSSProperties; className?: string }) {
   return (
@@ -284,9 +238,6 @@ function KPICard({ Icon, iconBg, iconColor, label, value, change, up }: {
 /* ── Resultado do mês ────────────────────────────────────── */
 function ResultadoCard({ resultado }: { resultado: number }) {
   const isPos = resultado >= 0;
-  /* use reference values when no real data */
-  const displayValue = resultado !== 0 ? resultado : -3810;
-  const displayPos   = displayValue >= 0;
 
   return (
     <div
@@ -296,7 +247,6 @@ function ResultadoCard({ resultado }: { resultado: number }) {
         isolation: "isolate",
         padding: "22px 20px 20px",
         minHeight: 290,
-        /* layered misty background */
         background: [
           "linear-gradient(135deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.00) 48%, rgba(120,101,148,0.10) 100%)",
           "radial-gradient(circle at 55% 72%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.00) 38%)",
@@ -307,20 +257,16 @@ function ResultadoCard({ resultado }: { resultado: number }) {
         boxShadow: "0 6px 24px rgba(25,24,33,0.07)",
       }}
     >
-      {/* content */}
       <div className="relative z-10 flex flex-col h-full">
 
-        {/* 1 — title */}
         <p style={{ fontSize: 11, fontWeight: 500, color: "#43384E", marginBottom: 6, letterSpacing: "0.01em" }}>
           Resultado do mês
         </p>
 
-        {/* 2 — value */}
         <p style={{ fontSize: "1.75rem", fontWeight: 800, lineHeight: 1.05, color: "#4A2E69", marginBottom: 10 }}>
-          {displayPos ? "" : "-"}{fmt(Math.abs(displayValue))}
+          {isPos ? "" : "-"}{fmt(Math.abs(resultado))}
         </p>
 
-        {/* 3 — pill */}
         <span style={{
           display: "inline-flex", alignItems: "center", gap: 4, alignSelf: "flex-start",
           padding: "4px 10px", borderRadius: 999,
@@ -329,13 +275,11 @@ function ResultadoCard({ resultado }: { resultado: number }) {
           border: "1px solid rgba(74,46,105,0.10)",
           marginBottom: 16,
         }}>
-          {displayPos ? "↑" : "↓"} {displayPos ? "+12,1%" : "-12,1%"} vs mês anterior
+          {isPos ? "↑" : "↓"} vs mês anterior
         </span>
 
-        {/* 4 — divider */}
         <div style={{ borderTop: "1px solid rgba(74,46,105,0.10)", marginBottom: 16 }} />
 
-        {/* 5 — advisory */}
         <div style={{ display: "flex", alignItems: "flex-start", gap: 10, flex: 1 }}>
           <div style={{
             width: 34, height: 34, borderRadius: "50%", flexShrink: 0,
@@ -346,29 +290,21 @@ function ResultadoCard({ resultado }: { resultado: number }) {
           </div>
           <div style={{ paddingTop: 2 }}>
             <p style={{ fontSize: 13, fontWeight: 600, color: "#2E2A36", lineHeight: 1.35 }}>
-              Revise seus custos
+              {resultado < 0 ? "Revise seus custos" : resultado === 0 ? "Cadastre seus dados" : "Bom resultado!"}
             </p>
             <p style={{ fontSize: 11, fontWeight: 400, color: "#6E6877", lineHeight: 1.4, marginTop: 2 }}>
-              para melhorar o resultado.
+              {resultado === 0 ? "para ver seu resultado aqui." : "para melhorar o resultado."}
             </p>
           </div>
         </div>
 
-        {/* 6 — CTA */}
         <Link href="/relatorios">
           <button
             style={{
-              marginTop: 18,
-              display: "inline-block",
-              padding: "9px 22px",
-              borderRadius: 999,
-              fontSize: 13,
-              fontWeight: 600,
-              color: "#FFFFFF",
-              background: "#5A347E",
-              border: "none",
-              cursor: "pointer",
-              transition: "background 0.15s",
+              marginTop: 18, display: "inline-block", padding: "9px 22px",
+              borderRadius: 999, fontSize: 13, fontWeight: 600,
+              color: "#FFFFFF", background: "#5A347E", border: "none",
+              cursor: "pointer", transition: "background 0.15s",
             }}
             onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#4B2B69"; }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#5A347E"; }}
@@ -526,44 +462,37 @@ export default function Painel() {
     || user?.email?.split("@")[0]
     || "";
 
-  /* real or reference values */
-  const receitaTotal = summary?.receita_total  ?? 28540;
-  const custosTotal  = summary?.custos_totais  ?? 22350;
-  const margem       = summary?.margem_media   ?? 21.7;
-  const resultado    = summary?.resultado_mes  ?? -3810;
+  const receitaTotal = summary?.receita_total  ?? 0;
+  const custosTotal  = summary?.custos_totais  ?? 0;
+  const margem       = summary?.margem_media   ?? 0;
+  const resultado    = summary?.resultado_mes  ?? 0;
 
   // Para o card PE: usa 0 como padrão quando summary ainda não carregou.
   // Isso evita misturar ponto_contabil real com receitaTotal mock, o que gerava
   // percentuais fictícios que depois caíam abruptamente para 0%.
   const receitaPE    = summary?.receita_total ?? 0;
   const hasPE        = pe && pe.ponto_contabil > 0;
-  const pePct        = hasPE ? Math.min(100, (receitaPE / pe.ponto_contabil) * 100) : 72;
-  const faltamPE     = hasPE ? Math.max(0, pe.ponto_contabil - receitaPE) : 7120;
+  const pePct        = hasPE ? Math.min(100, (receitaPE / pe.ponto_contabil) * 100) : 0;
+  const faltamPE     = hasPE ? Math.max(0, pe.ponto_contabil - receitaPE) : 0;
 
   const totalP    = topProdutos.length;
-  const saudaveis = totalP > 0 ? topProdutos.filter(p => p.margem_pct >= 30).length  : 3;
-  const atencao   = totalP > 0 ? topProdutos.filter(p => p.margem_pct >= 15 && p.margem_pct < 30).length : 2;
-  const criticos  = totalP > 0 ? topProdutos.filter(p => p.margem_pct < 15).length  : 1;
+  const saudaveis = topProdutos.filter(p => p.margem_pct >= 30).length;
+  const atencao   = topProdutos.filter(p => p.margem_pct >= 15 && p.margem_pct < 30).length;
+  const criticos  = topProdutos.filter(p => p.margem_pct < 15).length;
 
-  const txRows = lancamentos.length > 0
-    ? lancamentos.slice(0, 5).map(l => ({
-        id: l.id, name: l.descricao,
-        type: l.tipo === "receita" ? "Receita" : "Despesa",
-        date: new Date(l.data + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }),
-        value: l.valor, pos: l.tipo === "receita",
-        Icon: l.tipo === "receita" ? ShoppingCart : Home,
-      }))
-    : MOCK_TX;
+  const txRows = lancamentos.slice(0, 5).map(l => ({
+    id: l.id, name: l.descricao,
+    type: l.tipo === "receita" ? "Receita" : "Despesa",
+    date: new Date(l.data + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }),
+    value: l.valor, pos: l.tipo === "receita",
+    Icon: l.tipo === "receita" ? ShoppingCart : Home,
+  }));
 
-  const expRows   = despesas.length > 0
-    ? despesas.slice(0, 6).map((d, i) => ({ Icon: MOCK_EXP[i]?.Icon ?? FileText, label: d.categoria ?? "Despesa", value: d.valor }))
-    : MOCK_EXP;
-  const expTotal  = despesas.length > 0 ? despesas.reduce((s, d) => s + d.valor, 0) : 7000;
+  const expRows  = despesas.slice(0, 6).map(d => ({ Icon: FileText, label: d.categoria ?? "Despesa", value: d.valor }));
+  const expTotal = despesas.reduce((s, d) => s + d.valor, 0);
 
-  const prodRows  = topProdutos.length > 0
-    ? topProdutos.slice(0, 5).map((p, i) => ({ rank: i + 1, name: p.nome, units: Math.round(p.margem_pct * 3.5) }))
-    : MOCK_PROD;
-  const maxUnits  = prodRows[0]?.units || 1;
+  const prodRows = topProdutos.slice(0, 5).map((p, i) => ({ rank: i + 1, name: p.nome, units: Math.round(p.margem_pct * 3.5) }));
+  const maxUnits = prodRows[0]?.units || 1;
 
   return (
     <div className="-m-5 p-5 min-h-full" style={{ background: T.bgPage }} data-testid="painel-page">
@@ -579,10 +508,10 @@ export default function Painel() {
           </h1>
         </div>
         <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
-          <KPICard Icon={Wallet}       iconBg="#EAF7EF"  iconColor={T.iconGreen}  label="Receita do mês"   value={fmt(receitaTotal)}        change="↑ 8,6%"     up={true}  />
-          <KPICard Icon={ShoppingCart} iconBg="#FDEEE8"  iconColor={T.iconRed}    label="Custos do mês"    value={fmt(custosTotal)}         change="↑ 5,3%"     up={false} />
-          <KPICard Icon={Activity}     iconBg="#FFF4DE"  iconColor={T.iconOrange} label="Margem média"     value={`${margem.toFixed(1)}%`}  change="↑ 2,4 p.p." up={true}  />
-          <KPICard Icon={TrendingDown} iconBg="#F1EAFE"  iconColor={T.iconPurple} label="Resultado do mês" value={fmt(resultado)}           change="↓ -12,1%"   up={resultado >= 0} />
+          <KPICard Icon={Wallet}       iconBg="#EAF7EF"  iconColor={T.iconGreen}  label="Receita do mês"   value={fmt(receitaTotal)}        change="—" up={true}  />
+          <KPICard Icon={ShoppingCart} iconBg="#FDEEE8"  iconColor={T.iconRed}    label="Custos do mês"    value={fmt(custosTotal)}         change="—" up={false} />
+          <KPICard Icon={Activity}     iconBg="#FFF4DE"  iconColor={T.iconOrange} label="Margem média"     value={`${margem.toFixed(1)}%`}  change="—" up={true}  />
+          <KPICard Icon={TrendingDown} iconBg="#F1EAFE"  iconColor={T.iconPurple} label="Resultado do mês" value={fmt(resultado)}           change="—" up={resultado >= 0} />
         </div>
       </div>
 

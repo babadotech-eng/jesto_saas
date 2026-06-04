@@ -1,0 +1,79 @@
+SCOPE LOCK
+Corrija apenas a lógica de carregamento inicial do Painel.
+Não altere layout, design, cores, componentes visuais, sidebar, homepage, autenticação, banco, rotas ou outras páginas.
+Não invente novas métricas, não replique dados fake e não mude textos desnecessariamente.
+Objetivo único: quando o usuário entrar pela primeira vez no Painel, tudo deve vir zerado/vazio, sem dados mockados.
+
+PROBLEMA
+Hoje o Painel abre já com valores e listas preenchidos mesmo sem dados reais do usuário.
+Isso está errado.
+Para usuário novo ou conta sem registros, o dashboard deve exibir estado vazio real.
+
+TAREFA
+Faça uma varredura no código do dashboard e remova toda fonte de dados mockados, hardcoded, seeded ou fallback fake usados no primeiro carregamento.
+Verifique especialmente:
+- arrays locais de exemplo
+- objetos default com números preenchidos
+- mocks em useState
+- mocks em constants
+- fake transactions
+- fake products
+- fake expenses
+- fake KPI values
+- fake charts
+- fallbacks como `|| demoData`, `|| mockData`, `?? sampleData`
+- funções que retornam exemplos quando a consulta vem vazia
+
+COMPORTAMENTO CORRETO
+Se o usuário não tiver dados reais cadastrados:
+- receita do mês = R$ 0,00
+- custos do mês = R$ 0,00
+- margem média = 0,0%
+- resultado do mês = R$ 0,00
+- gráfico = vazio ou linha zerada, sem dados fictícios
+- ponto de equilíbrio = 0% ou estado vazio coerente
+- saúde do negócio = estado neutro, sem diagnóstico inventado
+- transações recentes = lista vazia
+- despesas fixas mensais = lista vazia ou total R$ 0,00
+- produtos mais vendidos = lista vazia
+
+REGRAS IMPORTANTES
+- Só mostrar números e listas quando vierem de dados reais salvos pelo usuário
+- Se a query vier vazia, renderizar empty state real, não preencher com exemplos
+- Não criar seed automático
+- Não popular estado inicial com exemplos
+- Não mascarar ausência de dados com conteúdo fake
+- Não mudar nada fora do Painel
+
+IMPLEMENTAÇÃO
+Revise a lógica de:
+- carregamento inicial
+- estados default
+- transformações de dados
+- mapeamento para cards do dashboard
+- componentes de gráfico
+- componentes de listas
+- cálculos de KPIs
+
+Substitua qualquer mock/default preenchido por estado vazio seguro, por exemplo:
+- números = 0
+- percentuais = 0
+- arrays = []
+- objetos agregados = null ou estrutura vazia coerente
+
+VALIDAÇÃO
+Depois da correção, garanta este teste:
+1. usuário novo entra no app
+2. acessa Painel
+3. dashboard abre sem nenhum dado fictício
+4. todos os cards vêm zerados ou vazios
+5. após cadastrar dados reais, o Painel passa a refletir apenas esses dados reais
+
+DELIVERABLE
+Retorne apenas:
+1. arquivos alterados
+2. onde estavam os mocks/fallbacks incorretos
+3. como o estado vazio foi implementado
+4. confirmação de que nada fora do Painel foi alterado
+
+Se existir qualquer dado hardcoded aparecendo no Painel sem origem real no banco, remova.
