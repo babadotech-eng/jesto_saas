@@ -223,7 +223,7 @@ export default function Onboarding() {
                   {showTooltip && (
                     <div className="absolute left-0 top-7 z-50 w-64 rounded-xl px-4 py-3 text-sm shadow-lg"
                       style={{ background: "#1A1A1A", color: "#F5F4F1", lineHeight: 1.5 }}>
-                      Esse dado é necessário para liberar cobranças e assinaturas com segurança.
+                      Esse dado só será usado se você decidir assinar um plano.
                     </div>
                   )}
                 </div>
