@@ -1,0 +1,61 @@
+Execute only. No plan mode. No long explanation.
+
+Do not respond with a plan.
+Implement the fix immediately.
+
+Read the current code first, then fix ONLY the CPF/CNPJ read logic used when the user clicks to subscribe/pay for a plan.
+Do not redesign anything.
+Do not refactor unrelated code.
+Do not touch dashboard/painel.
+Do not touch home.
+Do not touch onboarding UI.
+Do not touch pricing card design.
+Do not touch colors, spacing, typography, layout, or unrelated validation.
+
+PROBLEM
+The user already fills CPF/CNPJ in onboarding/configurações, but when clicking to subscribe to a paid plan, the checkout/payment flow still throws an error saying CPF/CNPJ is required.
+
+GOAL
+Make the subscription/checkout page correctly read the CPF/CNPJ already saved in the user profile/configurações and use that value when creating the customer/charge/checkout in Asaas.
+
+REQUIRED FIX
+- Before creating the Asaas customer, charge, subscription, or checkout, load the logged-in user's saved CPF/CNPJ from the same profile/configurações source already used by the app
+- Use that saved CPF/CNPJ in the Asaas payload
+- Do not require the user to type CPF/CNPJ again on the payment page if it already exists in the saved profile
+- If the saved CPF/CNPJ exists, the payment flow must continue normally
+- If the saved CPF/CNPJ does not exist, only then block the flow and show a clear message asking the user to fill this field in configurações/onboarding
+
+DATA SOURCE
+- Read CPF/CNPJ from the existing saved user profile/configurações data
+- Use the real saved field already created by the app
+- If the field is stored masked, sanitize it before sending to Asaas
+- If needed, trim spaces and send only valid CPF/CNPJ characters/numbers in the payload
+
+STRICT RULES
+- Do not add a new CPF/CNPJ field to the payment page
+- Do not duplicate CPF/CNPJ storage in another table or source unless absolutely required to fix a broken schema mapping
+- Do not change onboarding flow except if a field mapping fix is required
+- Do not change plan logic
+- Do not change checkout visual layout
+- Do not change unrelated profile fields
+- Do not change any unrelated text
+- Do not invent a new data structure if the value already exists in user settings/profile
+
+VALIDATION RULE
+- If CPF/CNPJ exists in the logged-in user's saved profile/configurações, use it automatically in the Asaas request
+- If missing, show a clear Portuguese message telling the user to complete CPF/CNPJ in configurações or onboarding before subscribing
+
+DEBUG/FIX DETAILS
+- Verify whether the checkout page is reading from the wrong field name, wrong table, wrong object path, wrong session payload, or stale state
+- Fix the mapping so the saved CPF/CNPJ reaches the payment request correctly
+- Ensure the latest saved value is loaded before payment starts
+
+FINAL RESPONSE
+Return only:
+1. Files changed
+2. Where CPF/CNPJ is now being read from
+3. What mapping/logic was fixed
+4. Confirmation that the payment page now uses the saved CPF/CNPJ automatically
+5. Confirmation that nothing else was changed
+
+If CPF/CNPJ is stored with mask formatting, remove punctuation before sending it to Asaas.

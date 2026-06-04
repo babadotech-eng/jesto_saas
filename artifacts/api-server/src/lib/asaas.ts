@@ -55,6 +55,7 @@ interface CustomerListResponse {
 export async function findOrCreateCustomer(
   email: string,
   name?: string,
+  cpfCnpj?: string,
 ): Promise<AsaasCustomer> {
   const list = await asaasRequest<CustomerListResponse>(
     "GET",
@@ -63,10 +64,12 @@ export async function findOrCreateCustomer(
   if (list.data && list.data.length > 0) {
     return list.data[0]!;
   }
-  return asaasRequest<AsaasCustomer>("POST", "/customers", {
-    name: name || email.split("@")[0],
+  const payload: Record<string, string> = {
+    name: name || email.split("@")[0]!,
     email,
-  });
+  };
+  if (cpfCnpj) payload.cpfCnpj = cpfCnpj;
+  return asaasRequest<AsaasCustomer>("POST", "/customers", payload);
 }
 
 export interface AsaasSubscription {

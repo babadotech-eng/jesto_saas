@@ -167,12 +167,19 @@ router.post("/assinaturas/checkout", requireAuth, async (req, res): Promise<void
 
   try {
     const [perfil] = await db
-      .select({ nome: perfisTable.nomeCompleto })
+      .select({ nome: perfisTable.nomeCompleto, cpfCnpj: perfisTable.cpfCnpj })
       .from(perfisTable)
       .where(eq(perfisTable.userId, userId))
       .limit(1);
 
-    const customer = await findOrCreateCustomer(email, perfil?.nome ?? undefined);
+    const cpfCnpjRaw = perfil?.cpfCnpj ?? null;
+    if (!cpfCnpjRaw) {
+      res.status(400).json({ error: "CPF ou CNPJ não encontrado. Preencha esse campo em Configurações antes de assinar." });
+      return;
+    }
+    const cpfCnpjClean = cpfCnpjRaw.replace(/\D/g, "");
+
+    const customer = await findOrCreateCustomer(email, perfil?.nome ?? undefined, cpfCnpjClean);
 
     const today = new Date();
     const nextDueDate = today.toISOString().split("T")[0]!;
