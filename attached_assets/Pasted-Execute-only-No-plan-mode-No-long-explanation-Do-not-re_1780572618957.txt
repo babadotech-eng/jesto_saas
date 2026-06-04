@@ -1,0 +1,61 @@
+Execute only. No plan mode. No long explanation.
+
+Do not respond with a plan.
+Implement the changes immediately.
+
+Read the current code first, then make ONLY the changes below.
+Do not redesign anything.
+Do not refactor unrelated code.
+Do not touch home.
+Do not touch pricing page.
+Do not touch login logic.
+Do not touch onboarding logic.
+Do not touch dashboard logic.
+Do not touch colors, fonts, spacing, layout structure, routes, or unrelated components.
+
+GOAL
+Make only logo/name display adjustments in:
+1. onboarding page
+2. painel/dashboard
+
+FILES ATTACHED
+- logo-onboarding
+- logo-painel
+
+MAKE ONLY THESE CHANGES:
+
+1. ONBOARDING
+- On the onboarding page, remove the visible text name "Jesto" where it currently appears near or with the logo
+- Replace the current logo/image used in onboarding with the attached asset: logo-onboarding
+- Increase the displayed logo size in onboarding to exactly 2x the current visual size
+- Keep the logo proportions correct
+- Do not stretch, crop, distort, recolor, or apply effects
+- Do not move other elements unless the minimum adjustment is required to fit the larger logo cleanly
+
+2. PAINEL / DASHBOARD
+- In the painel/dashboard area, remove the visible text name "Jesto" where it currently appears near or with the logo
+- Replace the current logo/image used in the painel/dashboard with the attached asset: logo-painel
+- Increase the displayed logo size in the painel/dashboard to exactly 2x the current visual size
+- Keep the logo proportions correct
+- Do not stretch, crop, distort, recolor, or apply effects
+- Do not move other elements unless the minimum adjustment is required to fit the larger logo cleanly
+
+STRICT RULES
+- Do not change any other text
+- Do not change any component behavior
+- Do not change authentication flow
+- Do not change page structure
+- Do not change global styles
+- Do not change spacing except the absolute minimum necessary to fit the larger logo
+- Do not replace logos anywhere else in the app
+- Do not edit any screen other than onboarding and painel/dashboard
+- Do not add new branding elements
+- Only remove the visible brand word "Jesto" in these two places and replace the logos as requested
+
+FINAL RESPONSE
+Return only:
+1. Files changed
+2. Where the onboarding logo was replaced
+3. Where the painel logo was replaced
+4. Confirmation that the visible text "Jesto" was removed only from onboarding and painel
+5. Confirmation that nothing else was changed

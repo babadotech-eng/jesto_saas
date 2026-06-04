@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { ChevronRight, Check, HelpCircle } from "lucide-react";
-import iconjestoBlack from "@assets/iconjesto_black_1780519861187.png";
+import logoOnboarding from "@assets/logo-onboarding_1780572611823.png";
 
 // ─── CPF / CNPJ helpers ────────────────────────────────────────────────────
 
@@ -177,8 +177,7 @@ export default function Onboarding() {
 
       {/* Header */}
       <div className="flex items-center gap-2 p-6">
-        <img src={iconjestoBlack} alt="Jesto" className="w-9 h-9 rounded-lg" />
-        <span className="font-bold text-zinc-800">Jesto</span>
+        <img src={logoOnboarding} alt="Jesto" className="h-18 w-auto rounded-lg" />
         <span className="ml-auto text-sm text-zinc-400">{step + 1} / {STEPS.length}</span>
       </div>
 

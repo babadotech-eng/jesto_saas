@@ -8,7 +8,7 @@ import {
   Users, LogOut, Lightbulb, ArrowRight, Menu, X,
 } from "lucide-react";
 import { ReactNode, useState } from "react";
-import iconjestoWhite from "@assets/iconjesto_white_1780519861186.png";
+import logoPainel from "@assets/logo-painel_1780572611823.png";
 
 const navigation = [
   { name: "Painel",        href: "/painel",       icon: LayoutDashboard },
@@ -38,9 +38,8 @@ function SidebarContent({
       {/* Logo */}
       <div className="h-16 flex items-center px-5 shrink-0"
         style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-        <div className="flex items-center gap-2.5">
-          <img src={iconjestoWhite} alt="Jesto" className="w-7 h-7 rounded-lg shrink-0" />
-          <span className="font-bold text-base text-white tracking-tight">Jesto</span>
+        <div className="flex items-center">
+          <img src={logoPainel} alt="Jesto" className="h-14 w-auto rounded-lg shrink-0" />
         </div>
       </div>
 
@@ -151,9 +150,8 @@ export default function Layout({ children }: { children: ReactNode }) {
         {/* Mobile header */}
         <header className="h-14 flex items-center justify-between px-5 md:hidden shrink-0"
           style={{ background: "#161722", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-          <div className="flex items-center gap-2">
-            <img src={iconjestoWhite} alt="Jesto" className="w-7 h-7 rounded-lg" />
-            <span className="font-bold text-white text-sm">Jesto</span>
+          <div className="flex items-center">
+            <img src={logoPainel} alt="Jesto" className="h-14 w-auto rounded-lg" />
           </div>
           <button
             onClick={() => setMobileOpen(true)}
