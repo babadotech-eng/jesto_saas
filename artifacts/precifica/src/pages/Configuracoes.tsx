@@ -15,6 +15,17 @@ import { toast } from "sonner";
 
 const VOLUME_OPTIONS = ["Até R$ 1.000", "R$ 1.000 a R$ 3.000", "R$ 3.000 a R$ 7.000", "R$ 7.000 a R$ 15.000", "Acima de R$ 15.000", "Ainda não vendo"];
 
+function formatCpfCnpj(v: string): string {
+  const d = v.replace(/\D/g, "").slice(0, 14);
+  if (d.length <= 11) {
+    if (d.length <= 3) return d;
+    if (d.length <= 6) return `${d.slice(0, 3)}.${d.slice(3)}`;
+    if (d.length <= 9) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6)}`;
+    return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
+  }
+  return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8, 12)}-${d.slice(12)}`;
+}
+
 function formatPhone(v: string): string {
   const digits = v.replace(/\D/g, "").slice(0, 11);
   if (digits.length <= 2) return digits.length ? `(${digits}` : "";
@@ -35,7 +46,7 @@ export default function Configuracoes() {
 
   const [form, setForm] = useState({
     nome_completo: "", nome_negocio: "", tipo_negocio: "",
-    volume_mensal: "", cidade_estado: "", whatsapp: "", email: "",
+    volume_mensal: "", cidade_estado: "", whatsapp: "", email: "", cpf_cnpj: "",
   });
   const [logoUploading, setLogoUploading] = useState(false);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -50,6 +61,7 @@ export default function Configuracoes() {
         cidade_estado: perfil.cidade_estado ?? "",
         whatsapp: perfil.whatsapp ?? "",
         email: perfil.email ?? "",
+        cpf_cnpj: perfil.cpf_cnpj ?? "",
       });
       setLogoPreview(perfil.logo_url ?? null);
     }
@@ -76,6 +88,7 @@ export default function Configuracoes() {
         cidade_estado: form.cidade_estado || null,
         whatsapp: form.whatsapp || null,
         email: form.email || null,
+        cpf_cnpj: form.cpf_cnpj || null,
       });
       toast.success("Perfil atualizado!");
     } catch {
@@ -267,6 +280,16 @@ export default function Configuracoes() {
                   onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                   placeholder="contato@seunegocio.com"
                   data-testid="input-config-email"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <Label>CPF ou CNPJ</Label>
+                <Input
+                  inputMode="numeric"
+                  value={form.cpf_cnpj}
+                  onChange={e => setForm(f => ({ ...f, cpf_cnpj: formatCpfCnpj(e.target.value) }))}
+                  placeholder="000.000.000-00 ou 00.000.000/0000-00"
+                  data-testid="input-config-cpf-cnpj"
                 />
               </div>
             </div>
