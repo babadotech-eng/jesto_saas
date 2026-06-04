@@ -13,7 +13,6 @@ import funcionariosRouter from "./funcionarios";
 import adminRouter from "./admin";
 import promoCodesRouter from "./promo_codes";
 import codigosRouter from "./codigos";
-import testAsaasRouter from "./test-asaas";
 
 const router: IRouter = Router();
 
@@ -31,6 +30,5 @@ router.use(funcionariosRouter);
 router.use(adminRouter);
 router.use(promoCodesRouter);
 router.use(codigosRouter);
-router.use(testAsaasRouter);
 
 export default router;
