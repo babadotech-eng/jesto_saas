@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import imgCaminhar from "@assets/caminhar_1780433938131.png";
+import iconjestoBlack from "@assets/iconjesto_black_1780519861187.png";
 import imgEstrada2 from "@assets/estrada_(2)_1780433938132.png";
 import imgEstrada from "@assets/estrada_1780433938132.png";
 import imgMasp from "@assets/masp_1780433938133.png";
@@ -393,9 +394,7 @@ function ConfirmarContent({ email, goTo }: { email: string; goTo: GoTo }) {
   return (
     <div className="text-center">
       <div className="flex justify-center mb-5">
-        <div className="bg-amber-50 text-amber-500 p-4 rounded-full">
-          <Mail size={36} />
-        </div>
+        <img src={iconjestoBlack} alt="Jesto" style={{ width: 44, height: 44, objectFit: "contain" }} />
       </div>
       <h2 className="text-xl font-semibold text-foreground mb-2">Confirme seu e-mail</h2>
       <p className="text-sm text-muted-foreground mb-1">Enviamos um link de confirmação para</p>
