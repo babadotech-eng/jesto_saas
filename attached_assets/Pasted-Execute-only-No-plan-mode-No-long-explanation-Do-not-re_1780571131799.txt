@@ -1,0 +1,62 @@
+Execute only. No plan mode. No long explanation.
+
+Do not respond with a plan.
+Implement the changes immediately.
+
+Read the current code first, then make ONLY the changes below.
+Do not redesign anything.
+Do not refactor unrelated code.
+Do not touch dashboard/painel.
+Do not touch home.
+Do not touch pricing page.
+Do not touch login flow outside the onboarding form.
+Do not change unrelated texts, routes, components or spacing.
+
+GOAL
+Update only the onboarding page form shown during the initial registration / first account setup.
+
+MAKE ONLY THESE 2 CHANGES:
+
+1. ADD REQUIRED CPF/CNPJ FIELD IN ONBOARDING
+- In the onboarding form, add one required field:
+  Label: CPF ou CNPJ
+- This field must be mandatory to continue
+- Add input mask for CPF and CNPJ
+- Validate CPF/CNPJ format before submit
+- Save this value in the user/profile data used by the app
+- If invalid or empty, show a short clear validation message in Portuguese
+- Use only one field, not two separate fields
+- Do not create a new onboarding step
+- Place this field in the most logical position inside the current onboarding form without redesigning the form
+
+2. ADD HELP ICON + CHANGE ONLY THE FORM COLORS
+- Add a small help/info icon next to the CPF ou CNPJ label or next to the onboarding section title
+- On hover or click, show this exact explanation in Portuguese:
+  "Esse dado é necessário para liberar cobranças e assinaturas com segurança."
+- Change only the colors inside the onboarding form so it matches the current app palette already used today
+- Follow the current visual identity of the app
+- Use the same palette already present in the system
+- Keep it visually coherent with the app today
+- Do not invent a new palette
+- Do not change layout, typography, structure, spacing, or form flow
+- Do not recolor other screens
+
+STRICT RULES
+- Do not change onboarding fields other than adding CPF/CNPJ
+- Do not remove existing fields
+- Do not change the order of existing fields unless required for proper UX
+- Do not change authentication logic outside the minimum needed to save the new required field
+- Do not create extra onboarding steps
+- Do not change copy outside the exact tooltip and validation text needed
+- Do not alter card size, page structure, global theme, or navigation
+- The user must not be able to complete onboarding without a valid CPF or CNPJ
+
+FINAL RESPONSE
+Return only:
+1. Files changed
+2. Where CPF/CNPJ was added in onboarding
+3. How validation works
+4. Where the value is saved
+5. Confirmation that only the onboarding form was changed
+
+Change colors only inside the initial registration form container/card. Do not recolor the page background or any other app screen.

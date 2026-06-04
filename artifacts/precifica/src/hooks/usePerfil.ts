@@ -11,6 +11,7 @@ export interface Perfil {
   cidade_estado: string | null;
   whatsapp: string | null;
   email: string | null;
+  cpf_cnpj: string | null;
   origem: string | null;
   logo_url: string | null;
   created_at: string;

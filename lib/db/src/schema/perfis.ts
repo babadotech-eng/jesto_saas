@@ -12,6 +12,7 @@ export const perfisTable = pgTable("perfis", {
   cidadeEstado: text("cidade_estado"),
   whatsapp: text("whatsapp"),
   email: text("email"),
+  cpfCnpj: text("cpf_cnpj"),
   origem: text("origem"),
   logoUrl: text("logo_url"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

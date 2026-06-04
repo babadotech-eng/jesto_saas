@@ -1,0 +1,64 @@
+Execute only. No plan mode. No long explanation.
+
+Do not respond with a plan.
+Implement the changes immediately.
+
+Read the current code first, then make ONLY the changes below.
+Do not redesign anything.
+Do not refactor unrelated code.
+Do not touch dashboard/painel.
+Do not touch home.
+Do not touch pricing page.
+Do not touch login flow outside this exact form.
+Do not change unrelated texts, routes, components or spacing.
+
+GOAL
+Update the initial registration/onboarding form that opens on first account setup.
+
+MAKE ONLY THESE 2 CHANGES:
+
+1. ADD REQUIRED CPF/CNPJ FIELD
+- Add one required field in the initial registration form:
+  Label: CPF ou CNPJ
+- This field must be mandatory to continue
+- Add input mask for CPF and CNPJ
+- Validate CPF/CNPJ format before submit
+- Save this value in the user/profile data used by the app
+- If invalid or empty, show a clear short validation message in Portuguese
+- Do not split into two fields
+- Use only one field: CPF ou CNPJ
+
+2. ADD SHORT EXPLANATION ICON + ADJUST ONLY THIS FORM COLORS
+- Add a small help/info icon next to the field label or section title
+- On hover/click, show a short explanation in Portuguese:
+  "Esse dado é necessário para liberar cobranças e assinaturas com segurança."
+- Change only the colors of this initial registration form to match the current app palette
+- Use the same palette already used in the app today
+- Follow the current visual identity of the app
+- Prefer the current purple/plum direction already used in the system
+- Do not invent a new palette
+- Do not change layout, structure or typography
+- Do not recolor the rest of the app
+- Only recolor this form so it looks visually consistent with the app today
+
+STRICT RULES
+- Do not change form fields other than adding CPF/CNPJ
+- Do not change the order of existing fields unless required for proper UX
+- If positioning is needed, place CPF/CNPJ in the most logical place inside the current form without redesigning the form
+- Do not change authentication logic outside the minimum needed to save the new required field
+- Do not create extra onboarding steps
+- Do not change copy outside the exact tooltip/validation text needed
+- Do not alter card sizes, page structure, global theme or navigation
+
+SUBMIT RULE
+- The user must not be able to complete this initial registration form without a valid CPF or CNPJ
+
+FINAL RESPONSE
+Return only:
+1. Files changed
+2. Where CPF/CNPJ was added
+3. How the validation works
+4. Where the value is saved
+5. Confirmation that only this form was changed
+
+Change colors only inside the initial registration form container/card. Do not recolor the page background or any other app screen.
