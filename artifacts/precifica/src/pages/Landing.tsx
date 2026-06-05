@@ -408,9 +408,7 @@ export default function Landing() {
               <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: C.text, marginBottom: "1.25rem", maxWidth: 520 }}>
                 Uma plataforma criada para quem<br/><It>vive da alimentação.</It>
               </h2>
-              <p style={{ fontSize: "1rem", lineHeight: 1.8, color: C.muted, maxWidth: 460, marginBottom: "3.5rem" }}>
-                Seja um restaurante, cafeteria, confeitaria ou delivery, o Jesto se adapta à sua operação.
-              </p>
+              <p style={{ fontSize: "1rem", lineHeight: 1.8, color: C.muted, maxWidth: 460, marginBottom: "3.5rem" }}>Seja um restaurante, cafeteria, pizzaria, açougue, padaria ou delivery, a Jesto se adapta à sua operação.</p>
             </Reveal>
 
             <div className="grid md:grid-cols-2 gap-4 items-stretch">
