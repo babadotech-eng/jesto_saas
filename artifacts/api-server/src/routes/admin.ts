@@ -220,7 +220,9 @@ router.post("/admin/users/:userId/reset-senha", requireAuth, requireAdmin, async
 
   try {
     const [perfil] = await db
-      .select({ email: perfisTable.email })
+      .select({
+        email: sql<string | null>`COALESCE(${perfisTable.loginEmail}, ${perfisTable.email})`,
+      })
       .from(perfisTable)
       .where(eq(perfisTable.userId, userId))
       .limit(1);
