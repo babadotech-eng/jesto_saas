@@ -12,13 +12,17 @@ import {
 } from "recharts";
 import { usePerfil } from "@/hooks/usePerfil";
 import { useAuth } from "@/contexts/AuthContext";
-import { Link } from "wouter";
+import { useAssinatura } from "@/hooks/useAssinatura";
+import { getFeatures } from "@/lib/planConfig";
+import { Link, useLocation } from "wouter";
 import {
   TrendingUp, TrendingDown, Info, ArrowRight,
   ShoppingCart, Wallet, Activity,
   Home, FileText,
   Heart, AlertTriangle, AlertCircle,
+  Crown,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 /* ── exact design tokens ──────────────────────────────────── */
 const T = {
@@ -452,6 +456,7 @@ export default function Painel() {
   const despesas = Array.isArray(despesasRaw) ? despesasRaw : [];
   const { data: lancamentosRaw } = useListLancamentos();
   const lancamentos = Array.isArray(lancamentosRaw) ? lancamentosRaw : [];
+  const { data: assinatura, isLoading: assinaturaLoading } = useAssinatura();
 
   const [period, setPeriod] = useState<Period>("7dias");
   const chartData = buildChartData(period, lancamentos as { data: string; tipo: string; valor: number | string }[]);
@@ -490,6 +495,28 @@ export default function Painel() {
 
   const expRows  = despesas.slice(0, 6).map(d => ({ Icon: FileText, label: d.categoria ?? "Despesa", value: d.valor }));
   const expTotal = despesas.reduce((s, d) => s + d.valor, 0);
+
+  const [, setLocation] = useLocation();
+  const features = getFeatures(assinatura?.plano ?? "gratis");
+  if (!assinaturaLoading && !features.dashboardCustos) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 text-center max-w-sm mx-auto px-4">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#7A4FB2] to-[#4D2F70] flex items-center justify-center mb-5 mx-auto shadow-lg">
+          <Crown size={28} className="text-white" />
+        </div>
+        <h2 className="text-xl font-bold text-foreground mb-2">Dashboard de Custos</h2>
+        <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+          Acompanhe receita, custos, margem e alertas de margem baixa em tempo real. Disponível nos planos <strong>Pro</strong> e <strong>Premium</strong>.
+        </p>
+        <Button
+          className="bg-[#7A4FB2] hover:bg-[#6C3FA0] text-white px-8"
+          onClick={() => setLocation("/planos")}
+        >
+          Fazer upgrade
+        </Button>
+      </div>
+    );
+  }
 
   const prodRows = topProdutos.slice(0, 5).map((p, i) => ({ rank: i + 1, name: p.nome, units: Math.round(p.margem_pct * 3.5) }));
   const maxUnits = prodRows[0]?.units || 1;

@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { eq, and, desc } from "drizzle-orm";
 import { db, lancamentosTable } from "@workspace/db";
-import { requireAuth, getUserId } from "../middlewares/auth";
+import { requireAuth, requirePlan, getUserId } from "../middlewares/auth";
 import { CreateLancamentoBody, UpdateLancamentoBody, UpdateLancamentoParams, DeleteLancamentoParams } from "@workspace/api-zod";
 
 const router = Router();
+const premiumOnly = requirePlan("premium");
 
-router.get("/lancamentos", requireAuth, async (req, res): Promise<void> => {
+router.get("/lancamentos", requireAuth, premiumOnly, async (req, res): Promise<void> => {
   const userId = getUserId(req);
   const rows = await db
     .select()
@@ -25,7 +26,7 @@ router.get("/lancamentos", requireAuth, async (req, res): Promise<void> => {
   })));
 });
 
-router.post("/lancamentos", requireAuth, async (req, res): Promise<void> => {
+router.post("/lancamentos", requireAuth, premiumOnly, async (req, res): Promise<void> => {
   const userId = getUserId(req);
   const parsed = CreateLancamentoBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
@@ -50,7 +51,7 @@ router.post("/lancamentos", requireAuth, async (req, res): Promise<void> => {
   });
 });
 
-router.put("/lancamentos/:id", requireAuth, async (req, res): Promise<void> => {
+router.put("/lancamentos/:id", requireAuth, premiumOnly, async (req, res): Promise<void> => {
   const userId = getUserId(req);
   const { id } = UpdateLancamentoParams.parse(req.params);
   const parsed = UpdateLancamentoBody.safeParse(req.body);
@@ -74,7 +75,7 @@ router.put("/lancamentos/:id", requireAuth, async (req, res): Promise<void> => {
   });
 });
 
-router.delete("/lancamentos/:id", requireAuth, async (req, res): Promise<void> => {
+router.delete("/lancamentos/:id", requireAuth, premiumOnly, async (req, res): Promise<void> => {
   const userId = getUserId(req);
   const { id } = DeleteLancamentoParams.parse(req.params);
   await db.delete(lancamentosTable).where(and(eq(lancamentosTable.id, id), eq(lancamentosTable.userId, userId)));

@@ -1,8 +1,11 @@
 import { Router } from "express";
 import { eq, and, gte, lte, desc } from "drizzle-orm";
 import { db, produtosTable, despesasFixasTable, lancamentosTable, fichasTecnicasTable, fichaItensTable, insumosTable } from "@workspace/db";
-import { requireAuth, getUserId } from "../middlewares/auth";
+import { requireAuth, requirePlan, getUserId } from "../middlewares/auth";
 import { calcTotalFolhaMensal } from "./funcionarios";
+
+const proOnly     = requirePlan("pro");
+const premiumOnly = requirePlan("premium");
 
 const router = Router();
 
@@ -38,7 +41,7 @@ async function calcMargemForProduto(userId: string, row: typeof produtosTable.$i
   return { cmv, margem, margemPct };
 }
 
-router.get("/relatorios/dashboard", requireAuth, async (req, res): Promise<void> => {
+router.get("/relatorios/dashboard", requireAuth, proOnly, async (req, res): Promise<void> => {
   const userId = getUserId(req);
 
   const now = new Date();
@@ -75,7 +78,7 @@ router.get("/relatorios/dashboard", requireAuth, async (req, res): Promise<void>
   });
 });
 
-router.get("/relatorios/top-produtos", requireAuth, async (req, res): Promise<void> => {
+router.get("/relatorios/top-produtos", requireAuth, proOnly, async (req, res): Promise<void> => {
   const userId = getUserId(req);
   const produtos = await db.select().from(produtosTable).where(eq(produtosTable.userId, userId));
   const withMargens = await Promise.all(produtos.map(async (p) => {
@@ -93,7 +96,7 @@ router.get("/relatorios/top-produtos", requireAuth, async (req, res): Promise<vo
   res.json(withMargens.slice(0, 10));
 });
 
-router.get("/relatorios/alertas-margem", requireAuth, async (req, res): Promise<void> => {
+router.get("/relatorios/alertas-margem", requireAuth, proOnly, async (req, res): Promise<void> => {
   const userId = getUserId(req);
   const produtos = await db.select().from(produtosTable).where(eq(produtosTable.userId, userId));
   const withMargens = await Promise.all(produtos.map(async (p) => {
@@ -112,7 +115,7 @@ router.get("/relatorios/alertas-margem", requireAuth, async (req, res): Promise<
   res.json(alertas);
 });
 
-router.get("/relatorios/fluxo-semanal", requireAuth, async (req, res): Promise<void> => {
+router.get("/relatorios/fluxo-semanal", requireAuth, premiumOnly, async (req, res): Promise<void> => {
   const userId = getUserId(req);
   const days: { data: string; receita: number; despesa: number; resultado: number }[] = [];
   const now = new Date();
@@ -134,7 +137,7 @@ router.get("/relatorios/fluxo-semanal", requireAuth, async (req, res): Promise<v
   res.json(days);
 });
 
-router.get("/relatorios/ponto-equilibrio", requireAuth, async (req, res): Promise<void> => {
+router.get("/relatorios/ponto-equilibrio", requireAuth, premiumOnly, async (req, res): Promise<void> => {
   const userId = getUserId(req);
   const [despesas, produtos] = await Promise.all([
     db.select().from(despesasFixasTable).where(eq(despesasFixasTable.userId, userId)),

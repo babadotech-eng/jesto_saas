@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useListDespesas, useCreateDespesa, useUpdateDespesa, useDeleteDespesa, getListDespesasQueryKey } from "@workspace/api-client-react";
 import { useAssinatura } from "@/hooks/useAssinatura";
-import { getLimites } from "@/lib/planConfig";
+import { planAtLeast } from "@/lib/planConfig";
 import { UpgradeModal } from "@/components/UpgradeModal";
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus, Pencil, Trash2, Wallet, ChevronDown, X, Search } from "lucide-react";
@@ -211,10 +211,10 @@ export default function Despesas() {
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues });
   const total = data?.reduce((sum, d) => sum + d.valor, 0) ?? 0;
 
-  const planLimites = getLimites(assinatura?.plano ?? "gratis");
+  const isPremium = planAtLeast(assinatura?.plano ?? "gratis", "premium");
 
   function openCreate() {
-    if ((data?.length ?? 0) >= planLimites.despesas) {
+    if (!isPremium) {
       setLimiteOpen(true);
       return;
     }
@@ -387,7 +387,7 @@ export default function Despesas() {
         open={limiteOpen}
         onClose={() => setLimiteOpen(false)}
         titulo="Limite de despesas atingido"
-        descricao={`Você atingiu o limite de ${planLimites.despesas} despesas fixas do seu plano atual. Faça upgrade para continuar cadastrando despesas e ter um controle financeiro completo.`}
+        descricao="Despesas fixas está disponível apenas no plano Premium. Faça upgrade para registrar e gerenciar seus custos fixos mensais."
       />
     </div>
   );

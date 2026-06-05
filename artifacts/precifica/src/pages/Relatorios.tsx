@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useGetTopProdutos, useGetAlertasMargem, useGetFluxoSemanal, useGetPontoEquilibrio, useListProdutos } from "@workspace/api-client-react";
 import { useAssinatura } from "@/hooks/useAssinatura";
+import { planAtLeast } from "@/lib/planConfig";
 import { TrendingUp, AlertTriangle, Target, Sliders, BarChart2 } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -317,13 +318,34 @@ export default function Relatorios() {
   const { data: alertas, isLoading: loadingAlertas } = useGetAlertasMargem();
   const { data: fluxo, isLoading: loadingFluxo } = useGetFluxoSemanal();
   const { data: pe, isLoading: loadingPe } = useGetPontoEquilibrio();
-  const { data: assinatura } = useAssinatura();
+  const { data: assinatura, isLoading: assinaturaLoading } = useAssinatura();
 
-  const isPremium = assinatura?.plano === "premium";
+  const isPremium = planAtLeast(assinatura?.plano ?? "gratis", "premium");
 
   const [modalSimulacao, setModalSimulacao] = useState(false);
   const [modalBreakeven, setModalBreakeven] = useState(false);
   const [modalAnalise, setModalAnalise] = useState(false);
+  const [, setLocation] = useLocation();
+
+  if (!assinaturaLoading && !isPremium) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 text-center max-w-sm mx-auto px-4">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#7A4FB2] to-[#4D2F70] flex items-center justify-center mb-5 mx-auto shadow-lg">
+          <Crown size={28} className="text-white" />
+        </div>
+        <h2 className="text-xl font-bold text-foreground mb-2">Relatórios</h2>
+        <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+          Acesse fluxo de caixa semanal, ponto de equilíbrio, ranking de produtos por margem e simulações avançadas. Disponível no plano <strong>Premium</strong>.
+        </p>
+        <Button
+          className="bg-[#7A4FB2] hover:bg-[#6C3FA0] text-white px-8"
+          onClick={() => setLocation("/planos")}
+        >
+          Fazer upgrade para Premium
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6" data-testid="relatorios-page">

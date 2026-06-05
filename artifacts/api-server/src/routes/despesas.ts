@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { eq, and, desc } from "drizzle-orm";
 import { db, despesasFixasTable } from "@workspace/db";
-import { requireAuth, getUserId } from "../middlewares/auth";
+import { requireAuth, requirePlan, getUserId } from "../middlewares/auth";
 import { CreateDespesaBody, UpdateDespesaBody, UpdateDespesaParams, DeleteDespesaParams } from "@workspace/api-zod";
 
 const router = Router();
+const premiumOnly = requirePlan("premium");
 
-router.get("/despesas", requireAuth, async (req, res): Promise<void> => {
+router.get("/despesas", requireAuth, premiumOnly, async (req, res): Promise<void> => {
   const userId = getUserId(req);
   const rows = await db
     .select()
@@ -24,7 +25,7 @@ router.get("/despesas", requireAuth, async (req, res): Promise<void> => {
   })));
 });
 
-router.post("/despesas", requireAuth, async (req, res): Promise<void> => {
+router.post("/despesas", requireAuth, premiumOnly, async (req, res): Promise<void> => {
   const userId = getUserId(req);
   const parsed = CreateDespesaBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
@@ -47,7 +48,7 @@ router.post("/despesas", requireAuth, async (req, res): Promise<void> => {
   });
 });
 
-router.put("/despesas/:id", requireAuth, async (req, res): Promise<void> => {
+router.put("/despesas/:id", requireAuth, premiumOnly, async (req, res): Promise<void> => {
   const userId = getUserId(req);
   const { id } = UpdateDespesaParams.parse(req.params);
   const parsed = UpdateDespesaBody.safeParse(req.body);
@@ -70,7 +71,7 @@ router.put("/despesas/:id", requireAuth, async (req, res): Promise<void> => {
   });
 });
 
-router.delete("/despesas/:id", requireAuth, async (req, res): Promise<void> => {
+router.delete("/despesas/:id", requireAuth, premiumOnly, async (req, res): Promise<void> => {
   const userId = getUserId(req);
   const { id } = DeleteDespesaParams.parse(req.params);
   await db.delete(despesasFixasTable).where(and(eq(despesasFixasTable.id, id), eq(despesasFixasTable.userId, userId)));

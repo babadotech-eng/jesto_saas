@@ -1,5 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useAssinatura } from "@/hooks/useAssinatura";
+import { planAtLeast } from "@/lib/planConfig";
 import { getDicaDoDia } from "@/data/dicas";
 import { Link, useLocation } from "wouter";
 import {
@@ -15,9 +16,9 @@ const navigation = [
   { name: "Produtos",      href: "/produtos",      icon: Package },
   { name: "Ingredientes",  href: "/insumos",       icon: Carrot },
   { name: "Ficha Técnica", href: "/ficha-tecnica", icon: FileText },
-  { name: "Lançamentos",   href: "/lancamentos",   icon: ArrowRightLeft },
-  { name: "Funcionários",  href: "/funcionarios",  icon: Users, premium: true },
-  { name: "Relatórios",    href: "/relatorios",    icon: BarChart3 },
+  { name: "Lançamentos",   href: "/lancamentos",   icon: ArrowRightLeft,  minPlan: "premium" as const },
+  { name: "Funcionários",  href: "/funcionarios",  icon: Users,           minPlan: "premium" as const },
+  { name: "Relatórios",    href: "/relatorios",    icon: BarChart3,       minPlan: "premium" as const },
   { name: "Configurações", href: "/configuracoes", icon: Settings },
 ];
 
@@ -99,8 +100,8 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const { signOut } = useAuth();
   const { data: assinatura } = useAssinatura();
-  const isPremium = assinatura?.plano === "premium";
-  const visibleNav = navigation.filter(i => !i.premium || isPremium);
+  const plano = assinatura?.plano ?? "gratis";
+  const visibleNav = navigation.filter(i => !i.minPlan || planAtLeast(plano, i.minPlan));
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
