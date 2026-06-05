@@ -1,5 +1,5 @@
 export const PLAN_LIMITS = {
-  gratis:  { produtos: 5,        insumos: 15,       fichas: 5,        despesas: 20       },
+  gratis:  { produtos: 5,        insumos: 30,       fichas: 10,       despesas: 20       },
   pro:     { produtos: 100,      insumos: 200,       fichas: 100,      despesas: 200      },
   premium: { produtos: Infinity, insumos: Infinity,  fichas: Infinity, despesas: Infinity },
 } as const;
