@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { ArrowLeft, Loader2, ShieldCheck, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Loader2, ShieldCheck, CheckCircle2, Tag, AlertCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 const C = {
   bg:      "#ECEAE5",
@@ -44,6 +45,25 @@ const PLAN_FEATURES: Record<string, string[]> = {
   ],
 };
 
+type CupomInfo = {
+  tipo: "percentual" | "fixo";
+  desconto: number;
+};
+
+function calcularDesconto(cupom: CupomInfo, preco: number) {
+  if (cupom.tipo === "percentual") {
+    return Math.round(preco * (cupom.desconto / 100) * 100) / 100;
+  }
+  return Math.min(cupom.desconto, preco);
+}
+
+function formatarDesconto(cupom: CupomInfo) {
+  if (cupom.tipo === "percentual") {
+    return `${cupom.desconto}% de desconto`;
+  }
+  return `R$ ${cupom.desconto.toFixed(2).replace(".", ",")} de desconto`;
+}
+
 function formatBRL(valor: number) {
   return valor.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
@@ -53,10 +73,14 @@ export default function CheckoutPage() {
   const { session } = useAuth();
   const [loading, setLoading] = useState(false);
 
+  const [codigoCupom, setCodigoCupom] = useState("");
+  const [cupomInfo, setCupomInfo] = useState<CupomInfo | null>(null);
+  const [cupomErro, setCupomErro] = useState("");
+  const [validando, setValidando] = useState(false);
+
   const params = new URLSearchParams(window.location.search);
   const plano = params.get("plano");
   const ciclo = (params.get("ciclo") ?? "mensal") as "mensal" | "anual";
-  const cupom = params.get("cupom") ?? "";
 
   if (!plano || !["pro", "premium"].includes(plano)) {
     navigate("/planos");
@@ -64,13 +88,42 @@ export default function CheckoutPage() {
   }
 
   const prices = PLAN_PRICES[plano as "pro" | "premium"];
-  const valor = prices[ciclo];
+  const valorBase = prices[ciclo];
+  const desconto = cupomInfo ? calcularDesconto(cupomInfo, valorBase) : 0;
+  const valorFinal = Math.max(0.01, valorBase - desconto);
+
+  async function validarCupom() {
+    const codigo = codigoCupom.trim();
+    if (!codigo) return;
+
+    setValidando(true);
+    setCupomErro("");
+    setCupomInfo(null);
+
+    try {
+      const res = await fetch(`/api/codigos/validar?codigo=${encodeURIComponent(codigo)}`);
+      const data = await res.json() as { valido?: boolean; tipo?: string; desconto?: number; error?: string };
+
+      if (!res.ok) {
+        setCupomErro(data.error ?? "Cupom inválido");
+      } else {
+        setCupomInfo({
+          tipo: data.tipo as "percentual" | "fixo",
+          desconto: data.desconto!,
+        });
+      }
+    } catch {
+      setCupomErro("Erro ao validar cupom. Tente novamente.");
+    } finally {
+      setValidando(false);
+    }
+  }
 
   async function handlePagar() {
     if (!session?.access_token) {
       sessionStorage.setItem("pendingCheckoutPlano", plano!);
       sessionStorage.setItem("pendingCheckoutCiclo", ciclo);
-      if (cupom) sessionStorage.setItem("pendingCheckoutCupom", cupom);
+      if (codigoCupom.trim()) sessionStorage.setItem("pendingCheckoutCupom", codigoCupom.trim());
       navigate("/login");
       return;
     }
@@ -78,7 +131,7 @@ export default function CheckoutPage() {
     setLoading(true);
     try {
       const body: Record<string, string> = { plano: plano!, ciclo };
-      if (cupom) body.cupomCode = cupom;
+      if (codigoCupom.trim()) body.cupomCode = codigoCupom.trim();
 
       const res = await fetch("/api/assinaturas/checkout", {
         method: "POST",
@@ -136,9 +189,20 @@ export default function CheckoutPage() {
               </p>
             </div>
             <div style={{ textAlign: "right" }}>
-              <p style={{ fontWeight: 900, fontSize: "1.5rem", color: C.text, lineHeight: 1 }}>
-                R$ {formatBRL(valor)}
-              </p>
+              {cupomInfo && desconto > 0 ? (
+                <>
+                  <p style={{ fontWeight: 700, fontSize: "0.95rem", color: C.muted, textDecoration: "line-through", lineHeight: 1 }}>
+                    R$ {formatBRL(valorBase)}
+                  </p>
+                  <p style={{ fontWeight: 900, fontSize: "1.5rem", color: "#16a34a", lineHeight: 1, marginTop: 3 }}>
+                    R$ {formatBRL(valorFinal)}
+                  </p>
+                </>
+              ) : (
+                <p style={{ fontWeight: 900, fontSize: "1.5rem", color: C.text, lineHeight: 1 }}>
+                  R$ {formatBRL(valorBase)}
+                </p>
+              )}
               <p style={{ fontSize: "0.75rem", color: C.muted, marginTop: 3 }}>
                 {ciclo === "mensal" ? "/mês" : "/ano"}
               </p>
@@ -153,12 +217,6 @@ export default function CheckoutPage() {
               </div>
             ))}
           </div>
-
-          {cupom && (
-            <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: "0.75rem", marginTop: "1rem", fontSize: "0.82rem", color: C.muted }}>
-              Cupom aplicado: <strong style={{ color: C.text }}>{cupom}</strong>
-            </div>
-          )}
         </div>
 
         {/* Annual savings badge */}
@@ -167,6 +225,51 @@ export default function CheckoutPage() {
             Plano anual inclui 2 meses grátis em relação ao mensal.
           </div>
         )}
+
+        {/* Coupon field */}
+        <div style={{ marginBottom: "1.25rem" }}>
+          <p style={{ fontSize: "0.8rem", fontWeight: 600, color: C.muted, marginBottom: "0.5rem" }}>
+            Código promocional
+          </p>
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Tag size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: C.muted }} />
+              <Input
+                className="pl-8 uppercase placeholder:normal-case"
+                style={{ background: C.surface, border: `1px solid ${C.border}`, color: C.text }}
+                placeholder="Código promocional (opcional)"
+                value={codigoCupom}
+                onChange={(e) => {
+                  setCodigoCupom(e.target.value.toUpperCase());
+                  if (cupomInfo || cupomErro) { setCupomInfo(null); setCupomErro(""); }
+                }}
+                onKeyDown={(e) => { if (e.key === "Enter") validarCupom(); }}
+                disabled={validando || loading}
+              />
+            </div>
+            <button
+              onClick={validarCupom}
+              disabled={validando || !codigoCupom.trim() || loading}
+              className="shrink-0 px-4 rounded-lg text-sm font-semibold transition-all disabled:opacity-40"
+              style={{ background: C.surface, border: `1px solid ${C.border}`, color: C.text, cursor: "pointer" }}
+            >
+              {validando ? <Loader2 size={15} className="animate-spin" /> : "Aplicar"}
+            </button>
+          </div>
+
+          {cupomInfo && (
+            <div className="mt-2 flex items-center gap-2 text-sm" style={{ color: "#16a34a" }}>
+              <CheckCircle2 size={15} className="shrink-0" />
+              <span>Cupom válido: {formatarDesconto(cupomInfo)}</span>
+            </div>
+          )}
+          {cupomErro && (
+            <div className="mt-2 flex items-center gap-2 text-sm" style={{ color: "#dc2626" }}>
+              <AlertCircle size={15} className="shrink-0" />
+              <span>{cupomErro}</span>
+            </div>
+          )}
+        </div>
 
         <button
           onClick={handlePagar}

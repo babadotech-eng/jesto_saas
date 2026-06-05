@@ -1,0 +1,60 @@
+EXECUTE ONLY. NO PLAN MODE.
+
+Faça SOMENTE esta alteração no fluxo de planos/checkout.
+
+OBJETIVO
+Remover o campo "código promocional" da página Planos e adicionar esse campo na página de checkout, antes do redirecionamento para o Asaas, exatamente na tela de resumo do pedido.
+
+REGRA CRÍTICA
+O Asaas já deve receber o valor final com o desconto aplicado.
+Não mover apenas o campo visualmente.
+A lógica do cupom precisa ser aplicada antes de gerar/enviar o pagamento para o Asaas.
+
+ESCOPO EXATO
+1. Remover o campo de código promocional da página Planos
+2. Adicionar o campo de código promocional na página de checkout/resumo do pedido
+3. Colocar o campo antes do botão "Continuar para pagamento"
+4. Permitir aplicar/validar o cupom nesse ponto
+5. Atualizar o valor final no checkout antes de seguir para o Asaas
+6. Enviar ao Asaas o valor já com desconto aplicado, quando houver cupom válido
+
+COMPORTAMENTO ESPERADO
+- Página Planos: não mostrar mais campo de cupom
+- Página Checkout: mostrar campo de cupom antes do botão de pagamento
+- Cupom válido: recalcula o valor e mostra o total correto no resumo
+- Cupom inválido: mostrar erro claro e não aplicar desconto
+- Ao clicar em continuar, o Asaas deve receber o valor final já descontado
+
+REGRAS
+- Preservar a lógica existente de cupons, apenas mudando o ponto de entrada para o checkout
+- Se hoje a validação do cupom está na página Planos, mover essa lógica para o checkout
+- Não duplicar lógica desnecessária
+- Não quebrar regras existentes de plano, ciclo mensal/anual, Pro/Premium ou restrições de cupom
+- Não criar novo comportamento fora do que já existe
+
+NÃO MEXER EM MAIS NADA
+- não alterar home
+- não alterar admin
+- não alterar dashboard
+- não alterar login/cadastro
+- não alterar layout geral além do necessário para encaixar o campo no checkout
+- não refatorar partes paralelas
+- não mudar textos, cores, spacing ou componentes fora do necessário
+
+VALIDAÇÃO OBRIGATÓRIA
+1. o campo sumiu da página Planos
+2. o campo aparece no checkout antes do botão
+3. cupom válido altera o valor do resumo
+4. cupom inválido mostra erro e não altera o valor
+5. o Asaas recebe o valor final já com desconto aplicado
+6. nada mais foi alterado
+
+RETORNO
+Responda apenas:
+1. arquivos alterados
+2. onde o campo foi removido
+3. onde o campo foi adicionado
+4. onde o cupom passou a ser validado
+5. como o valor final com desconto está sendo enviado ao Asaas
+6. testes executados
+7. confirmação de que nada mais foi alterado

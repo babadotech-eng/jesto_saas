@@ -1,7 +1,6 @@
-import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Link, useLocation } from "wouter";
-import { Check, ArrowLeft, Tag, Loader2, CheckCircle2, AlertCircle, ChevronDown } from "lucide-react";
+import { Check, ArrowLeft, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -21,25 +20,6 @@ const PLAN_PRICES: Record<string, { mensal: number; anual: number }> = {
   pro:     { mensal: 24.90, anual: 207.50 },
   premium: { mensal: 49.90, anual: 416.00 },
 };
-
-type CupomInfo = {
-  tipo: "percentual" | "fixo";
-  desconto: number;
-};
-
-function calcularDesconto(cupom: CupomInfo, preco: number) {
-  if (cupom.tipo === "percentual") {
-    return Math.round(preco * (cupom.desconto / 100) * 100) / 100;
-  }
-  return Math.min(cupom.desconto, preco);
-}
-
-function formatarDesconto(cupom: CupomInfo) {
-  if (cupom.tipo === "percentual") {
-    return `${cupom.desconto}% de desconto`;
-  }
-  return `R$ ${cupom.desconto.toFixed(2).replace(".", ",")} de desconto`;
-}
 
 const FAQ_ITEMS = [
   {
@@ -106,57 +86,19 @@ const FAQ_ITEMS = [
 
 export default function Planos() {
   const [anual, setAnual] = useState(false);
-  const [codigoCupom, setCodigoCupom] = useState("");
-  const [cupom, setCupom] = useState<CupomInfo | null>(null);
-  const [cupomErro, setCupomErro] = useState("");
-  const [validando, setValidando] = useState(false);
-  const [showCupom, setShowCupom] = useState(false);
   const [assinando, setAssinando] = useState(false);
   const [, navigate] = useLocation();
   const { session } = useAuth();
-
-  async function validarCupom() {
-    const codigo = codigoCupom.trim();
-    if (!codigo) return;
-
-    setValidando(true);
-    setCupomErro("");
-    setCupom(null);
-
-    try {
-      const res = await fetch(`/api/codigos/validar?codigo=${encodeURIComponent(codigo)}`);
-      const data = await res.json() as { valido?: boolean; tipo?: string; desconto?: number; error?: string };
-
-      if (!res.ok) {
-        setCupomErro(data.error ?? "Cupom inválido");
-      } else {
-        setCupom({
-          tipo: data.tipo as "percentual" | "fixo",
-          desconto: data.desconto!,
-        });
-      }
-    } catch {
-      setCupomErro("Erro ao validar cupom. Tente novamente.");
-    } finally {
-      setValidando(false);
-    }
-  }
 
   async function assinar(plano: string) {
     // Paid plans → checkout page
     if (plano !== "gratis") {
       const ciclo = anual ? "anual" : "mensal";
-      const cupomParam = cupom && codigoCupom.trim()
-        ? `&cupom=${encodeURIComponent(codigoCupom.trim())}`
-        : "";
       if (session?.access_token) {
-        navigate(`/checkout?plano=${plano}&ciclo=${ciclo}${cupomParam}`);
+        navigate(`/checkout?plano=${plano}&ciclo=${ciclo}`);
       } else {
         sessionStorage.setItem("pendingCheckoutPlano", plano);
         sessionStorage.setItem("pendingCheckoutCiclo", ciclo);
-        if (cupom && codigoCupom.trim()) {
-          sessionStorage.setItem("pendingCheckoutCupom", codigoCupom.trim());
-        }
         navigate("/login");
       }
       return;
@@ -198,11 +140,6 @@ export default function Planos() {
   const precoPro = anual ? precosPro.anual : precosPro.mensal;
   const precoPremium = anual ? precosPremium.anual : precosPremium.mensal;
 
-  const descontoPro = cupom ? calcularDesconto(cupom, precoPro) : 0;
-  const descontoPremium = cupom ? calcularDesconto(cupom, precoPremium) : 0;
-  const finalPro = precoPro - descontoPro;
-  const finalPremium = precoPremium - descontoPremium;
-
   function formatarPreco(valor: number) {
     return valor.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
@@ -234,74 +171,19 @@ export default function Planos() {
             <button
               className="px-5 py-2 rounded-full text-sm font-semibold transition-all"
               style={!anual ? { background: C.text, color: "#fff" } : { color: C.muted }}
-              onClick={() => { setAnual(false); setCupom(null); setCupomErro(""); }}
+              onClick={() => setAnual(false)}
             >
               Mensal
             </button>
             <button
               className="px-5 py-2 rounded-full text-sm font-semibold transition-all"
               style={anual ? { background: C.text, color: "#fff" } : { color: C.muted }}
-              onClick={() => { setAnual(true); setCupom(null); setCupomErro(""); }}
+              onClick={() => setAnual(true)}
             >
               Anual <span style={{ marginLeft: 4, fontSize: "0.75rem", opacity: 0.7 }}>— 2 meses grátis</span>
             </button>
           </div>
 
-        </div>
-
-        {/* Cupom — acesso discreto pré-checkout */}
-        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <button
-            onClick={() => setShowCupom(v => !v)}
-            style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: "0.8rem", color: C.muted, background: "none", border: "none", cursor: "pointer", fontWeight: 500 }}
-          >
-            <Tag size={13} />
-            Tenho um código promocional
-            <ChevronDown size={13} style={{ transition: "transform 0.2s", transform: showCupom ? "rotate(180deg)" : "rotate(0deg)" }} />
-          </button>
-
-          {showCupom && (
-            <div style={{ maxWidth: 340, margin: "0.75rem auto 0" }}>
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Tag size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: C.muted }} />
-                  <Input
-                    className="pl-8 uppercase placeholder:normal-case"
-                    style={{ background: C.surface, border: `1px solid ${C.border}`, color: C.text }}
-                    placeholder="Código promocional"
-                    value={codigoCupom}
-                    onChange={(e) => {
-                      setCodigoCupom(e.target.value.toUpperCase());
-                      if (cupom || cupomErro) { setCupom(null); setCupomErro(""); }
-                    }}
-                    onKeyDown={(e) => { if (e.key === "Enter") validarCupom(); }}
-                    disabled={validando}
-                  />
-                </div>
-                <button
-                  onClick={validarCupom}
-                  disabled={validando || !codigoCupom.trim()}
-                  className="shrink-0 px-4 rounded-lg text-sm font-semibold transition-all disabled:opacity-40"
-                  style={{ background: C.surface, border: `1px solid ${C.border}`, color: C.text }}
-                >
-                  {validando ? <Loader2 size={15} className="animate-spin" /> : "Aplicar"}
-                </button>
-              </div>
-
-              {cupom && (
-                <div className="mt-2 flex items-center gap-2 text-sm" style={{ color: "#16a34a" }}>
-                  <CheckCircle2 size={15} className="shrink-0" />
-                  <span>Cupom válido: {formatarDesconto(cupom)} — será aplicado ao confirmar</span>
-                </div>
-              )}
-              {cupomErro && (
-                <div className="mt-2 flex items-center gap-2 text-sm" style={{ color: "#dc2626" }}>
-                  <AlertCircle size={15} className="shrink-0" />
-                  <span>{cupomErro}</span>
-                </div>
-              )}
-            </div>
-          )}
         </div>
 
         {/* Cards */}
@@ -340,22 +222,11 @@ export default function Planos() {
             <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#fff", marginBottom: 4 }}>Pro</h3>
             <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.45)", marginBottom: "1.5rem" }}>Para quem precisa de mais controle na operação e na precificação.</p>
             <div style={{ marginBottom: "1.5rem" }}>
-              {cupom && descontoPro > 0 ? (
-                <div>
-                  <span style={{ fontSize: "1.5rem", fontWeight: 900, color: "rgba(255,255,255,0.35)", textDecoration: "line-through" }}>R$ {formatarPreco(anual ? precosPro.mensal * 0.8 : precoPro)}</span>
-                  <div>
-                    <span style={{ fontSize: "2.4rem", fontWeight: 900, color: "#4ade80" }}>R$ {formatarPreco(anual ? precosPro.mensal * 0.8 * (finalPro / precoPro) : finalPro)}</span>
-                    <span style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.4)", marginLeft: 4 }}>/mês</span>
-                  </div>
-                  {anual && <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)", marginTop: 4 }}>cobrado anualmente.</p>}
-                </div>
-              ) : (
-                <div>
-                  <span style={{ fontSize: "2.4rem", fontWeight: 900, color: "#fff" }}>R$ {formatarPreco(anual ? precosPro.mensal * 0.8 : precoPro)}</span>
-                  <span style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.4)", marginLeft: 4 }}>/mês</span>
-                  {anual && <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)", marginTop: 4 }}>cobrado anualmente.</p>}
-                </div>
-              )}
+              <div>
+                <span style={{ fontSize: "2.4rem", fontWeight: 900, color: "#fff" }}>R$ {formatarPreco(anual ? precosPro.mensal * 0.8 : precoPro)}</span>
+                <span style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.4)", marginLeft: 4 }}>/mês</span>
+                {anual && <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)", marginTop: 4 }}>cobrado anualmente.</p>}
+              </div>
             </div>
             <button
               className="w-full transition-all hover:opacity-90 active:scale-[0.97]"
@@ -382,22 +253,11 @@ export default function Planos() {
             <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: C.text, marginBottom: 4 }}>Premium</h3>
             <p style={{ fontSize: "0.85rem", color: C.muted, marginBottom: "1.5rem" }}>Para uma gestão mais completa, com visão mais estratégica do negócio.</p>
             <div style={{ marginBottom: "1.5rem" }}>
-              {cupom && descontoPremium > 0 ? (
-                <div>
-                  <span style={{ fontSize: "1.5rem", fontWeight: 900, color: `${C.muted}88`, textDecoration: "line-through" }}>R$ {formatarPreco(anual ? precosPremium.mensal * 0.8 : precoPremium)}</span>
-                  <div>
-                    <span style={{ fontSize: "2.4rem", fontWeight: 900, color: "#16a34a" }}>R$ {formatarPreco(anual ? precosPremium.mensal * 0.8 * (finalPremium / precoPremium) : finalPremium)}</span>
-                    <span style={{ fontSize: "0.85rem", color: C.muted, marginLeft: 4 }}>/mês</span>
-                  </div>
-                  {anual && <p style={{ fontSize: "0.75rem", color: C.muted, marginTop: 4 }}>cobrado anualmente.</p>}
-                </div>
-              ) : (
-                <div>
-                  <span style={{ fontSize: "2.4rem", fontWeight: 900, color: C.text }}>R$ {formatarPreco(anual ? precosPremium.mensal * 0.8 : precoPremium)}</span>
-                  <span style={{ fontSize: "0.85rem", color: C.muted, marginLeft: 4 }}>/mês</span>
-                  {anual && <p style={{ fontSize: "0.75rem", color: C.muted, marginTop: 4 }}>cobrado anualmente.</p>}
-                </div>
-              )}
+              <div>
+                <span style={{ fontSize: "2.4rem", fontWeight: 900, color: C.text }}>R$ {formatarPreco(anual ? precosPremium.mensal * 0.8 : precoPremium)}</span>
+                <span style={{ fontSize: "0.85rem", color: C.muted, marginLeft: 4 }}>/mês</span>
+                {anual && <p style={{ fontSize: "0.75rem", color: C.muted, marginTop: 4 }}>cobrado anualmente.</p>}
+              </div>
             </div>
             <button
               className="w-full transition-all hover:bg-[#2d2d2d] active:scale-[0.97]"
