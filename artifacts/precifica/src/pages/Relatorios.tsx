@@ -320,6 +320,7 @@ export default function Relatorios() {
   const { data: pe, isLoading: loadingPe } = useGetPontoEquilibrio();
   const { data: assinatura, isLoading: assinaturaLoading } = useAssinatura();
 
+  const isPro = planAtLeast(assinatura?.plano ?? "gratis", "pro");
   const isPremium = planAtLeast(assinatura?.plano ?? "gratis", "premium");
 
   const [modalSimulacao, setModalSimulacao] = useState(false);
@@ -327,7 +328,7 @@ export default function Relatorios() {
   const [modalAnalise, setModalAnalise] = useState(false);
   const [, setLocation] = useLocation();
 
-  if (!assinaturaLoading && !isPremium) {
+  if (!assinaturaLoading && !isPro) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center max-w-sm mx-auto px-4">
         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#7A4FB2] to-[#4D2F70] flex items-center justify-center mb-5 mx-auto shadow-lg">
@@ -335,13 +336,13 @@ export default function Relatorios() {
         </div>
         <h2 className="text-xl font-bold text-foreground mb-2">Relatórios</h2>
         <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-          Acesse fluxo de caixa semanal, ponto de equilíbrio, ranking de produtos por margem e simulações avançadas. Disponível no plano <strong>Premium</strong>.
+          Acesse ranking de produtos por margem, alertas de margem e muito mais. Disponível a partir do plano <strong>Pro</strong>.
         </p>
         <Button
           className="bg-[#7A4FB2] hover:bg-[#6C3FA0] text-white px-8"
           onClick={() => setLocation("/planos")}
         >
-          Fazer upgrade para Premium
+          Fazer upgrade para Pro
         </Button>
       </div>
     );
@@ -354,47 +355,65 @@ export default function Relatorios() {
         <p className="text-sm text-muted-foreground mt-1">Análise detalhada do seu negócio</p>
       </div>
 
-      {/* Fluxo semanal */}
-      <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
-        <h2 className="font-semibold mb-4 flex items-center gap-2"><TrendingUp size={18} className="text-primary" />Fluxo de Caixa — Últimos 7 Dias</h2>
-        {loadingFluxo ? <Skeleton className="h-48 w-full" /> : (
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={fluxo} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="data" tick={{ fontSize: 11 }} tickFormatter={(v) => v.slice(5)} stroke="hsl(var(--muted-foreground))" />
-              <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `R$${v}`} />
-              <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
-              <Bar dataKey="receita" name="Receita" fill="#7A4FB2" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="despesa" name="Despesa" fill="#ef4444" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="resultado" name="Resultado" fill="#F2B544" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        {/* Ponto de equilíbrio */}
+      {/* Fluxo semanal — Premium */}
+      {isPremium ? (
         <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
-          <h2 className="font-semibold mb-4">Ponto de Equilíbrio</h2>
-          {loadingPe ? <Skeleton className="h-40 w-full" /> : pe ? (
-            <div className="space-y-0">
-              {[
-                { label: "Despesas Fixas Totais", value: fmt(pe.despesas_fixas_total), highlight: false },
-                { label: "Margem de Contribuição Média", value: `${pe.margem_media.toFixed(1)}%`, highlight: false },
-                { label: "PE Contábil (faturamento mín.)", value: fmt(pe.ponto_contabil), highlight: true },
-                { label: "PE Econômico (com lucro 20%)", value: fmt(pe.ponto_economico), highlight: true },
-                { label: "Unidades mínimas necessárias", value: pe.unidades_necessarias.toFixed(0) + " unid.", highlight: false },
-              ].map((row, i) => (
-                <div key={i} className={`flex justify-between items-center py-3 border-b border-border last:border-0 ${row.highlight ? "font-semibold" : ""}`}>
-                  <span className="text-sm text-muted-foreground">{row.label}</span>
-                  <span className={row.highlight ? "text-primary font-bold" : ""}>{row.value}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8 text-sm text-muted-foreground">Cadastre produtos e despesas fixas para ver a análise</div>
+          <h2 className="font-semibold mb-4 flex items-center gap-2"><TrendingUp size={18} className="text-primary" />Fluxo de Caixa — Últimos 7 Dias</h2>
+          {loadingFluxo ? <Skeleton className="h-48 w-full" /> : (
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={fluxo} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="data" tick={{ fontSize: 11 }} tickFormatter={(v) => v.slice(5)} stroke="hsl(var(--muted-foreground))" />
+                <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `R$${v}`} />
+                <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
+                <Bar dataKey="receita" name="Receita" fill="#7A4FB2" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="despesa" name="Despesa" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="resultado" name="Resultado" fill="#F2B544" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           )}
         </div>
+      ) : (
+        <PremiumLock
+          title="Fluxo de Caixa — Últimos 7 Dias"
+          description="Veja receitas, despesas e resultado dos últimos 7 dias. Disponível no plano Premium."
+          icon={TrendingUp}
+          onClick={() => {}}
+        />
+      )}
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        {/* Ponto de equilíbrio — Premium */}
+        {isPremium ? (
+          <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
+            <h2 className="font-semibold mb-4">Ponto de Equilíbrio</h2>
+            {loadingPe ? <Skeleton className="h-40 w-full" /> : pe ? (
+              <div className="space-y-0">
+                {[
+                  { label: "Despesas Fixas Totais", value: fmt(pe.despesas_fixas_total), highlight: false },
+                  { label: "Margem de Contribuição Média", value: `${pe.margem_media.toFixed(1)}%`, highlight: false },
+                  { label: "PE Contábil (faturamento mín.)", value: fmt(pe.ponto_contabil), highlight: true },
+                  { label: "PE Econômico (com lucro 20%)", value: fmt(pe.ponto_economico), highlight: true },
+                  { label: "Unidades mínimas necessárias", value: pe.unidades_necessarias.toFixed(0) + " unid.", highlight: false },
+                ].map((row, i) => (
+                  <div key={i} className={`flex justify-between items-center py-3 border-b border-border last:border-0 ${row.highlight ? "font-semibold" : ""}`}>
+                    <span className="text-sm text-muted-foreground">{row.label}</span>
+                    <span className={row.highlight ? "text-primary font-bold" : ""}>{row.value}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-sm text-muted-foreground">Cadastre produtos e despesas fixas para ver a análise</div>
+            )}
+          </div>
+        ) : (
+          <PremiumLock
+            title="Ponto de Equilíbrio"
+            description="Calcule o faturamento mínimo para cobrir seus custos fixos. Disponível no plano Premium."
+            icon={Target}
+            onClick={() => {}}
+          />
+        )}
 
         {/* Alertas margem */}
         <div className="bg-card border border-border rounded-xl p-5 shadow-sm">

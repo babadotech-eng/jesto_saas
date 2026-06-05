@@ -18,7 +18,7 @@ const navigation = [
   { name: "Ficha Técnica", href: "/ficha-tecnica", icon: FileText },
   { name: "Lançamentos",   href: "/lancamentos",   icon: ArrowRightLeft,  minPlan: "premium" as const },
   { name: "Funcionários",  href: "/funcionarios",  icon: Users,           minPlan: "premium" as const },
-  { name: "Relatórios",    href: "/relatorios",    icon: BarChart3,       minPlan: "premium" as const },
+  { name: "Relatórios",    href: "/relatorios",    icon: BarChart3,       minPlan: "pro" as const },
   { name: "Configurações", href: "/configuracoes", icon: Settings },
 ];
 

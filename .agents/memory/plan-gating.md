@@ -6,14 +6,19 @@ description: How plan-based access control (gratis/pro/premium) is implemented a
 ## Rule
 All plan limits and feature flags come from `artifacts/precifica/src/lib/planConfig.ts` — never hardcode limits in individual pages.
 
-**Why:** Centralizing into `PLAN_LIMITS` / `PLAN_FEATURES` makes it easy to update limits without hunting down every page. Also provides `planAtLeast(userPlano, minPlano)` helper for ordering checks.
+**Why:** Centralizing into `PLAN_LIMITS` / `PLAN_FEATURES` + `planAtLeast()` makes limits easy to update and keeps frontend/backend aligned.
 
 ## How to apply
 - Call `getLimites(assinatura?.plano ?? "gratis")` or `getFeatures(assinatura?.plano ?? "gratis")` in gated components.
 - Use `planAtLeast(plano, "pro"|"premium")` for min-plan comparisons.
 - For full-page gates: call `useAssinatura()` with `isLoading`, then return a Crown locked state only after `!isLoading` to avoid flash.
 - Use `<UpgradeModal>` for limit dialogs; use inline Crown locked state for full-page gates.
+- For pages with mixed Pro/Premium sections: use both `isPro` and `isPremium` booleans. Gate the page itself on `isPro`, then gate individual Premium sections with `<PremiumLock>`.
 - Backend: use `requirePlan("pro"|"premium")` middleware (from `auth.ts`) after `requireAuth`.
+
+## Key invariant
+**Never block in the frontend something the backend allows for that plan, and never display something the backend will reject.**
+Frontend gate level must exactly match backend gate level per section/endpoint.
 
 ## Current limits
 | Plan    | Produtos | Insumos | Fichas |
@@ -47,11 +52,20 @@ Despesas fixas removed from PLAN_LIMITS — now feature-gated (Premium only), no
 - `/api/relatorios/fluxo-semanal` → Premium
 - `/api/relatorios/ponto-equilibrio` → Premium
 
-## Frontend full-page gates
-- Painel → Pro (dashboardCustos)
-- Lançamentos → Premium (fluxoCaixa)
-- Relatórios → Premium (planAtLeast "premium")
-- Funcionários → Premium (existing)
+## Frontend gates per page
+
+### Painel → Pro full-page lock (dashboardCustos)
+### Lançamentos → Premium full-page lock (fluxoCaixa)
+### Relatórios → Pro full-page lock; within page:
+  - top-produtos: visible (Pro+)
+  - alertas-margem: visible (Pro+)
+  - fluxo-semanal: PremiumLock for non-Premium
+  - ponto-equilibrio: PremiumLock for non-Premium
+  - relatórios avançados: PremiumLock for non-Premium
+### Funcionários → Premium full-page lock
 
 ## Sidebar (Layout.tsx)
-Nav items use `minPlan: "premium"` field; filter uses `planAtLeast`. Items hidden for users below minPlan: Lançamentos, Funcionários, Relatórios.
+Nav items use `minPlan: "pro"|"premium"` field; filter uses `planAtLeast`.
+- Lançamentos: minPlan "premium"
+- Funcionários: minPlan "premium"
+- Relatórios: minPlan "pro" (Pro users see the nav item)
