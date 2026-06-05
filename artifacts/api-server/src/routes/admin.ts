@@ -97,7 +97,7 @@ router.get("/admin/users", requireAuth, requireAdmin, async (req, res): Promise<
     if (search) {
       const term = `%${search}%`;
       conditions.push(
-        sql`(${perfisTable.email} ILIKE ${term} OR ${perfisTable.nomeCompleto} ILIKE ${term})`,
+        sql`(${perfisTable.loginEmail} ILIKE ${term} OR ${perfisTable.email} ILIKE ${term} OR ${perfisTable.nomeCompleto} ILIKE ${term})`,
       );
     }
 
@@ -106,7 +106,7 @@ router.get("/admin/users", requireAuth, requireAdmin, async (req, res): Promise<
     const users = await db
       .select({
         userId: perfisTable.userId,
-        email: perfisTable.email,
+        email: sql<string | null>`COALESCE(${perfisTable.loginEmail}, ${perfisTable.email})`,
         nomeCompleto: perfisTable.nomeCompleto,
         nomeNegocio: perfisTable.nomeNegocio,
         createdAt: perfisTable.createdAt,
@@ -150,6 +150,7 @@ router.get("/admin/users/:userId", requireAuth, requireAdmin, async (req, res): 
 
     res.json({
       ...perfil,
+      email: perfil.loginEmail ?? perfil.email,
       plano: assinatura?.plano ?? "gratis",
       statusAssinatura: assinatura?.status ?? "ativo",
       planoUpdatedAt: assinatura?.updatedAt ?? null,
@@ -275,7 +276,7 @@ router.get("/admin/lixeira", requireAuth, requireAdmin, async (req, res): Promis
     const users = await db
       .select({
         userId: perfisTable.userId,
-        email: perfisTable.email,
+        email: sql<string | null>`COALESCE(${perfisTable.loginEmail}, ${perfisTable.email})`,
         nomeCompleto: perfisTable.nomeCompleto,
         nomeNegocio: perfisTable.nomeNegocio,
         createdAt: perfisTable.createdAt,

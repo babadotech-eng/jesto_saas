@@ -33,15 +33,14 @@ router.get("/perfis/me", requireAuth, async (req, res): Promise<void> => {
     const rows = await db.select().from(perfisTable).where(eq(perfisTable.userId, userId)).limit(1);
     const authEmail = getUserEmail(req);
     if (rows.length === 0) {
-      const [created] = await db.insert(perfisTable).values({ userId, email: authEmail }).returning();
+      const [created] = await db.insert(perfisTable).values({ userId, loginEmail: authEmail }).returning();
       res.json(serializePerfil(created));
       return;
     }
     const row = rows[0];
-    // Back-fill auth email if profile email is still null
-    if (!row.email && authEmail) {
-      await db.update(perfisTable).set({ email: authEmail }).where(eq(perfisTable.userId, userId));
-      row.email = authEmail;
+    // Silently keep loginEmail in sync with auth email (admin-only field, never in serializePerfil)
+    if (!row.loginEmail && authEmail) {
+      await db.update(perfisTable).set({ loginEmail: authEmail }).where(eq(perfisTable.userId, userId));
     }
     if (row.deletedAt) {
       res.status(410).json({ error: "account_deleted", expires_at: row.expiresAt?.toISOString() ?? null });
