@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Check, TrendingUp, BookOpen, Wallet, LayoutDashboard, UtensilsCrossed, Coffee, ShoppingBag, Sandwich, ArrowRight, FileSpreadsheet } from "lucide-react";
-import dashboardImg from "@assets/Captura_de_tela_27-5-2026_182552_d4272d6d-2b36-4ab1-adf1-6048_1779919697917.jpeg";
+import dashboardImg from "@assets/mocks2.png";
 import chefImg from "@assets/file_00000000bfc471f58b48209158bd14c0_1779979641753.png";
 import logoBlack from "@assets/logo-black_1780519870384.png";
 import logoWhite from "@assets/logo-white_1780519870384.png";
@@ -115,11 +115,9 @@ export default function Landing() {
 
   return (
     <div style={{ background: C.bg, color: C.text, fontFamily: "'Satoshi', sans-serif", position: "relative" }}>
-
       {/* ── Border rails ── */}
       <div style={{ position: "fixed", top: 0, left: 14, bottom: 0, width: 2, background: C.border, zIndex: 60, pointerEvents: "none" }} />
       <div style={{ position: "fixed", top: 0, right: 14, bottom: 0, width: 2, background: C.border, zIndex: 60, pointerEvents: "none" }} />
-
       {/* ── Back-to-top ── */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -140,7 +138,6 @@ export default function Landing() {
         </svg>
         <span style={{ fontSize: 9, letterSpacing: "0.2em", fontWeight: 700, textTransform: "uppercase", writingMode: "vertical-rl" }}>Topo</span>
       </button>
-
       {/* ══ HEADER ═══════════════════════════════════════════════ */}
       <header className="sticky top-0 z-50 h-16 flex items-center justify-between px-10 md:px-14"
         style={{ background: "rgba(236,234,229,0.9)", borderBottom: `1px solid ${C.border}`, backdropFilter: "blur(14px)" }}>
@@ -160,7 +157,6 @@ export default function Landing() {
           <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
         </button>
       </header>
-
       {menuOpen && (
         <div className="md:hidden fixed inset-x-0 z-40 px-8 py-5 space-y-4 text-sm font-medium border-b"
           style={{ top: 64, background: C.surface, borderColor: C.border }}>
@@ -171,7 +167,6 @@ export default function Landing() {
           <Link href="/cadastro" className={btnBlack + " w-full"}>Comece grátis</Link>
         </div>
       )}
-
       <main>
         {/* ══ 1. HERO ═════════════════════════════════════════════ */}
         <section id="inicio" className="relative overflow-hidden"
@@ -308,9 +303,7 @@ export default function Landing() {
               <h2 style={{ fontSize: T.section, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.02em", color: "#fff", marginBottom: "1.25rem", maxWidth: 580 }}>
                 Do estoque<br/><It dark>ao lucro.</It>
               </h2>
-              <p style={{ fontSize: "1rem", lineHeight: 1.8, color: "rgba(255,255,255,0.5)", maxWidth: 500, marginBottom: "3.5rem" }}>
-                Do cadastro à margem final, o Jesto organiza a rotina financeira do seu negócio em etapas claras.
-              </p>
+              <p style={{ fontSize: "1rem", lineHeight: 1.8, color: "rgba(255,255,255,0.5)", maxWidth: 500, marginBottom: "3.5rem" }}>Do cadastro à margem final, a Jesto organiza a rotina financeira do seu negócio em etapas claras.</p>
               <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full mb-12"
                 style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
                 <FileSpreadsheet size={13} style={{ color: C.accentAlt }} />
@@ -399,7 +392,7 @@ export default function Landing() {
               <div className="rounded-2xl overflow-hidden shadow-xl" style={{ border: `1.5px solid ${C.border}` }}>
                 <div className="flex items-center gap-1.5 px-4 h-9" style={{ background: C.bg2, borderBottom: `1px solid ${C.border}` }}>
                   <span className="w-2.5 h-2.5 rounded-full bg-red-400" /><span className="w-2.5 h-2.5 rounded-full bg-yellow-400" /><span className="w-2.5 h-2.5 rounded-full bg-green-400" />
-                  <span className="mx-auto text-[11px] font-medium px-12 rounded h-5 flex items-center" style={{ background: C.surface, color: C.muted }}>precifica.app/painel</span>
+                  <span className="mx-auto text-[11px] font-medium px-12 rounded h-5 flex items-center" style={{ background: C.surface, color: C.muted }}>jesto.com.br/painel</span>
                 </div>
                 <img src={dashboardImg} alt="Painel do Jesto — receita, custos, margem e ponto de equilíbrio" className="w-full block" draggable={false} />
               </div>
@@ -654,7 +647,6 @@ export default function Landing() {
           </div>
         </section>
       </main>
-
       {/* ══ FOOTER ══════════════════════════════════════════════ */}
       <footer style={{ background: "#111", borderTop: "1px solid rgba(255,255,255,0.05)" }} className="py-10 px-10 md:px-14">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
@@ -668,7 +660,6 @@ export default function Landing() {
           </div>
         </div>
       </footer>
-
     </div>
   );
 }
