@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Check, TrendingUp, BookOpen, Wallet, LayoutDashboard, UtensilsCrossed, Coffee, ShoppingBag, Sandwich, ArrowRight, FileSpreadsheet } from "lucide-react";
-import dashboardImg from "@assets/mocks2.png";
+import dashboardImg from "@assets/mocks3.png";
 import chefImg from "@assets/file_00000000bfc471f58b48209158bd14c0_1779979641753.png";
 import logoBlack from "@assets/logo-black_1780519870384.png";
 import logoWhite from "@assets/logo-white_1780519870384.png";
