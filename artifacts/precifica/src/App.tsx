@@ -6,7 +6,11 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import NotFound from "@/pages/not-found";
 import { setAuthTokenGetter } from "@workspace/api-client-react";
 import { supabase } from "@/lib/supabase";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 import Layout from "@/components/Layout";
 import Painel from "@/pages/Painel";
@@ -119,11 +123,112 @@ function OnboardingRoute() {
   return <Onboarding />;
 }
 
+const ADMIN_EMAIL = "michelkhodair@gmail.com";
+
+function AdminLoginGate() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setLoading(false);
+    if (error) {
+      if (error.message.includes("Invalid login credentials")) {
+        toast.error("Email ou senha incorretos");
+      } else {
+        toast.error("Erro ao entrar", { description: error.message });
+      }
+    }
+    // on success the AuthProvider updates session and AdminRoute re-renders
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="w-full max-w-md">
+        <div className="flex flex-col items-center mb-8">
+          <h1 className="text-2xl font-bold text-foreground">Acesso Administrativo</h1>
+          <p className="text-muted-foreground mt-2 text-sm">Entre com sua conta de administrador</p>
+        </div>
+        <Card className="shadow-xl border-white/10 bg-[#161722]">
+          <CardContent className="space-y-4 !pt-6">
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="admin-email" className="text-zinc-300">Email</Label>
+                <Input
+                  id="admin-email"
+                  type="email"
+                  placeholder="seu@email.com"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  required
+                  className="bg-white/5 border-white/15 text-white placeholder:text-zinc-500 focus-visible:ring-yellow-400/40 focus-visible:border-yellow-400/60"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="admin-password" className="text-zinc-300">Senha</Label>
+                <Input
+                  id="admin-password"
+                  type="password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                  className="bg-white/5 border-white/15 text-white placeholder:text-zinc-500 focus-visible:ring-yellow-400/40 focus-visible:border-yellow-400/60"
+                />
+              </div>
+              <Button
+                type="submit"
+                className="w-full h-11 text-base bg-yellow-400 hover:bg-yellow-300 text-[#1A1A1A] font-semibold"
+                disabled={loading}
+              >
+                {loading ? "Entrando..." : "Entrar"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function AdminDenied() {
+  const { signOut } = useAuth();
+  const [, navigate] = useLocation();
+
+  async function handleSignOut() {
+    await signOut();
+    navigate("/");
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="w-full max-w-sm text-center">
+        <div className="w-14 h-14 rounded-2xl bg-red-500/10 flex items-center justify-center mx-auto mb-5">
+          <span className="text-2xl">🚫</span>
+        </div>
+        <h1 className="text-xl font-bold text-foreground mb-2">Acesso negado</h1>
+        <p className="text-muted-foreground text-sm mb-6">
+          Sua conta não tem permissão para acessar a área administrativa.
+        </p>
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={handleSignOut}
+        >
+          Sair e voltar ao início
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function AdminRoute() {
   const { session, loading, user } = useAuth();
   if (loading) return <Loading />;
-  if (!session) return <Redirect to="/login" />;
-  if (user?.email?.toLowerCase() !== "michelkhodair@gmail.com") return <Redirect to="/painel" />;
+  if (!session) return <AdminLoginGate />;
+  if (user?.email?.toLowerCase() !== ADMIN_EMAIL) return <AdminDenied />;
   return <AdminPanel />;
 }
 

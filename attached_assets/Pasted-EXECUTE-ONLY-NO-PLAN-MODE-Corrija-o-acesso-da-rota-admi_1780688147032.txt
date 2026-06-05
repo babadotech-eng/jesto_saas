@@ -1,0 +1,56 @@
+EXECUTE ONLY. NO PLAN MODE.
+
+Corrija o acesso da rota /admin.
+
+REGRA EXATA
+A página de administração JÁ está em /admin.
+Não crie uma nova página separada.
+Não crie outra rota de login admin.
+O login deve servir para proteger e liberar a própria página /admin.
+
+OBJETIVO
+Quando alguém acessar /admin:
+1. se estiver deslogado, deve ver a tela de login usando o design atual do app
+2. se estiver logado com o email michelkhodair@gmail.com, deve entrar no admin
+3. se estiver logado com qualquer outro email, deve receber acesso negado e não entrar no admin
+
+REGRAS
+- único administrador permitido: michelkhodair@gmail.com
+- não adicionar botão público para admin
+- não criar nova rota pública de admin login
+- não mexer em outras áreas do app
+- não redesenhar o sistema
+- usar o estilo visual atual de login/cadastro
+- proteger /admin de verdade, não só visualmente
+
+IMPLEMENTAÇÃO
+- usar a própria rota /admin como rota protegida
+- se não autenticado: renderizar/login gate com o design atual
+- se autenticado e email = michelkhodair@gmail.com: renderizar a página admin existente
+- se autenticado e email diferente: bloquear acesso com mensagem clara
+- reutilizar autenticação atual do app
+- não alterar home, dashboard comum, planos, checkout ou outras rotas
+
+SEGURANÇA
+- checar email autenticado antes de liberar /admin
+- não confiar em esconder componentes
+- manter regras de acesso consistentes
+- não expor privilégios admin a outros usuários
+
+VALIDAÇÃO OBRIGATÓRIA
+1. acessar /admin deslogado mostra login
+2. acessar /admin com michelkhodair@gmail.com libera admin
+3. acessar /admin com qualquer outro email bloqueia admin
+4. nenhuma nova rota de admin foi criada
+5. nenhum botão/link público para admin foi adicionado
+6. nada mais foi alterado fora desse escopo
+
+RETORNO
+Responda apenas:
+1. arquivos alterados
+2. como /admin foi protegido
+3. como o login foi exibido dentro do fluxo de /admin
+4. onde o allowlist do email admin foi definido
+5. como acesso negado foi tratado
+6. confirmação de que só michelkhodair@gmail.com acessa /admin
+7. confirmação de que nada mais foi alterado
