@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { eq, sql, desc, and } from "drizzle-orm";
+import { eq, sql, desc, and, isNull, isNotNull } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 import type { Request, Response, NextFunction } from "express";
 import { createClient } from "@supabase/supabase-js";
@@ -35,7 +35,8 @@ router.get("/admin/stats", requireAuth, requireAdmin, async (req, res): Promise<
   try {
     const [totalRow] = await db
       .select({ total: sql<number>`COUNT(*)::int` })
-      .from(perfisTable);
+      .from(perfisTable)
+      .where(isNull(perfisTable.deletedAt));
 
     const planCounts = await db
       .select({
@@ -44,12 +45,13 @@ router.get("/admin/stats", requireAuth, requireAdmin, async (req, res): Promise<
       })
       .from(perfisTable)
       .leftJoin(assinaturasTable, eq(perfisTable.userId, assinaturasTable.userId))
+      .where(isNull(perfisTable.deletedAt))
       .groupBy(sql`COALESCE(${assinaturasTable.plano}, 'gratis')`);
 
     const [novosMesRow] = await db
       .select({ count: sql<number>`COUNT(*)::int` })
       .from(perfisTable)
-      .where(sql`${perfisTable.createdAt} >= date_trunc('month', CURRENT_DATE)`);
+      .where(and(isNull(perfisTable.deletedAt), sql`${perfisTable.createdAt} >= date_trunc('month', CURRENT_DATE)`));
 
     const [ativasRow] = await db
       .select({ count: sql<number>`COUNT(*)::int` })
@@ -99,6 +101,8 @@ router.get("/admin/users", requireAuth, requireAdmin, async (req, res): Promise<
       );
     }
 
+    conditions.push(isNull(perfisTable.deletedAt));
+
     const users = await db
       .select({
         userId: perfisTable.userId,
@@ -112,7 +116,7 @@ router.get("/admin/users", requireAuth, requireAdmin, async (req, res): Promise<
       })
       .from(perfisTable)
       .leftJoin(assinaturasTable, eq(perfisTable.userId, assinaturasTable.userId))
-      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .where(and(...conditions))
       .orderBy(desc(perfisTable.createdAt));
 
     res.json(users);
@@ -241,16 +245,141 @@ router.post("/admin/users/:userId/reset-senha", requireAuth, requireAdmin, async
   }
 });
 
-// ── MODULE 2: DELETE USER ─────────────────────────────────────────────────────
+// ── MODULE 2: SOFT DELETE (move to lixeira) ───────────────────────────────────
 
 router.delete("/admin/users/:userId", requireAuth, requireAdmin, async (req, res): Promise<void> => {
   const userId = String(req.params.userId);
   try {
-    await db.delete(assinaturasTable).where(eq(assinaturasTable.userId, userId));
-    await db.delete(perfisTable).where(eq(perfisTable.userId, userId));
+    const now = new Date();
+    const expiresAt = new Date(now);
+    expiresAt.setMonth(expiresAt.getMonth() + 3);
+    const result = await db.update(perfisTable)
+      .set({ deletedAt: now, expiresAt, updatedAt: now })
+      .where(eq(perfisTable.userId, userId))
+      .returning({ userId: perfisTable.userId });
+    if (!result.length) {
+      res.status(404).json({ error: "Usuário não encontrado" });
+      return;
+    }
     res.json({ ok: true });
   } catch (err) {
-    req.log.error({ err }, "admin delete user error");
+    req.log.error({ err }, "admin soft delete user error");
+    res.status(500).json({ error: "Erro interno" });
+  }
+});
+
+// ── MODULE 2: LIXEIRA ─────────────────────────────────────────────────────────
+
+router.get("/admin/lixeira", requireAuth, requireAdmin, async (req, res): Promise<void> => {
+  try {
+    const users = await db
+      .select({
+        userId: perfisTable.userId,
+        email: perfisTable.email,
+        nomeCompleto: perfisTable.nomeCompleto,
+        nomeNegocio: perfisTable.nomeNegocio,
+        createdAt: perfisTable.createdAt,
+        deletedAt: perfisTable.deletedAt,
+        expiresAt: perfisTable.expiresAt,
+        plano: sql<string>`COALESCE(${assinaturasTable.plano}, 'gratis')`,
+      })
+      .from(perfisTable)
+      .leftJoin(assinaturasTable, eq(perfisTable.userId, assinaturasTable.userId))
+      .where(isNotNull(perfisTable.deletedAt))
+      .orderBy(desc(perfisTable.deletedAt));
+    res.json(users);
+  } catch (err) {
+    req.log.error({ err }, "admin lixeira list error");
+    res.status(500).json({ error: "Erro interno" });
+  }
+});
+
+// ── MODULE 2: RESTAURAR ───────────────────────────────────────────────────────
+
+router.post("/admin/users/:userId/restaurar", requireAuth, requireAdmin, async (req, res): Promise<void> => {
+  const userId = String(req.params.userId);
+  try {
+    const [perfil] = await db
+      .select({ deletedAt: perfisTable.deletedAt })
+      .from(perfisTable)
+      .where(eq(perfisTable.userId, userId))
+      .limit(1);
+
+    if (!perfil) {
+      res.status(404).json({ error: "Usuário não encontrado" });
+      return;
+    }
+    if (!perfil.deletedAt) {
+      res.status(409).json({ error: "Conta não está na lixeira" });
+      return;
+    }
+
+    await db.update(perfisTable)
+      .set({ deletedAt: null, expiresAt: null, updatedAt: new Date() })
+      .where(eq(perfisTable.userId, userId));
+
+    // If assinatura expired or cancelled, reset to gratis
+    const now = new Date();
+    const [assinatura] = await db
+      .select()
+      .from(assinaturasTable)
+      .where(eq(assinaturasTable.userId, userId))
+      .limit(1);
+
+    const isValid = assinatura?.status === "ativo" &&
+      (!assinatura.validoAte || new Date(assinatura.validoAte) > now);
+
+    if (!isValid) {
+      await db
+        .insert(assinaturasTable)
+        .values({ userId, plano: "gratis", status: "ativo" })
+        .onConflictDoUpdate({
+          target: assinaturasTable.userId,
+          set: { plano: "gratis", status: "ativo", updatedAt: new Date() },
+        });
+    }
+
+    res.json({ ok: true });
+  } catch (err) {
+    req.log.error({ err }, "admin restaurar user error");
+    res.status(500).json({ error: "Erro interno" });
+  }
+});
+
+// ── MODULE 2: HARD DELETE (from lixeira) ──────────────────────────────────────
+
+router.delete("/admin/lixeira/:userId", requireAuth, requireAdmin, async (req, res): Promise<void> => {
+  const userId = String(req.params.userId);
+  try {
+    const [perfil] = await db
+      .select({ deletedAt: perfisTable.deletedAt })
+      .from(perfisTable)
+      .where(eq(perfisTable.userId, userId))
+      .limit(1);
+
+    if (!perfil?.deletedAt) {
+      res.status(409).json({ error: "Usuário não está na lixeira. Use a exclusão da lixeira." });
+      return;
+    }
+
+    await db.delete(assinaturasTable).where(eq(assinaturasTable.userId, userId));
+    await db.delete(perfisTable).where(eq(perfisTable.userId, userId));
+
+    // Attempt Supabase Auth deletion (requires service role key)
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (serviceKey) {
+      const adminClient = createClient(supabaseUrl, serviceKey);
+      const { error: authErr } = await adminClient.auth.admin.deleteUser(userId);
+      if (authErr) {
+        req.log.warn({ authErr, userId }, "Supabase Auth deletion failed after DB hard delete");
+      }
+    } else {
+      req.log.warn({ userId }, "SUPABASE_SERVICE_ROLE_KEY not set; skipping Supabase Auth deletion");
+    }
+
+    res.json({ ok: true });
+  } catch (err) {
+    req.log.error({ err }, "admin hard delete user error");
     res.status(500).json({ error: "Erro interno" });
   }
 });

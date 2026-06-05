@@ -14,8 +14,19 @@ export interface Perfil {
   cpf_cnpj: string | null;
   origem: string | null;
   logo_url: string | null;
+  deleted_at: string | null;
+  expires_at: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export class PerfilError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "PerfilError";
+    this.status = status;
+  }
 }
 
 async function getToken(): Promise<string | null> {
@@ -28,11 +39,11 @@ async function fetchPerfil(): Promise<Perfil> {
   const res = await fetch("/api/perfis/me", {
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error("Erro ao buscar perfil");
+  if (!res.ok) throw new PerfilError("Erro ao buscar perfil", res.status);
   return res.json();
 }
 
-async function updatePerfil(data: Partial<Omit<Perfil, "id" | "user_id" | "created_at" | "updated_at">>): Promise<Perfil> {
+async function updatePerfil(data: Partial<Omit<Perfil, "id" | "user_id" | "created_at" | "updated_at" | "deleted_at" | "expires_at">>): Promise<Perfil> {
   const token = await getToken();
   const res = await fetch("/api/perfis/me", {
     method: "PUT",
@@ -46,11 +57,15 @@ async function updatePerfil(data: Partial<Omit<Perfil, "id" | "user_id" | "creat
 export const PERFIL_QUERY_KEY = ["perfil", "me"] as const;
 
 export function usePerfil(enabled = true) {
-  return useQuery<Perfil>({
+  return useQuery<Perfil, PerfilError>({
     queryKey: PERFIL_QUERY_KEY,
     queryFn: fetchPerfil,
     enabled,
     staleTime: 60_000,
+    retry: (failureCount, error) => {
+      if (error instanceof PerfilError && error.status === 410) return false;
+      return failureCount < 1;
+    },
   });
 }
 

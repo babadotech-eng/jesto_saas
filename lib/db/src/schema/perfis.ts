@@ -15,6 +15,8 @@ export const perfisTable = pgTable("perfis", {
   cpfCnpj: text("cpf_cnpj"),
   origem: text("origem"),
   logoUrl: text("logo_url"),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
+  expiresAt: timestamp("expires_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

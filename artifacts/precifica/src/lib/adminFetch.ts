@@ -39,6 +39,17 @@ export interface AdminUser {
   planoUpdatedAt: string | null;
 }
 
+export interface AdminLixeiraUser {
+  userId: string;
+  email: string | null;
+  nomeCompleto: string | null;
+  nomeNegocio: string | null;
+  createdAt: string;
+  deletedAt: string;
+  expiresAt: string | null;
+  plano: string;
+}
+
 export interface AdminUserDetail {
   userId: string;
   id: string;

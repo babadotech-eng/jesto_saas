@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Search, ChevronDown, Trash2, Ban, CheckCircle, Crown, Star,
   User2, KeyRound, Building2, Phone, MapPin, Package, Calendar, Download,
+  Archive, RotateCcw,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,7 @@ import {
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription,
 } from "@/components/ui/sheet";
-import { adminFetch, type AdminUser, type AdminUserDetail } from "@/lib/adminFetch";
+import { adminFetch, type AdminUser, type AdminUserDetail, type AdminLixeiraUser } from "@/lib/adminFetch";
 import { exportToCsv, todayIso } from "@/lib/exportCsv";
 
 function fmtDate(d: string | null | undefined) {
@@ -70,9 +71,12 @@ export default function AdminUsers() {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [viewMode, setViewMode] = useState<"ativo" | "lixeira">("ativo");
   const [deleteTarget, setDeleteTarget] = useState<{ userId: string; email: string | null; nomeCompleto: string | null } | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [resetTarget, setResetTarget] = useState<{ userId: string; email: string | null } | null>(null);
+  const [restaurarTarget, setRestaurarTarget] = useState<AdminLixeiraUser | null>(null);
+  const [hardDeleteTarget, setHardDeleteTarget] = useState<AdminLixeiraUser | null>(null);
   const searchTimer = useState<ReturnType<typeof setTimeout> | null>(null);
 
   function handleSearch(v: string) {
@@ -91,6 +95,17 @@ export default function AdminUsers() {
       return res.json();
     },
     staleTime: 30_000,
+  });
+
+  const { data: lixeiraUsers, isLoading: lixeiraLoading } = useQuery<AdminLixeiraUser[]>({
+    queryKey: ["admin", "lixeira"],
+    queryFn: async () => {
+      const res = await adminFetch("/api/admin/lixeira");
+      if (!res.ok) throw new Error("Erro ao buscar lixeira");
+      return res.json();
+    },
+    staleTime: 30_000,
+    enabled: viewMode === "lixeira",
   });
 
   const { data: userDetail, isLoading: detailLoading, isError: detailError } = useQuery<AdminUserDetail>({
@@ -144,16 +159,44 @@ export default function AdminUsers() {
   const deleteMutation = useMutation({
     mutationFn: async (userId: string) => {
       const res = await adminFetch(`/api/admin/users/${userId}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Erro ao excluir usuário");
+      if (!res.ok) throw new Error("Erro ao mover para lixeira");
     },
     onSuccess: () => {
-      toast.success("Usuário excluído.");
+      toast.success("Usuário movido para a lixeira.");
       qc.invalidateQueries({ queryKey: ["admin", "users"] });
       qc.invalidateQueries({ queryKey: ["admin", "stats"] });
       setDeleteTarget(null);
       setSelectedUserId(null);
     },
-    onError: () => toast.error("Erro ao excluir o usuário."),
+    onError: () => toast.error("Erro ao mover usuário para lixeira."),
+  });
+
+  const restaurarMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      const res = await adminFetch(`/api/admin/users/${userId}/restaurar`, { method: "POST" });
+      if (!res.ok) throw new Error("Erro ao restaurar usuário");
+    },
+    onSuccess: () => {
+      toast.success("Conta restaurada com sucesso.");
+      qc.invalidateQueries({ queryKey: ["admin", "lixeira"] });
+      qc.invalidateQueries({ queryKey: ["admin", "users"] });
+      qc.invalidateQueries({ queryKey: ["admin", "stats"] });
+      setRestaurarTarget(null);
+    },
+    onError: () => toast.error("Erro ao restaurar a conta."),
+  });
+
+  const hardDeleteMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      const res = await adminFetch(`/api/admin/lixeira/${userId}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Erro ao excluir permanentemente");
+    },
+    onSuccess: () => {
+      toast.success("Conta excluída permanentemente.");
+      qc.invalidateQueries({ queryKey: ["admin", "lixeira"] });
+      setHardDeleteTarget(null);
+    },
+    onError: () => toast.error("Erro ao excluir permanentemente."),
   });
 
   const resetSenhaMutation = useMutation({
@@ -182,34 +225,109 @@ export default function AdminUsers() {
         <div>
           <h2 className="text-2xl font-bold text-foreground">Gerenciar Usuários</h2>
           <p className="text-sm text-muted-foreground mt-1">
-            {users
-              ? `${users.length} usuário${users.length !== 1 ? "s" : ""} encontrado${users.length !== 1 ? "s" : ""}`
-              : "Carregando..."}
+            {viewMode === "ativo"
+              ? (users ? `${users.length} usuário${users.length !== 1 ? "s" : ""} ativo${users.length !== 1 ? "s" : ""}` : "Carregando...")
+              : (lixeiraUsers ? `${lixeiraUsers.length} conta${lixeiraUsers.length !== 1 ? "s" : ""} na lixeira` : "Carregando...")}
           </p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-1.5 shrink-0"
-          disabled={!users?.length}
-          onClick={() => users && handleExportUsers(users)}
-        >
-          <Download size={14} />
-          Exportar CSV
-        </Button>
+        <div className="flex items-center gap-2 shrink-0">
+          <Button
+            variant={viewMode === "lixeira" ? "default" : "outline"}
+            size="sm"
+            className={`gap-1.5 ${viewMode === "lixeira" ? "bg-destructive/80 hover:bg-destructive text-destructive-foreground" : "text-muted-foreground"}`}
+            onClick={() => setViewMode(v => v === "ativo" ? "lixeira" : "ativo")}
+          >
+            <Archive size={14} />
+            {viewMode === "lixeira" ? "Ver Ativos" : "Lixeira"}
+            {lixeiraUsers && lixeiraUsers.length > 0 && viewMode === "ativo" && (
+              <span className="ml-1 bg-destructive text-destructive-foreground text-xs rounded-full px-1.5 py-0.5 leading-none">
+                {lixeiraUsers.length}
+              </span>
+            )}
+          </Button>
+          {viewMode === "ativo" && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              disabled={!users?.length}
+              onClick={() => users && handleExportUsers(users)}
+            >
+              <Download size={14} />
+              Exportar CSV
+            </Button>
+          )}
+        </div>
       </div>
 
-      <div className="relative max-w-sm">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          placeholder="Buscar por nome ou e-mail..."
-          className="pl-9"
-          value={search}
-          onChange={e => handleSearch(e.target.value)}
-        />
-      </div>
+      {viewMode === "ativo" && (
+        <div className="relative max-w-sm">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Buscar por nome ou e-mail..."
+            className="pl-9"
+            value={search}
+            onChange={e => handleSearch(e.target.value)}
+          />
+        </div>
+      )}
 
-      {isLoading ? (
+      {viewMode === "lixeira" ? (
+        lixeiraLoading ? (
+          <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-14 rounded-lg" />)}</div>
+        ) : !lixeiraUsers?.length ? (
+          <div className="bg-card border border-border rounded-xl p-12 text-center text-sm text-muted-foreground">
+            Nenhuma conta na lixeira.
+          </div>
+        ) : (
+          <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50 border-b border-border">
+                <tr>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground">Usuário</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground hidden sm:table-cell">Plano</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground hidden md:table-cell">Excluído em</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground hidden lg:table-cell">Expira em</th>
+                  <th className="px-4 py-3 text-right font-medium text-muted-foreground">Ações</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {lixeiraUsers.map(u => (
+                  <tr key={u.userId} className="hover:bg-muted/30 transition-colors">
+                    <td className="px-4 py-3">
+                      <p className="font-medium truncate max-w-[180px]">{u.nomeCompleto ?? "—"}</p>
+                      <p className="text-xs text-muted-foreground truncate max-w-[180px]">{u.email ?? u.userId}</p>
+                    </td>
+                    <td className="px-4 py-3 hidden sm:table-cell"><PlanoBadge plano={u.plano} /></td>
+                    <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{fmtDate(u.deletedAt)}</td>
+                    <td className="px-4 py-3 hidden lg:table-cell">
+                      <span className="text-xs font-medium text-amber-600">{fmtDate(u.expiresAt)}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost" size="icon" className="h-7 w-7"
+                          title="Restaurar conta"
+                          onClick={() => setRestaurarTarget(u)}
+                        >
+                          <RotateCcw size={14} className="text-green-600" />
+                        </Button>
+                        <Button
+                          variant="ghost" size="icon" className="h-7 w-7"
+                          title="Excluir permanentemente"
+                          onClick={() => setHardDeleteTarget(u)}
+                        >
+                          <Trash2 size={14} className="text-destructive" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
+      ) : isLoading ? (
         <div className="space-y-2">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-14 rounded-lg" />)}</div>
       ) : !users?.length ? (
         <div className="bg-card border border-border rounded-xl p-12 text-center text-sm text-muted-foreground">
@@ -290,10 +408,10 @@ export default function AdminUsers() {
 
                       <Button
                         variant="ghost" size="icon" className="h-7 w-7"
-                        title="Excluir usuário"
+                        title="Mover para lixeira"
                         onClick={() => setDeleteTarget({ userId: u.userId, email: u.email, nomeCompleto: u.nomeCompleto })}
                       >
-                        <Trash2 size={14} className="text-destructive" />
+                        <Archive size={14} className="text-destructive" />
                       </Button>
                     </div>
                   </td>
@@ -453,8 +571,8 @@ export default function AdminUsers() {
                   className="gap-1.5 border-destructive/30 text-destructive hover:bg-destructive/5 w-full sm:w-auto"
                   onClick={() => setDeleteTarget({ userId: userDetail.userId, email: userDetail.email, nomeCompleto: userDetail.nomeCompleto })}
                 >
-                  <Trash2 size={13} />
-                  Excluir Usuário
+                  <Archive size={13} />
+                  Mover para Lixeira
                 </Button>
               </section>
             </div>
@@ -462,15 +580,22 @@ export default function AdminUsers() {
         </SheetContent>
       </Sheet>
 
-      {/* ── Delete Confirm ── */}
+      {/* ── Mover para Lixeira Confirm ── */}
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Excluir usuário?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta ação removerá o perfil e a assinatura de{" "}
-              <strong>{deleteTarget?.email ?? deleteTarget?.nomeCompleto ?? deleteTarget?.userId}</strong>.
-              {" "}Não pode ser desfeita.
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Archive size={17} className="text-destructive" />
+              Mover para a lixeira?
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p>
+                  O usuário <strong className="text-foreground">{deleteTarget?.email ?? deleteTarget?.nomeCompleto ?? deleteTarget?.userId}</strong>{" "}
+                  será desativado imediatamente.
+                </p>
+                <p>Os dados ficam preservados por até 3 meses e podem ser restaurados da lixeira.</p>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -480,7 +605,71 @@ export default function AdminUsers() {
               onClick={() => deleteTarget && deleteMutation.mutate(deleteTarget.userId)}
               disabled={deleteMutation.isPending}
             >
-              Excluir
+              {deleteMutation.isPending ? "Movendo..." : "Mover para Lixeira"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* ── Restaurar Confirm ── */}
+      <AlertDialog open={!!restaurarTarget} onOpenChange={() => setRestaurarTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <RotateCcw size={17} className="text-green-600" />
+              Restaurar conta?
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p>
+                  A conta de <strong className="text-foreground">{restaurarTarget?.email ?? restaurarTarget?.nomeCompleto ?? restaurarTarget?.userId}</strong>{" "}
+                  será reativada.
+                </p>
+                <p>Se a assinatura estiver expirada ou cancelada, o plano voltará para <strong className="text-foreground">Grátis</strong>.</p>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-green-600 hover:bg-green-700 text-white"
+              onClick={() => restaurarTarget && restaurarMutation.mutate(restaurarTarget.userId)}
+              disabled={restaurarMutation.isPending}
+            >
+              {restaurarMutation.isPending ? "Restaurando..." : "Restaurar Conta"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* ── Hard Delete Confirm ── */}
+      <AlertDialog open={!!hardDeleteTarget} onOpenChange={() => setHardDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+              <Trash2 size={17} />
+              Excluir permanentemente?
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p>
+                  Todos os dados de <strong className="text-foreground">{hardDeleteTarget?.email ?? hardDeleteTarget?.nomeCompleto ?? hardDeleteTarget?.userId}</strong>{" "}
+                  serão <strong className="text-destructive">excluídos definitivamente</strong>.
+                </p>
+                <p className="text-xs bg-destructive/5 border border-destructive/20 rounded px-3 py-2 text-destructive/80">
+                  Esta ação não pode ser desfeita. O usuário precisará criar uma nova conta para acessar o sistema.
+                </p>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => hardDeleteTarget && hardDeleteMutation.mutate(hardDeleteTarget.userId)}
+              disabled={hardDeleteMutation.isPending}
+            >
+              {hardDeleteMutation.isPending ? "Excluindo..." : "Excluir Definitivamente"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

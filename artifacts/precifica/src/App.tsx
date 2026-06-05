@@ -25,7 +25,8 @@ import AdminPanel from "@/pages/admin/AdminPanel";
 import RedefinirSenha from "@/pages/RedefinirSenha";
 import CheckoutPage from "@/pages/CheckoutPage";
 import PagamentoRetorno from "@/pages/PagamentoRetorno";
-import { usePerfil } from "@/hooks/usePerfil";
+import { toast } from "sonner";
+import { usePerfil, PerfilError } from "@/hooks/usePerfil";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
@@ -92,8 +93,19 @@ function PendingCheckoutRedirector() {
 }
 
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
-  const { session, loading } = useAuth();
-  const { data: perfil, isLoading: perfilLoading } = usePerfil(!!session);
+  const { session, loading, signOut } = useAuth();
+  const [, setLocation] = useLocation();
+  const { data: perfil, isLoading: perfilLoading, error: perfilError } = usePerfil(!!session);
+
+  useEffect(() => {
+    if (perfilError instanceof PerfilError && perfilError.status === 410) {
+      signOut().then(() => {
+        toast.error("Conta desativada. Seus dados ficam preservados por até 3 meses.");
+        setLocation("/");
+      });
+    }
+  }, [perfilError]);
+
   if (loading || (session && perfilLoading)) return <Loading />;
   if (!session) return <Redirect to="/login" />;
   if (perfil && !perfil.nome_completo) return <Redirect to="/onboarding" />;

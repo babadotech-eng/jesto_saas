@@ -10,7 +10,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LogOut, User, CreditCard, Settings, Save, Upload, ImageIcon, X } from "lucide-react";
+import { LogOut, User, CreditCard, Settings, Save, Upload, ImageIcon, X, HeartCrack } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 
 const VOLUME_OPTIONS = ["Até R$ 1.000", "R$ 1.000 a R$ 3.000", "R$ 3.000 a R$ 7.000", "R$ 7.000 a R$ 15.000", "Acima de R$ 15.000", "Ainda não vendo"];
@@ -50,6 +54,8 @@ export default function Configuracoes() {
   });
   const [logoUploading, setLogoUploading] = useState(false);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (perfil) {
@@ -155,6 +161,29 @@ export default function Configuracoes() {
     await signOut();
     toast.success("Você saiu com sucesso.");
     setLocation("/");
+  }
+
+  async function handleDeleteAccount() {
+    setDeleting(true);
+    try {
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      const res = await fetch("/api/conta", {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${currentSession?.access_token}` },
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error((body as { error?: string }).error ?? "Erro ao desativar conta");
+      }
+      toast.success("Conta desativada. Seus dados ficam preservados por até 3 meses.");
+      await signOut();
+      setLocation("/");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao desativar conta.");
+    } finally {
+      setDeleting(false);
+      setShowDeleteModal(false);
+    }
   }
 
   const planLabel = assinatura?.plano === "gratis" ? "Grátis" : assinatura?.plano === "pro" ? "Pro" : "Premium";
@@ -349,6 +378,76 @@ export default function Configuracoes() {
         </div>
       </div>
 
+      {/* Zona de Risco */}
+      <div className="bg-card border border-destructive/20 rounded-xl p-5 shadow-sm">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="font-medium text-destructive">Desativar conta</p>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Seus dados ficam preservados por até 3 meses e podem ser restaurados pelo suporte
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={() => setShowDeleteModal(true)}
+            className="shrink-0 text-destructive border-destructive/30 hover:bg-destructive/5"
+          >
+            <HeartCrack size={16} className="mr-2" />
+            Deletar conta
+          </Button>
+        </div>
+      </div>
+
+      <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+              <HeartCrack size={20} />
+              Desativar sua conta
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3 text-sm text-muted-foreground">
+                <p>Ao confirmar, sua conta será <strong className="text-foreground">desativada imediatamente</strong> e você será desconectado.</p>
+                <ul className="space-y-1.5">
+                  <li className="flex items-start gap-2">
+                    <span className="text-amber-500 mt-0.5 shrink-0">•</span>
+                    <span>Seus dados ficam <strong className="text-foreground">preservados por até 3 meses</strong></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-amber-500 mt-0.5 shrink-0">•</span>
+                    <span>A conta fica <strong className="text-foreground">inacessível</strong> durante esse período</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-amber-500 mt-0.5 shrink-0">•</span>
+                    <span>Após 3 meses, os dados podem ser <strong className="text-foreground">excluídos definitivamente</strong></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-500 mt-0.5 shrink-0">•</span>
+                    <span>Ao restaurar <strong className="text-foreground">sem assinatura ativa</strong>, você entra no plano Grátis</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-500 mt-0.5 shrink-0">•</span>
+                    <span>Ao restaurar <strong className="text-foreground">com assinatura ativa</strong>, retorna no plano correspondente</span>
+                  </li>
+                </ul>
+                <p className="text-xs text-muted-foreground/70 border-t border-border pt-2">
+                  Para restaurar a conta antes do prazo, entre em contato com o suporte.
+                </p>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleDeleteAccount}
+              disabled={deleting}
+            >
+              {deleting ? "Desativando..." : "Sim, desativar minha conta"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

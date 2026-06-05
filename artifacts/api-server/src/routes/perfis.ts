@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { eq } from "drizzle-orm";
+import { eq, isNull } from "drizzle-orm";
 import { db } from "@workspace/db";
 import { perfisTable } from "@workspace/db";
 import { requireAuth, getUserId } from "../middlewares/auth";
@@ -20,6 +20,8 @@ function serializePerfil(row: typeof perfisTable.$inferSelect) {
     cpf_cnpj: row.cpfCnpj ?? null,
     origem: row.origem ?? null,
     logo_url: row.logoUrl ?? null,
+    deleted_at: row.deletedAt?.toISOString() ?? null,
+    expires_at: row.expiresAt?.toISOString() ?? null,
     created_at: row.createdAt?.toISOString() ?? null,
     updated_at: row.updatedAt?.toISOString() ?? null,
   };
@@ -34,7 +36,12 @@ router.get("/perfis/me", requireAuth, async (req, res): Promise<void> => {
       res.json(serializePerfil(created));
       return;
     }
-    res.json(serializePerfil(rows[0]));
+    const row = rows[0];
+    if (row.deletedAt) {
+      res.status(410).json({ error: "account_deleted", expires_at: row.expiresAt?.toISOString() ?? null });
+      return;
+    }
+    res.json(serializePerfil(row));
   } catch (err) {
     req.log.error({ err }, "Error fetching perfil");
     res.status(500).json({ error: "Internal server error" });
@@ -63,6 +70,10 @@ router.put("/perfis/me", requireAuth, async (req, res): Promise<void> => {
       res.json(serializePerfil(created));
       return;
     }
+    if (rows[0].deletedAt) {
+      res.status(410).json({ error: "account_deleted" });
+      return;
+    }
     const [updated] = await db.update(perfisTable)
       .set({
         nomeCompleto: nome_completo ?? rows[0].nomeCompleto,
@@ -82,6 +93,38 @@ router.put("/perfis/me", requireAuth, async (req, res): Promise<void> => {
     res.json(serializePerfil(updated));
   } catch (err) {
     req.log.error({ err }, "Error updating perfil");
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.delete("/conta", requireAuth, async (req, res): Promise<void> => {
+  const userId = getUserId(req);
+  try {
+    const [row] = await db.select({ deletedAt: perfisTable.deletedAt })
+      .from(perfisTable)
+      .where(eq(perfisTable.userId, userId))
+      .limit(1);
+
+    if (!row) {
+      res.status(404).json({ error: "Perfil não encontrado" });
+      return;
+    }
+    if (row.deletedAt) {
+      res.status(409).json({ error: "Conta já está desativada" });
+      return;
+    }
+
+    const now = new Date();
+    const expiresAt = new Date(now);
+    expiresAt.setMonth(expiresAt.getMonth() + 3);
+
+    await db.update(perfisTable)
+      .set({ deletedAt: now, expiresAt, updatedAt: now })
+      .where(eq(perfisTable.userId, userId));
+
+    res.json({ ok: true, expires_at: expiresAt.toISOString() });
+  } catch (err) {
+    req.log.error({ err }, "Error deleting conta");
     res.status(500).json({ error: "Internal server error" });
   }
 });
