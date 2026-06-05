@@ -320,8 +320,8 @@ export default function Relatorios() {
   const { data: pe, isLoading: loadingPe } = useGetPontoEquilibrio();
   const { data: assinatura, isLoading: assinaturaLoading } = useAssinatura();
 
-  const isPro = planAtLeast(assinatura?.plano ?? "gratis", "pro");
-  const isPremium = planAtLeast(assinatura?.plano ?? "gratis", "premium");
+  const isPro = planAtLeast(assinatura?.planoEfetivo ?? "gratis", "pro");
+  const isPremium = planAtLeast(assinatura?.planoEfetivo ?? "gratis", "premium");
 
   const [modalSimulacao, setModalSimulacao] = useState(false);
   const [modalBreakeven, setModalBreakeven] = useState(false);

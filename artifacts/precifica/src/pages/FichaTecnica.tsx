@@ -677,8 +677,8 @@ export default function FichaTecnica() {
   const [listImporting, setListImporting] = useState(false);
   const [listImportErrorOpen, setListImportErrorOpen] = useState(false);
 
-  const planLimites = getLimites(assinatura?.plano ?? "gratis");
-  const planFeatures = getFeatures(assinatura?.plano ?? "gratis");
+  const planLimites = getLimites(assinatura?.planoEfetivo ?? "gratis");
+  const planFeatures = getFeatures(assinatura?.planoEfetivo ?? "gratis");
 
   function handleNovaFicha() {
     if ((data?.length ?? 0) >= planLimites.fichas) {

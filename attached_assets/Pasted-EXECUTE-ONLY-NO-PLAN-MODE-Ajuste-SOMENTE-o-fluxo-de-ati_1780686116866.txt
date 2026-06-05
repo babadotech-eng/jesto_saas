@@ -1,0 +1,74 @@
+EXECUTE ONLY. NO PLAN MODE.
+
+Ajuste SOMENTE o fluxo de ativação de plano via Asaas Checkout.
+
+OBJETIVO
+O app só deve liberar o plano após confirmação oficial de pagamento pelo Asaas Checkout.
+Não ativar plano ao criar checkout.
+Não ativar plano ao abrir checkout.
+Não ativar plano ao redirecionar o usuário.
+Ativar somente quando o backend receber o webhook CHECKOUT_PAID.
+
+REGRA EXATA
+- checkout criado = NÃO ativa plano
+- usuário redirecionado para Asaas = NÃO ativa plano
+- retorno do frontend após checkout = NÃO ativa plano sozinho
+- somente webhook CHECKOUT_PAID ativa o plano
+- CHECKOUT_CANCELED e CHECKOUT_EXPIRED não ativam plano
+
+IMPLEMENTAÇÃO OBRIGATÓRIA
+
+1. Audite o fluxo atual
+- encontre onde o plano está sendo liberado hoje
+- remova qualquer liberação prematura no frontend e backend
+- não deixar usuário ganhar acesso pago antes do webhook oficial
+
+2. Criar/ajustar fluxo pendente
+- ao criar checkout, marcar assinatura/pedido como pending / awaiting_payment
+- enquanto estiver pendente, não liberar recursos pagos
+
+3. Ativação correta
+- implementar ou corrigir endpoint backend para receber webhook do Asaas
+- processar os eventos de checkout
+- ativar plano SOMENTE quando receber CHECKOUT_PAID
+- se receber CHECKOUT_CANCELED ou CHECKOUT_EXPIRED, manter sem ativação
+
+4. Segurança e consistência
+- tratar webhook no backend, nunca no frontend
+- evitar processamento duplicado do mesmo evento
+- se o mesmo webhook chegar mais de uma vez, não ativar duas vezes
+- responder HTTP 200 quando o webhook for processado corretamente
+- manter logs claros para debug
+
+5. Atualização de estado
+- CHECKOUT_CREATED => pending
+- CHECKOUT_PAID => active / paid e liberar plano
+- CHECKOUT_CANCELED => canceled / not paid
+- CHECKOUT_EXPIRED => expired / not paid
+
+NÃO MEXER EM MAIS NADA
+- não alterar layout
+- não alterar home
+- não alterar admin fora do necessário
+- não alterar páginas visuais além de eventual estado pendente, se já existir
+- não refatorar áreas paralelas
+- não criar fluxo novo de produto
+
+VALIDAÇÃO OBRIGATÓRIA
+1. criar checkout não ativa plano
+2. abrir/pagar parcialmente no Asaas sem webhook confirmado não ativa plano
+3. CHECKOUT_PAID ativa o plano
+4. CHECKOUT_CANCELED não ativa o plano
+5. CHECKOUT_EXPIRED não ativa o plano
+6. evento duplicado não duplica ativação
+7. nada mais foi alterado
+
+RETORNO
+Responda apenas:
+1. arquivos alterados
+2. onde a ativação prematura foi removida
+3. qual endpoint/webhook está processando CHECKOUT_PAID
+4. como o status pending foi implementado
+5. como duplicidade foi evitada
+6. testes executados
+7. confirmação de que o plano agora só libera após CHECKOUT_PAID

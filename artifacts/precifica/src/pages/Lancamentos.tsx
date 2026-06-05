@@ -207,7 +207,7 @@ export default function Lancamentos() {
   const totalDespesa = byMonth.filter(l => l.tipo === "despesa").reduce((s, l) => s + l.valor, 0);
   const saldo = totalReceita - totalDespesa;
 
-  const features = getFeatures(assinatura?.plano ?? "gratis");
+  const features = getFeatures(assinatura?.planoEfetivo ?? "gratis");
   if (!assinaturaLoading && !features.fluxoCaixa) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center max-w-sm mx-auto px-4">

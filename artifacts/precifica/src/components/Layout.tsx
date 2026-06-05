@@ -100,7 +100,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const { signOut } = useAuth();
   const { data: assinatura } = useAssinatura();
-  const plano = assinatura?.plano ?? "gratis";
+  const plano = assinatura?.planoEfetivo ?? "gratis";
   const visibleNav = navigation.filter(i => !i.minPlan || planAtLeast(plano, i.minPlan));
   const [mobileOpen, setMobileOpen] = useState(false);
 

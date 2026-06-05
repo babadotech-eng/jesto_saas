@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase";
 export interface Assinatura {
   id: string;
   plano: string;
+  planoEfetivo: string;
   status: string;
   valido_ate: string | null;
 }
@@ -15,7 +16,8 @@ async function fetchAssinatura(): Promise<Assinatura> {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
   if (!res.ok) throw new Error("Erro ao buscar assinatura");
-  return res.json();
+  const raw = await res.json() as Omit<Assinatura, "planoEfetivo">;
+  return { ...raw, planoEfetivo: raw.status === "ativo" ? raw.plano : "gratis" };
 }
 
 export const ASSINATURA_QUERY_KEY = ["assinatura", "current"] as const;

@@ -103,8 +103,8 @@ export default function Produtos() {
 
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues });
 
-  const planLimites = getLimites(assinatura?.plano ?? "gratis");
-  const planFeatures = getFeatures(assinatura?.plano ?? "gratis");
+  const planLimites = getLimites(assinatura?.planoEfetivo ?? "gratis");
+  const planFeatures = getFeatures(assinatura?.planoEfetivo ?? "gratis");
 
   // Build cargo → avg valor_hora map from Funcionários data
   const cargoMap: Record<string, number> = (() => {

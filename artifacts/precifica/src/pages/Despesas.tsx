@@ -211,7 +211,7 @@ export default function Despesas() {
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues });
   const total = data?.reduce((sum, d) => sum + d.valor, 0) ?? 0;
 
-  const isPremium = planAtLeast(assinatura?.plano ?? "gratis", "premium");
+  const isPremium = planAtLeast(assinatura?.planoEfetivo ?? "gratis", "premium");
 
   function openCreate() {
     if (!isPremium) {

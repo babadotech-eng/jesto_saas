@@ -497,7 +497,7 @@ export default function Painel() {
   const expTotal = despesas.reduce((s, d) => s + d.valor, 0);
 
   const [, setLocation] = useLocation();
-  const features = getFeatures(assinatura?.plano ?? "gratis");
+  const features = getFeatures(assinatura?.planoEfetivo ?? "gratis");
   if (!assinaturaLoading && !features.dashboardCustos) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center max-w-sm mx-auto px-4">

@@ -107,8 +107,8 @@ export default function Insumos() {
   const [importErrorRows, setImportErrorRows] = useState<ImportRow[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const planLimites = getLimites(assinatura?.plano ?? "gratis");
-  const planFeatures = getFeatures(assinatura?.plano ?? "gratis");
+  const planLimites = getLimites(assinatura?.planoEfetivo ?? "gratis");
+  const planFeatures = getFeatures(assinatura?.planoEfetivo ?? "gratis");
 
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues });
   const filtered = (data?.filter(i => i.nome.toLowerCase().includes(search.toLowerCase())) ?? [])

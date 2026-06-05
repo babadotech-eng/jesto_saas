@@ -286,6 +286,16 @@ router.post("/assinaturas/webhook", async (req, res): Promise<void> => {
       externalReference?: string;
       status?: string;
     };
+    checkout?: {
+      id?: string;
+      externalReference?: string;
+      status?: string;
+      value?: number;
+      payment?: {
+        id?: string;
+        confirmedDate?: string;
+      };
+    };
   };
 
   const { event } = body;
@@ -316,6 +326,60 @@ router.post("/assinaturas/webhook", async (req, res): Promise<void> => {
       }
     } catch (err) {
       req.log.error({ err }, "Webhook payment processing error");
+      res.status(500).json({ error: "Webhook processing failed" });
+      return;
+    }
+  }
+
+  // Checkout events (CHECKOUT_PAID / CHECKOUT_CANCELED / CHECKOUT_EXPIRED)
+  if (body.checkout?.externalReference) {
+    const userId = body.checkout.externalReference;
+    try {
+      if (event === "CHECKOUT_PAID") {
+        // Idempotency: only update while pending — prevents duplicate activation
+        await db
+          .update(assinaturasTable)
+          .set({
+            status: "ativo",
+            transactionId: body.checkout.payment?.id ?? body.checkout.id ?? null,
+            dataInicio: body.checkout.payment?.confirmedDate
+              ? new Date(body.checkout.payment.confirmedDate)
+              : new Date(),
+            updatedAt: new Date(),
+          })
+          .where(
+            and(
+              eq(assinaturasTable.userId, userId),
+              eq(assinaturasTable.gateway, "asaas"),
+              eq(assinaturasTable.status, "pendente"),
+            ),
+          );
+        req.log.info({ userId, event }, "Webhook CHECKOUT_PAID: plan activated");
+      } else if (event === "CHECKOUT_CANCELED") {
+        await db
+          .update(assinaturasTable)
+          .set({ status: "cancelado", updatedAt: new Date() })
+          .where(
+            and(
+              eq(assinaturasTable.userId, userId),
+              eq(assinaturasTable.gateway, "asaas"),
+            ),
+          );
+        req.log.info({ userId, event }, "Webhook CHECKOUT_CANCELED: plan not activated");
+      } else if (event === "CHECKOUT_EXPIRED") {
+        await db
+          .update(assinaturasTable)
+          .set({ status: "expirado", updatedAt: new Date() })
+          .where(
+            and(
+              eq(assinaturasTable.userId, userId),
+              eq(assinaturasTable.gateway, "asaas"),
+            ),
+          );
+        req.log.info({ userId, event }, "Webhook CHECKOUT_EXPIRED: plan expired");
+      }
+    } catch (err) {
+      req.log.error({ err }, "Webhook checkout processing error");
       res.status(500).json({ error: "Webhook processing failed" });
       return;
     }
