@@ -116,7 +116,7 @@ function ReadOnlyField({ label, value, highlight }: { label: string; value: stri
 export default function Funcionarios() {
   const qc = useQueryClient();
   const { data: assinatura, isLoading: loadingAssinatura } = useAssinatura();
-  const isPremium = assinatura?.plano === "premium";
+  const isPremium = assinatura?.planoEfetivo === "premium";
 
   const { data, isLoading } = useListFuncionarios({ query: { enabled: isPremium, queryKey: getListFuncionariosQueryKey() } });
   const createMutation = useCreateFuncionario();
