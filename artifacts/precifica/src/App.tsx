@@ -40,7 +40,7 @@ function Loading() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="flex items-center gap-2 text-muted-foreground">
-        <div className="w-4 h-4 rounded-full bg-primary animate-pulse" />
+        <div className="w-4 h-4 rounded-full animate-pulse" style={{ background: "#4D2F70" }} />
         Carregando...
       </div>
     </div>
