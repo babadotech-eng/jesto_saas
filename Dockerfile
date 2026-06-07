@@ -12,4 +12,4 @@ RUN pnpm --filter @workspace/api-server build
 
 EXPOSE 3000
 
-CMD ["pnpm", "--filter", "@workspace/api-server", "start"]e
+CMD ["pnpm", "--filter", "@workspace/api-server", "start"]
