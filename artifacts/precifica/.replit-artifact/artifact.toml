@@ -1,6 +1,6 @@
 kind = "web"
 previewPath = "/"
-title = "Precifica"
+title = "Jesto"
 version = "1.0.0"
 id = "artifacts/precifica"
 router = "path"
