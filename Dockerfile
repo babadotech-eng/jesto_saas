@@ -2,11 +2,15 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@11.5.2 --activate
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+RUN corepack enable
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY . .
 
+RUN corepack prepare pnpm@11.5.2 --activate
 RUN pnpm install --no-frozen-lockfile
 RUN pnpm --filter @workspace/api-server build
 
