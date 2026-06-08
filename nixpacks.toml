@@ -1,11 +1,11 @@
 [phases.setup]
-nixPkgs = ["nodejs_20", "pnpm", "openssl"]
+nixPkgs = ["nodejs_22", "pnpm", "openssl"]
 
 [phases.install]
 cmds = ["pnpm install --no-frozen-lockfile"]
 
 [phases.build]
-cmds = ["PORT=8080 BASE_PATH=/ pnpm --filter './artifacts/api-server' --filter './artifacts/precifica' run build"]
+cmds = ["PORT=8080 BASE_PATH=/ pnpm run build"]
 
 [start]
 cmd = "pnpm run start"
