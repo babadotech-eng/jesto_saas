@@ -1,0 +1,71 @@
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m1[m[36m:[mconst [1;31mASAAS[m_API_KEY = process.env.[1;31mASAAS[m_API_KEY;
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m2[m[36m:[mconst [1;31mASAAS[m_BASE_URL =
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m3[m[36m:[m  process.env.[1;31mASAAS[m_ENV === "production"
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m4[m[36m:[m    ? "https://api.[1;31masaas[m.com/api/v3"
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m5[m[36m:[m    : "https://sandbox.[1;31masaas[m.com/api/v3";
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m7[m[36m:[mexport function is[1;31mAsaas[mConfigured(): boolean {
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m8[m[36m:[m  return !![1;31mASAAS[m_API_KEY;
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m11[m[36m:[minterface [1;31mAsaas[mErrorResponse {
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m15[m[36m:[masync function [1;31masaas[mRequest<T>(
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m20[m[36m:[m  if (![1;31mASAAS[m_API_KEY) {
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m21[m[36m:[m    throw new Error("[1;31mASAAS[m_API_KEY não configurado");
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m24[m[36m:[m  const res = await fetch(`${[1;31mASAAS[m_BASE_URL}${path}`, {
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m28[m[36m:[m      "access_token": [1;31mASAAS[m_API_KEY,
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m33[m[36m:[m  const data = (await res.json()) as T & [1;31mAsaas[mErrorResponse;
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m36[m[36m:[m    const firstError = (data as [1;31mAsaas[mErrorResponse).errors?.[0];
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m39[m[36m:[m      : `[1;31mAsaas[m API error (${res.status})`;
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m46[m[36m:[mexport interface [1;31mAsaas[mCustomer {
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m54[m[36m:[m  data: [1;31mAsaas[mCustomer[];
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m62[m[36m:[m): Promise<[1;31mAsaas[mCustomer> {
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m63[m[36m:[m  const list = await [1;31masaas[mRequest<CustomerListResponse>(
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m72[m[36m:[m      const updated = await [1;31masaas[mRequest<[1;31mAsaas[mCustomer>("PUT", `/customers/${existing.id}`, {
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m87[m[36m:[m  return [1;31masaas[mRequest<[1;31mAsaas[mCustomer>("POST", "/customers", payload);
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m90[m[36m:[mexport interface [1;31mAsaas[mSubscription {
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m99[m[36m:[mexport interface [1;31mAsaas[mPayment {
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m110[m[36m:[m  data: [1;31mAsaas[mPayment[];
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m121[m[36m:[m}): Promise<[1;31mAsaas[mSubscription> {
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m122[m[36m:[m  return [1;31masaas[mRequest<[1;31mAsaas[mSubscription>("POST", "/subscriptions", {
+[35martifacts/api-server/src/lib/asaas.ts[m[36m:[m[32m136[m[36m:[m  return [1;31masaas[mRequest<PaymentListResponse>(
+[35martifacts/api-server/src/routes/assinaturas.ts[m[36m:[m[32m9[m[36m:[m  is[1;31mAsaas[mConfigured,
+[35martifacts/api-server/src/routes/assinaturas.ts[m[36m:[m[32m10[m[36m:[m} from "../lib/[1;31masaas[m";
+[35martifacts/api-server/src/routes/assinaturas.ts[m[36m:[m[32m83[m[36m:[m// POST /api/assinaturas/checkout — create [1;31mAsaas[m subscription, return payment URL
+[35martifacts/api-server/src/routes/assinaturas.ts[m[36m:[m[32m108[m[36m:[m  if (!is[1;31mAsaas[mConfigured()) {
+[35martifacts/api-server/src/routes/assinaturas.ts[m[36m:[m[32m187[m[36m:[m      req.log.info({ customerId: customer.id, has[1;31mAsaas[mCpfCnpj: !!customer.cpfCnpj }, "checkout: customer resolved");
+[35martifacts/api-server/src/routes/assinaturas.ts[m[36m:[m[32m190[m[36m:[m      req.log.error({ [1;31masaas[mError: msg }, "checkout: findOrCreateCustomer failed");
+[35martifacts/api-server/src/routes/assinaturas.ts[m[36m:[m[32m199[m[36m:[m    const [1;31masaas[mCycle = ciclo === "mensal" ? "MONTHLY" : "YEARLY";
+[35martifacts/api-server/src/routes/assinaturas.ts[m[36m:[m[32m204[m[36m:[m      cycle: [1;31masaas[mCycle,
+[35martifacts/api-server/src/routes/assinaturas.ts[m[36m:[m[32m242[m[36m:[m        gateway: "[1;31masaas[m",
+[35martifacts/api-server/src/routes/assinaturas.ts[m[36m:[m[32m255[m[36m:[m          gateway: "[1;31masaas[m",
+[35martifacts/api-server/src/routes/assinaturas.ts[m[36m:[m[32m267[m[36m:[m    req.log.error({ err }, "Error creating [1;31mAsaas[m checkout");
+[35martifacts/api-server/src/routes/assinaturas.ts[m[36m:[m[32m273[m[36m:[m// POST /api/assinaturas/webhook — [1;31mAsaas[m payment events (no auth)
+[35martifacts/api-server/src/routes/assinaturas.ts[m[36m:[m[32m321[m[36m:[m              eq(assinaturasTable.gateway, "[1;31masaas[m"),
+[35martifacts/api-server/src/routes/assinaturas.ts[m[36m:[m[32m353[m[36m:[m              eq(assinaturasTable.gateway, "[1;31masaas[m"),
+[35martifacts/api-server/src/routes/assinaturas.ts[m[36m:[m[32m365[m[36m:[m              eq(assinaturasTable.gateway, "[1;31masaas[m"),
+[35martifacts/api-server/src/routes/assinaturas.ts[m[36m:[m[32m376[m[36m:[m              eq(assinaturasTable.gateway, "[1;31masaas[m"),
+[35martifacts/api-server/src/routes/assinaturas.ts[m[36m:[m[32m399[m[36m:[m              eq(assinaturasTable.gateway, "[1;31masaas[m"),
+[35martifacts/precifica/src/pages/CheckoutPage.tsx[m[36m:[m[32m302[m[36m:[m          Pagamento seguro via [1;31mAsaas[m
+[35mattached_assets/Pasted-Do-not-touch-the-Planos-page-except-what-is-strictly-ne_1780526998530.txt[m[36m:[m[32m25[m[36m:[mUse [1;31mAsaas[m as the payment gateway for paid plans.
+[35mattached_assets/Pasted-Do-not-touch-the-Planos-page-except-what-is-strictly-ne_1780526998530.txt[m[36m:[m[32m55[m[36m:[m- Do not send Gratis to [1;31mAsaas[m
+[35mattached_assets/Pasted-Do-not-touch-the-Planos-page-except-what-is-strictly-ne_1780526998530.txt[m[36m:[m[32m66[m[36m:[m- Use [1;31mAsaas[m as payment gateway
+[35mattached_assets/Pasted-Do-not-touch-the-Planos-page-except-what-is-strictly-ne_1780526998530.txt[m[36m:[m[32m68[m[36m:[m- Store gateway reference returned by [1;31mAsaas[m
+[35mattached_assets/Pasted-Do-not-touch-the-Planos-page-except-what-is-strictly-ne_1780526998530.txt[m[36m:[m[32m76[m[36m:[m- save gateway name = [1;31mAsaas[m
+[35mattached_assets/Pasted-Do-not-touch-the-Planos-page-except-what-is-strictly-ne_1780526998530.txt[m[36m:[m[32m121[m[36m:[m- create payment with [1;31mAsaas[m
+[35mattached_assets/Pasted-EXECUTE-ONLY-NO-PLAN-MODE-Ajuste-SOMENTE-o-fluxo-de-ati_1780686116866.txt[m[36m:[m[32m3[m[36m:[mAjuste SOMENTE o fluxo de ativação de plano via [1;31mAsaas[m Checkout.
+[35mattached_assets/Pasted-EXECUTE-ONLY-NO-PLAN-MODE-Ajuste-SOMENTE-o-fluxo-de-ati_1780686116866.txt[m[36m:[m[32m6[m[36m:[mO app só deve liberar o plano após confirmação oficial de pagamento pelo [1;31mAsaas[m Checkout.
+[35mattached_assets/Pasted-EXECUTE-ONLY-NO-PLAN-MODE-Ajuste-SOMENTE-o-fluxo-de-ati_1780686116866.txt[m[36m:[m[32m14[m[36m:[m- usuário redirecionado para [1;31mAsaas[m = NÃO ativa plano
+[35mattached_assets/Pasted-EXECUTE-ONLY-NO-PLAN-MODE-Ajuste-SOMENTE-o-fluxo-de-ati_1780686116866.txt[m[36m:[m[32m31[m[36m:[m- implementar ou corrigir endpoint backend para receber webhook do [1;31mAsaas[m
+[35mattached_assets/Pasted-EXECUTE-ONLY-NO-PLAN-MODE-Ajuste-SOMENTE-o-fluxo-de-ati_1780686116866.txt[m[36m:[m[32m59[m[36m:[m2. abrir/pagar parcialmente no [1;31mAsaas[m sem webhook confirmado não ativa plano
+[35mattached_assets/Pasted-EXECUTE-ONLY-NO-PLAN-MODE-Fa-a-SOMENTE-esta-altera-o-no_1780684997026.txt[m[36m:[m[32m6[m[36m:[mRemover o campo "código promocional" da página Planos e adicionar esse campo na página de checkout, antes do redirecionamento para o [1;31mAsaas[m, exatamente na tela de resumo do pedido.
+[35mattached_assets/Pasted-EXECUTE-ONLY-NO-PLAN-MODE-Fa-a-SOMENTE-esta-altera-o-no_1780684997026.txt[m[36m:[m[32m9[m[36m:[mO [1;31mAsaas[m já deve receber o valor final com o desconto aplicado.
+[35mattached_assets/Pasted-EXECUTE-ONLY-NO-PLAN-MODE-Fa-a-SOMENTE-esta-altera-o-no_1780684997026.txt[m[36m:[m[32m11[m[36m:[mA lógica do cupom precisa ser aplicada antes de gerar/enviar o pagamento para o [1;31mAsaas[m.
+[35mattached_assets/Pasted-EXECUTE-ONLY-NO-PLAN-MODE-Fa-a-SOMENTE-esta-altera-o-no_1780684997026.txt[m[36m:[m[32m18[m[36m:[m5. Atualizar o valor final no checkout antes de seguir para o [1;31mAsaas[m
+[35mattached_assets/Pasted-EXECUTE-ONLY-NO-PLAN-MODE-Fa-a-SOMENTE-esta-altera-o-no_1780684997026.txt[m[36m:[m[32m19[m[36m:[m6. Enviar ao [1;31mAsaas[m o valor já com desconto aplicado, quando houver cupom válido
+[35mattached_assets/Pasted-EXECUTE-ONLY-NO-PLAN-MODE-Fa-a-SOMENTE-esta-altera-o-no_1780684997026.txt[m[36m:[m[32m26[m[36m:[m- Ao clicar em continuar, o [1;31mAsaas[m deve receber o valor final já descontado
+[35mattached_assets/Pasted-EXECUTE-ONLY-NO-PLAN-MODE-Fa-a-SOMENTE-esta-altera-o-no_1780684997026.txt[m[36m:[m[32m49[m[36m:[m5. o [1;31mAsaas[m recebe o valor final já com desconto aplicado
+[35mattached_assets/Pasted-EXECUTE-ONLY-NO-PLAN-MODE-Fa-a-SOMENTE-esta-altera-o-no_1780684997026.txt[m[36m:[m[32m58[m[36m:[m5. como o valor final com desconto está sendo enviado ao [1;31mAsaas[m
+[35mattached_assets/Pasted-Execute-only-No-plan-mode-No-long-explanation-Do-not-re_1780573732725.txt[m[36m:[m[32m19[m[36m:[mMake the subscription/checkout page correctly read the CPF/CNPJ already saved in the user profile/configurações and use that value when creating the customer/charge/checkout in [1;31mAsaas[m.
+[35mattached_assets/Pasted-Execute-only-No-plan-mode-No-long-explanation-Do-not-re_1780573732725.txt[m[36m:[m[32m22[m[36m:[m- Before creating the [1;31mAsaas[m customer, charge, subscription, or checkout, load the logged-in user's saved CPF/CNPJ from the same profile/configurações source already used by the app
+[35mattached_assets/Pasted-Execute-only-No-plan-mode-No-long-explanation-Do-not-re_1780573732725.txt[m[36m:[m[32m23[m[36m:[m- Use that saved CPF/CNPJ in the [1;31mAsaas[m payload
+[35mattached_assets/Pasted-Execute-only-No-plan-mode-No-long-explanation-Do-not-re_1780573732725.txt[m[36m:[m[32m31[m[36m:[m- If the field is stored masked, sanitize it before sending to [1;31mAsaas[m
+[35mattached_assets/Pasted-Execute-only-No-plan-mode-No-long-explanation-Do-not-re_1780573732725.txt[m[36m:[m[32m45[m[36m:[m- If CPF/CNPJ exists in the logged-in user's saved profile/configurações, use it automatically in the [1;31mAsaas[m request
+[35mattached_assets/Pasted-Execute-only-No-plan-mode-No-long-explanation-Do-not-re_1780573732725.txt[m[36m:[m[32m61[m[36m:[mIf CPF/CNPJ is stored with mask formatting, remove punctuation before sending it to [1;31mAsaas[m.

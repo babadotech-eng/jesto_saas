@@ -515,6 +515,9 @@ export default function AdminUsers() {
                   {userDetail.planoUpdatedAt && (
                     <DetailField label="Plano atualizado em" value={fmtDate(userDetail.planoUpdatedAt)} />
                   )}
+                  {userDetail.plano !== "gratis" && userDetail.validoAte && (
+                    <DetailField label="Válido até" value={fmtDate(userDetail.validoAte)} />
+                  )}
                 </div>
               </section>
 
