@@ -3,7 +3,7 @@ import { useGetAssinatura, useGetMe } from "@workspace/api-client-react";
 import { usePerfil, useUpdatePerfil, PERFIL_QUERY_KEY } from "@/hooks/usePerfil";
 import { supabase } from "@/lib/supabase";
 import { useLocation } from "wouter";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +47,22 @@ export default function Configuracoes() {
   const { data: perfil, isLoading: loadingPerfil } = usePerfil();
   const updatePerfil = useUpdatePerfil();
   const logoInputRef = useRef<HTMLInputElement>(null);
+
+  const isPendente = assinatura?.status === "pendente";
+  const { data: pendingPayment } = useQuery<{ url: string | null }>({
+    queryKey: ["assinatura", "pending-payment-url"],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token ?? null;
+      const res = await fetch("/api/assinaturas/pending-payment-url", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) return { url: null };
+      return res.json() as Promise<{ url: string | null }>;
+    },
+    enabled: isPendente,
+    staleTime: 60_000,
+  });
 
   const [form, setForm] = useState({
     nome_completo: "", nome_negocio: "", tipo_negocio: "",
@@ -337,12 +353,15 @@ export default function Configuracoes() {
           <h2 className="font-semibold">Plano Atual</h2>
         </div>
         {loadingAssinatura ? <Skeleton className="h-16 w-full" /> : assinatura ? (
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
                 <Badge className={planColor} data-testid="badge-plano">{planLabel}</Badge>
                 <Badge variant="outline" className="text-green-600 border-green-200">Ativo</Badge>
               </div>
+              {isPendente && (
+                <p className="text-sm text-amber-600 font-medium mt-1">Esperando pagamento</p>
+              )}
               {assinatura.valido_ate && (
                 <p className="text-sm text-muted-foreground mt-1">Válido até: {new Date(assinatura.valido_ate).toLocaleDateString("pt-BR")}</p>
               )}
@@ -357,9 +376,16 @@ export default function Configuracoes() {
                 <p className="text-sm text-muted-foreground mt-1">Limite: 1 receita cadastrada</p>
               )}
             </div>
-            {assinatura.plano === "gratis" && (
-              <Button size="sm" asChild><a href="/planos">Fazer Upgrade</a></Button>
-            )}
+            <div className="flex flex-col gap-2 items-end shrink-0">
+              {isPendente && pendingPayment?.url && (
+                <Button size="sm" asChild>
+                  <a href={pendingPayment.url} target="_blank" rel="noopener noreferrer">Efetuar Pagamento</a>
+                </Button>
+              )}
+              <Button size="sm" variant="outline" asChild>
+                <a href="/planos">Fazer Upgrade</a>
+              </Button>
+            </div>
           </div>
         ) : null}
       </div>

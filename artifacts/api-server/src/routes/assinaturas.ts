@@ -270,6 +270,30 @@ router.post("/assinaturas/checkout", requireAuth, async (req, res): Promise<void
   }
 });
 
+// GET /api/assinaturas/pending-payment-url — recover invoiceUrl for a pending subscription
+router.get("/assinaturas/pending-payment-url", requireAuth, async (req, res): Promise<void> => {
+  const userId = getUserId(req);
+  try {
+    const [row] = await db
+      .select({ subscriptionIdGateway: assinaturasTable.subscriptionIdGateway })
+      .from(assinaturasTable)
+      .where(and(eq(assinaturasTable.userId, userId), eq(assinaturasTable.status, "pendente")))
+      .limit(1);
+
+    if (!row?.subscriptionIdGateway) {
+      res.json({ url: null });
+      return;
+    }
+
+    const payments = await getSubscriptionPayments(row.subscriptionIdGateway);
+    const url = payments.data?.[0]?.invoiceUrl ?? null;
+    res.json({ url });
+  } catch (err) {
+    req.log.warn({ err }, "pending-payment-url: could not fetch from Asaas");
+    res.json({ url: null });
+  }
+});
+
 // POST /api/assinaturas/webhook — Asaas payment events (no auth)
 router.post("/assinaturas/webhook", async (req, res): Promise<void> => {
   const body = req.body as {
