@@ -37,10 +37,11 @@ function SidebarContent({
   return (
     <>
       {/* Logo */}
-      <div className="h-16 flex items-center px-5 shrink-0"
+      <div className="h-auto min-h-16 py-1.5 flex items-center px-5 shrink-0"
         style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-        <div className="flex items-center">
-          <img src={logoPainel} alt="Jesto" className="h-10 w-auto rounded-lg shrink-0" />
+        <div className="flex flex-col items-start justify-center">
+          <img src={logoPainel} alt="Jesto" className="h-11 w-auto rounded-lg shrink-0" />
+          <span className="text-white text-[10px] leading-none mt-0.5 tracking-wide">Gestão de um jeito certo</span>
         </div>
       </div>
 
