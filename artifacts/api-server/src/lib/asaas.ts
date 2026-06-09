@@ -1,8 +1,8 @@
 const ASAAS_API_KEY = process.env.ASAAS_API_KEY;
 const ASAAS_BASE_URL =
   process.env.ASAAS_ENV === "production"
-    ? "https://api.asaas.com/api/v3"
-    : "https://sandbox.asaas.com/api/v3";
+    ? "https://api.asaas.com/v3"
+    : "https://api-sandbox.asaas.com/v3";
 
 export function isAsaasConfigured(): boolean {
   return !!ASAAS_API_KEY;
