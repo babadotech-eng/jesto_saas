@@ -294,8 +294,25 @@ router.get("/assinaturas/pending-payment-url", requireAuth, async (req, res): Pr
   }
 });
 
-// POST /api/assinaturas/webhook — Asaas payment events (no auth)
+// POST /api/assinaturas/webhook — Asaas payment events
+// Secured via ASAAS_WEBHOOK_TOKEN: set this env var to the token configured
+// in the Asaas dashboard (Configurações → Notificações → Token).
+// Asaas sends the token in the "asaas-access-token" header.
+const ASAAS_WEBHOOK_TOKEN = process.env.ASAAS_WEBHOOK_TOKEN;
+
 router.post("/assinaturas/webhook", async (req, res): Promise<void> => {
+  // Reject if token env var is configured but header is missing or wrong
+  if (ASAAS_WEBHOOK_TOKEN) {
+    const incomingToken = req.headers["asaas-access-token"];
+    if (!incomingToken || incomingToken !== ASAAS_WEBHOOK_TOKEN) {
+      req.log.warn({ hasHeader: !!incomingToken }, "Webhook: invalid or missing asaas-access-token — rejected");
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+  } else {
+    req.log.warn("Webhook: ASAAS_WEBHOOK_TOKEN not set — accepting without auth (configure it in Asaas dashboard)");
+  }
+
   const body = req.body as {
     event?: string;
     payment?: {
