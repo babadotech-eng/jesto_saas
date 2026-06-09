@@ -149,10 +149,11 @@ export default function Layout({ children }: { children: ReactNode }) {
       {/* ── Main ─────────────────────────────────────────────── */}
       <main className="flex-1 flex flex-col min-w-0">
         {/* Mobile header */}
-        <header className="h-14 flex items-center justify-between px-5 md:hidden shrink-0"
+        <header className="h-auto min-h-14 py-1.5 flex items-center justify-between px-5 md:hidden shrink-0"
           style={{ background: "#161722", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-          <div className="flex items-center">
-            <img src={logoPainel} alt="Jesto" className="h-10 w-auto rounded-lg" />
+          <div className="flex flex-col items-start justify-center">
+            <img src={logoPainel} alt="Jesto" className="h-11 w-auto rounded-lg" />
+            <span className="text-white text-[10px] leading-none mt-0.5 tracking-wide">Gestão de um jeito certo</span>
           </div>
           <button
             onClick={() => setMobileOpen(true)}
