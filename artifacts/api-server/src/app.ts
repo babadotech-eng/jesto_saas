@@ -33,11 +33,18 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
 
-// In production on Railway, serve the Vite frontend from the same service.
-// This makes https://your-app.up.railway.app/ show the SaaS UI instead of "Cannot GET /".
-const publicDir = path.resolve(process.cwd(), "artifacts/precifica/dist/public");
+// Serve the Vite frontend whenever the build folder is found.
+// Try candidate paths to handle different CWDs (monorepo root vs api-server dir).
+const candidateDirs = [
+  path.resolve(process.cwd(), "artifacts/precifica/dist/public"),
+  path.resolve(process.cwd(), "../precifica/dist/public"),
+  path.resolve(process.cwd(), "../../artifacts/precifica/dist/public"),
+];
 
-if (process.env.NODE_ENV === "production" && existsSync(publicDir)) {
+const publicDir = candidateDirs.find(existsSync) ?? null;
+
+if (publicDir) {
+  logger.info({ publicDir }, "Serving frontend static files");
   app.use(express.static(publicDir));
 
   // SPA fallback: let React/Vite handle routes like /login, /dashboard, etc.
@@ -45,6 +52,7 @@ if (process.env.NODE_ENV === "production" && existsSync(publicDir)) {
     res.sendFile(path.join(publicDir, "index.html"));
   });
 } else {
+  logger.warn({ candidateDirs }, "Frontend static build not found — API-only mode");
   app.get("/", (_req, res) => {
     res.send("Precifica API online. Frontend static build not found.");
   });
