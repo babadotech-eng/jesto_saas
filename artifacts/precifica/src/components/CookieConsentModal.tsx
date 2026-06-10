@@ -95,7 +95,7 @@ export default function CookieConsentModal() {
 
   return (
     <div
-      className="fixed bottom-0 right-0 z-[9999] p-4 sm:p-5 w-full sm:w-auto pointer-events-none"
+      className="fixed bottom-0 left-0 z-[9999] p-4 sm:p-5 w-full sm:w-auto pointer-events-none"
       aria-live="polite"
     >
       <div
