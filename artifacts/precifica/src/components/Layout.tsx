@@ -35,6 +35,7 @@ function SidebarContent({
   onNavClick?: () => void;
 }) {
   const d = getDicaDoDia();
+  const [, navigate] = useLocation();
   return (
     <>
       {/* Logo */}
@@ -87,7 +88,7 @@ function SidebarContent({
       {/* Sair */}
       <div className="px-3 pt-2 shrink-0"
         style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-        <button onClick={() => { onNavClick?.(); signOut(); }}
+        <button onClick={async () => { onNavClick?.(); await signOut(); navigate("/"); }}
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl w-full text-left transition-all"
           style={{ color: "#D9D2E3" }}>
           <LogOut size={16} style={{ color: "#C7BED6" }} />
