@@ -96,10 +96,6 @@ function SidebarContent({
         </button>
       </div>
 
-      {/* Legal links */}
-      <div className="px-3 pb-3 pt-1 shrink-0">
-        <LegalFooter className="flex-col !items-start gap-1" />
-      </div>
     </>
   );
 }
