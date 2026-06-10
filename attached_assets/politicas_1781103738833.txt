@@ -1,0 +1,214 @@
+Complementar a implementação anterior adicionando o conteúdo textual das páginas legais do SaaS.
+
+Importante:
+- Usar estes textos como base inicial.
+- Não inventar informações além das descritas.
+- Manter linguagem clara, elegante e acessível.
+- Inserir data de última atualização como: Junho de 2026.
+- Usar o e-mail soulplat@gmail.com como canal temporário de contato.
+- Manter o design já solicitado: fundo escuro, card central, bordas arredondadas, boa leitura e responsividade.
+- Não alterar autenticação, banco de dados, Supabase, Railway, Asaas ou rotas existentes.
+
+Página: /politica-de-privacidade
+Título: Política de Privacidade
+
+Conteúdo:
+
+Esta Política de Privacidade explica como coletamos, usamos, armazenamos e protegemos os dados pessoais dos usuários da plataforma.
+
+A plataforma foi criada para apoiar negócios de alimentação na organização de informações operacionais, financeiras e comerciais, como produtos, insumos, fichas técnicas, custos, preços, indicadores e dados relacionados à operação do negócio.
+
+1. Dados que podemos coletar
+
+Podemos coletar dados fornecidos diretamente pelo usuário, como nome, e-mail, dados da empresa, informações de cadastro e dados inseridos voluntariamente na plataforma.
+
+Também podemos tratar dados relacionados ao uso da plataforma, como registros de acesso, preferências, interações com funcionalidades, informações técnicas do dispositivo, navegador, endereço IP e dados necessários para segurança e funcionamento do sistema.
+
+Para usuários que contratam planos pagos, dados relacionados a pagamentos, cobranças e assinaturas podem ser tratados por meio de provedores externos de pagamento, como o Asaas.
+
+2. Finalidades do tratamento
+
+Os dados podem ser usados para:
+
+- Criar e gerenciar a conta do usuário;
+- Permitir o acesso seguro à plataforma;
+- Disponibilizar funcionalidades do sistema;
+- Armazenar informações inseridas pelo próprio usuário;
+- Processar assinaturas, cobranças e pagamentos;
+- Melhorar a experiência de uso;
+- Prevenir fraudes, falhas técnicas e acessos indevidos;
+- Cumprir obrigações legais ou regulatórias;
+- Entrar em contato sobre assuntos relacionados à conta, suporte ou funcionamento da plataforma.
+
+3. Bases legais
+
+O tratamento de dados poderá ocorrer com base na execução de contrato, cumprimento de obrigação legal ou regulatória, legítimo interesse, consentimento do usuário e demais hipóteses previstas na Lei Geral de Proteção de Dados Pessoais, conforme aplicável.
+
+4. Compartilhamento de dados
+
+Podemos compartilhar dados pessoais com fornecedores necessários para o funcionamento da plataforma, como serviços de hospedagem, autenticação, banco de dados, processamento de pagamentos, envio de comunicações e ferramentas técnicas de suporte.
+
+Entre os serviços utilizados pela plataforma podem estar provedores como Supabase, Railway, Asaas e outros fornecedores necessários à operação do sistema.
+
+Não vendemos dados pessoais dos usuários.
+
+5. Armazenamento e segurança
+
+Adotamos medidas técnicas e organizacionais razoáveis para proteger os dados contra acesso não autorizado, perda, alteração, divulgação indevida ou destruição.
+
+Apesar dos esforços de segurança, nenhum sistema é totalmente imune a riscos. O usuário também deve proteger suas credenciais de acesso e evitar compartilhar sua senha com terceiros.
+
+6. Retenção de dados
+
+Os dados serão mantidos pelo tempo necessário para cumprir as finalidades descritas nesta política, atender obrigações legais, resolver disputas, preservar direitos ou manter o funcionamento da conta enquanto ela estiver ativa.
+
+Quando aplicável, o usuário poderá solicitar a exclusão de seus dados, observadas as obrigações legais e operacionais de retenção.
+
+7. Direitos do titular
+
+Nos termos da LGPD, o usuário pode solicitar, quando aplicável:
+
+- Confirmação da existência de tratamento;
+- Acesso aos dados pessoais;
+- Correção de dados incompletos, inexatos ou desatualizados;
+- Anonimização, bloqueio ou eliminação de dados desnecessários ou tratados em desconformidade;
+- Portabilidade dos dados, quando aplicável;
+- Informação sobre compartilhamento de dados;
+- Revogação do consentimento;
+- Eliminação dos dados tratados com consentimento, quando aplicável;
+- Revisão de decisões automatizadas, se houver.
+
+As solicitações podem ser feitas pelo e-mail: soulplat@gmail.com.
+
+8. Dados inseridos pelo usuário
+
+O usuário é responsável pelas informações que insere na plataforma, incluindo dados de produtos, insumos, preços, custos, fornecedores, fichas técnicas, relatórios e demais informações relacionadas ao seu negócio.
+
+A plataforma atua como meio tecnológico para organização desses dados, não sendo responsável pela veracidade, atualização ou legalidade das informações inseridas pelo usuário.
+
+9. Cookies e tecnologias semelhantes
+
+Podemos usar cookies e tecnologias semelhantes para permitir o funcionamento da plataforma, melhorar a experiência de uso e, mediante consentimento, realizar análises de navegação.
+
+Mais informações estão disponíveis na Política de Cookies.
+
+10. Alterações nesta política
+
+Esta Política de Privacidade poderá ser atualizada periodicamente para refletir melhorias no sistema, mudanças legais ou alterações operacionais.
+
+A versão mais recente estará sempre disponível nesta página.
+
+Última atualização: Junho de 2026.
+
+
+Página: /politica-de-cookies
+Título: Política de Cookies
+
+Conteúdo:
+
+Esta Política de Cookies explica como a plataforma utiliza cookies e tecnologias semelhantes para funcionar corretamente, melhorar a experiência do usuário e oferecer mais segurança durante a navegação.
+
+1. O que são cookies
+
+Cookies são pequenos arquivos armazenados no navegador ou dispositivo do usuário quando ele acessa um site ou aplicação.
+
+Eles podem ser usados para lembrar preferências, manter sessões ativas, reforçar a segurança, entender o uso da plataforma e melhorar a experiência de navegação.
+
+2. Tipos de cookies que podemos utilizar
+
+A plataforma pode utilizar as seguintes categorias de cookies:
+
+Cookies necessários
+
+São essenciais para o funcionamento da plataforma. Eles permitem recursos como login, autenticação, segurança, sessão do usuário e acesso às áreas protegidas.
+
+Esses cookies não podem ser desativados pelo modal de preferências, pois são necessários para a prestação do serviço.
+
+Cookies analíticos
+
+Ajudam a entender como os usuários utilizam a plataforma, quais páginas são acessadas e como podemos melhorar recursos, navegação e desempenho.
+
+Esses cookies somente devem ser ativados mediante consentimento do usuário.
+
+Cookies de marketing
+
+Podem ser usados para campanhas, anúncios, remarketing ou mensuração de publicidade, caso essas ferramentas sejam ativadas no futuro.
+
+Esses cookies somente devem ser ativados mediante consentimento do usuário.
+
+3. Consentimento
+
+Ao acessar a plataforma pela primeira vez, o usuário poderá aceitar todos os cookies, recusar cookies não essenciais ou personalizar suas preferências.
+
+As escolhas serão armazenadas no navegador do usuário para que o aviso não seja exibido repetidamente.
+
+O usuário poderá alterar suas preferências a qualquer momento por meio da opção "Gerenciar cookies", disponível no rodapé da plataforma.
+
+4. Cookies de terceiros
+
+Algumas funcionalidades podem depender de serviços externos, como autenticação, hospedagem, pagamento, análise de uso ou ferramentas de suporte.
+
+Esses terceiros podem utilizar cookies ou tecnologias semelhantes conforme suas próprias políticas de privacidade e cookies.
+
+5. Como apagar cookies no navegador
+
+O usuário pode apagar ou bloquear cookies diretamente nas configurações do navegador.
+
+A desativação de cookies necessários pode comprometer o funcionamento da plataforma, especialmente login, autenticação e acesso à conta.
+
+6. Alterações nesta política
+
+Esta Política de Cookies poderá ser atualizada para refletir mudanças nas tecnologias utilizadas, novas funcionalidades ou exigências legais.
+
+A versão mais recente estará sempre disponível nesta página.
+
+Última atualização: Junho de 2026.
+
+
+Página: /lgpd
+Título: LGPD e Direitos do Titular
+
+Conteúdo:
+
+A plataforma respeita a Lei Geral de Proteção de Dados Pessoais, Lei nº 13.709/2018, e busca tratar dados pessoais com transparência, segurança e responsabilidade.
+
+Esta página apresenta, de forma simples, os principais direitos dos titulares de dados pessoais e o canal para solicitações relacionadas à privacidade.
+
+1. Direitos do titular
+
+Nos termos da LGPD, o titular de dados pessoais pode solicitar, quando aplicável:
+
+- Confirmação da existência de tratamento de dados pessoais;
+- Acesso aos dados pessoais tratados;
+- Correção de dados incompletos, inexatos ou desatualizados;
+- Anonimização, bloqueio ou eliminação de dados desnecessários, excessivos ou tratados em desconformidade;
+- Portabilidade dos dados, quando aplicável;
+- Informação sobre compartilhamento de dados com terceiros;
+- Revogação do consentimento;
+- Eliminação dos dados pessoais tratados com base no consentimento, quando aplicável;
+- Informação sobre a possibilidade de não fornecer consentimento e sobre as consequências da negativa;
+- Revisão de decisões tomadas exclusivamente com base em tratamento automatizado de dados pessoais, caso existam.
+
+2. Como fazer uma solicitação
+
+Para exercer seus direitos ou tirar dúvidas sobre privacidade e proteção de dados, entre em contato pelo e-mail:
+
+soulplat@gmail.com
+
+Ao enviar uma solicitação, poderemos pedir informações adicionais para confirmar a identidade do solicitante e garantir a segurança dos dados.
+
+3. Prazo de resposta
+
+As solicitações serão analisadas e respondidas dentro de prazo razoável, conforme a complexidade do pedido e as exigências previstas na legislação aplicável.
+
+4. Segurança e responsabilidade
+
+Adotamos medidas razoáveis para proteger os dados pessoais tratados na plataforma.
+
+O usuário também é responsável por manter suas credenciais de acesso em segurança e por não compartilhar sua senha com terceiros.
+
+5. Atualizações
+
+Esta página poderá ser atualizada para refletir mudanças legais, melhorias na plataforma ou ajustes operacionais.
+
+Última atualização: Junho de 2026.

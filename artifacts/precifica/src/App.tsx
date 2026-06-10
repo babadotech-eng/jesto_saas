@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import Layout from "@/components/Layout";
+import CookieConsentModal from "@/components/CookieConsentModal";
 import Painel from "@/pages/Painel";
 import Auth from "@/pages/Auth";
 import Landing from "@/pages/Landing";
@@ -29,6 +30,9 @@ import AdminPanel from "@/pages/admin/AdminPanel";
 import RedefinirSenha from "@/pages/RedefinirSenha";
 import CheckoutPage from "@/pages/CheckoutPage";
 import PagamentoRetorno from "@/pages/PagamentoRetorno";
+import PoliticaPrivacidade from "@/pages/PoliticaPrivacidade";
+import PoliticaCookies from "@/pages/PoliticaCookies";
+import Lgpd from "@/pages/Lgpd";
 import { toast } from "sonner";
 import { usePerfil, PerfilError } from "@/hooks/usePerfil";
 
@@ -262,6 +266,9 @@ function Router() {
       <Route path="/funcionarios"><ProtectedRoute component={Funcionarios} /></Route>
       <Route path="/configuracoes"><ProtectedRoute component={Configuracoes} /></Route>
       <Route path="/redefinir-senha"><PublicRoute component={RedefinirSenha} /></Route>
+      <Route path="/politica-de-privacidade"><PoliticaPrivacidade /></Route>
+      <Route path="/politica-de-cookies"><PoliticaCookies /></Route>
+      <Route path="/lgpd"><Lgpd /></Route>
       <Route path="/admin"><AdminRoute /></Route>
       <Route path="/admin/usuarios"><AdminRoute /></Route>
       <Route path="/admin/assinaturas"><AdminRoute /></Route>
@@ -281,6 +288,7 @@ function App() {
           <PendingCheckoutRedirector />
           <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
             <Router />
+            <CookieConsentModal />
           </WouterRouter>
           <Toaster richColors position="top-right" />
         </AuthProvider>

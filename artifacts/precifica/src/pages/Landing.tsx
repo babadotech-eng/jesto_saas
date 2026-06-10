@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
+import LegalFooter from "@/components/LegalFooter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Check, TrendingUp, BookOpen, Wallet, LayoutDashboard, UtensilsCrossed, Coffee, ShoppingBag, Sandwich, ArrowRight, FileSpreadsheet } from "lucide-react";
 import dashboardImg from "@assets/mocks3.png";
@@ -647,15 +648,21 @@ export default function Landing() {
         </section>
       </main>
       {/* ══ FOOTER ══════════════════════════════════════════════ */}
-      <footer style={{ background: "#111", borderTop: "1px solid rgba(255,255,255,0.05)" }} className="py-10 px-10 md:px-14">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
-          <a href="#inicio" className="flex items-center gap-2">
-            <img src={logoWhite} alt="Jesto" style={{ height: 24 }} />
-          </a>
-          <p style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.25)" }}>© 2025 Jesto. Todos os direitos reservados. · CNPJ 63.029.108/0001-27</p>
-          <div className="flex items-center gap-6">
-            <Link href="/login" style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.35)" }} className="hover:text-white transition-colors">Entrar</Link>
-            <Link href="/cadastro" style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.35)" }} className="hover:text-white transition-colors">Criar conta</Link>
+      <footer style={{ background: "#111", borderTop: "1px solid rgba(255,255,255,0.05)" }} className="py-8 px-10 md:px-14">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-5 pb-6"
+            style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+            <a href="#inicio" className="flex items-center gap-2">
+              <img src={logoWhite} alt="Jesto" style={{ height: 24 }} />
+            </a>
+            <p style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.25)" }}>© 2025 Jesto. Todos os direitos reservados. · CNPJ 63.029.108/0001-27</p>
+            <div className="flex items-center gap-6">
+              <Link href="/login" style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.35)" }} className="hover:text-white transition-colors">Entrar</Link>
+              <Link href="/cadastro" style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.35)" }} className="hover:text-white transition-colors">Criar conta</Link>
+            </div>
+          </div>
+          <div className="pt-5 flex justify-center">
+            <LegalFooter />
           </div>
         </div>
       </footer>

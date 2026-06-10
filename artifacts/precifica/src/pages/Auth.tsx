@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
+import LegalFooter from "@/components/LegalFooter";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Check, X, Mail, ArrowLeft, Eye, EyeOff } from "lucide-react";
@@ -584,7 +585,7 @@ export default function Auth() {
       </div>
 
       {/* ── Form panel: left on desktop (lg:order-1), below image on tablet ── */}
-      <div className="lg:order-1 lg:flex-none lg:w-[42%] flex-1 flex flex-col items-center justify-center py-12 px-6 sm:px-10 lg:px-14 bg-white">
+      <div className="lg:order-1 lg:flex-none lg:w-[42%] flex-1 flex flex-col items-center justify-center py-12 px-6 sm:px-10 lg:px-14 bg-white relative pb-16">
 
         {/* Form content */}
         <div
@@ -603,6 +604,11 @@ export default function Auth() {
           {view === "recuperar" && (
             <RecuperarContent goTo={goTo} />
           )}
+        </div>
+
+        {/* Legal footer */}
+        <div className="absolute bottom-4 left-0 right-0 flex justify-center px-4">
+          <LegalFooter dark={false} />
         </div>
       </div>
 

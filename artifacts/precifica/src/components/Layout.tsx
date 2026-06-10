@@ -3,6 +3,7 @@ import { useAssinatura } from "@/hooks/useAssinatura";
 import { planAtLeast } from "@/lib/planConfig";
 import { getDicaDoDia } from "@/data/dicas";
 import { Link, useLocation } from "wouter";
+import LegalFooter from "@/components/LegalFooter";
 import {
   LayoutDashboard, Package, Carrot, FileText,
   Wallet, ArrowRightLeft, BarChart3, Settings, // BarChart3 used for Relatórios nav icon
@@ -84,7 +85,7 @@ function SidebarContent({
       </div>
 
       {/* Sair */}
-      <div className="px-3 pb-4 pt-2 shrink-0"
+      <div className="px-3 pt-2 shrink-0"
         style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
         <button onClick={() => { onNavClick?.(); signOut(); }}
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl w-full text-left transition-all"
@@ -92,6 +93,11 @@ function SidebarContent({
           <LogOut size={16} style={{ color: "#C7BED6" }} />
           <span className="text-sm">Sair</span>
         </button>
+      </div>
+
+      {/* Legal links */}
+      <div className="px-3 pb-3 pt-1 shrink-0">
+        <LegalFooter className="flex-col !items-start gap-1" />
       </div>
     </>
   );
