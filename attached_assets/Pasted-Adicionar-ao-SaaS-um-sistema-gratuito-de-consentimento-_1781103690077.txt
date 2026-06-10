@@ -1,0 +1,164 @@
+Adicionar ao SaaS um sistema gratuito de consentimento de cookies e páginas legais para LGPD, com modal minimalista seguindo a identidade visual atual do app.
+
+Importante:
+- Existe um arquivo em anexo com o conteúdo textual das páginas legais.
+- Utilizar o conteúdo do anexo como base principal para preencher as páginas:
+  - Política de Privacidade
+  - Política de Cookies
+  - LGPD e Direitos do Titular
+- Não inventar textos jurídicos além do conteúdo do anexo.
+- Apenas adaptar a formatação visual para a interface do app.
+- Manter títulos, seções, data de atualização e e-mail de contato conforme o anexo.
+- Se houver algum trecho ambíguo no anexo, manter o texto original sem reescrever juridicamente.
+
+Requisitos gerais:
+
+1. Criar um componente CookieConsentModal no frontend.
+2. O modal deve aparecer no primeiro acesso do usuário.
+3. Salvar a escolha em localStorage com a chave "cookie-consent".
+4. Opções:
+   - Aceitar todos
+   - Recusar não essenciais
+   - Personalizar preferências
+5. Categorias:
+   - Necessários: sempre ativos
+   - Analíticos: desativado por padrão
+   - Marketing: desativado por padrão
+6. Não carregar scripts de analytics, marketing ou pixels antes do consentimento.
+7. Adicionar botão/link "Gerenciar cookies" no rodapé para reabrir o modal.
+8. Criar páginas:
+   - /politica-de-privacidade
+   - /politica-de-cookies
+   - /lgpd
+9. Adicionar links dessas páginas no rodapé da landing page, login e painel.
+10. Não alterar autenticação, banco de dados, Supabase, Railway, Asaas ou rotas existentes.
+11. Não usar serviço pago externo.
+12. O modal deve ser responsivo e funcionar em desktop e mobile.
+
+Design do modal:
+
+Criar um modal/banner minimalista, elegante e discreto, alinhado ao visual atual do app.
+
+Estilo visual:
+- Fundo geral do modal em tom escuro do app: #1a1a1a ou #161722.
+- Card interno com visual sofisticado, levemente elevado, usando bordas arredondadas de 24px.
+- Usar borda sutil com transparência, por exemplo rgba(255,255,255,0.08).
+- Aplicar sombra suave, sem exagero.
+- Texto principal em branco ou quase branco.
+- Textos secundários em cinza claro, por exemplo rgba(255,255,255,0.68).
+- Manter bastante respiro interno, com padding confortável.
+- Evitar visual chamativo, pop-up agressivo ou excesso de ícones.
+- O modal deve parecer parte natural do app, não uma peça externa.
+
+Tipografia:
+- Título com elegância, podendo usar Playfair Display se já estiver disponível no projeto.
+- Texto e botões com Inter ou a fonte padrão atual do app.
+- Título sugerido: "Preferências de cookies"
+- Texto sugerido:
+  "Usamos cookies necessários para o funcionamento da plataforma e, com sua autorização, cookies de análise para melhorar sua experiência. Você pode aceitar todos, recusar os não essenciais ou personalizar suas preferências."
+
+Layout:
+- Desktop: modal compacto no canto inferior direito ou centralizado na parte inferior, sem ocupar a tela inteira.
+- Mobile: modal em bottom sheet, ocupando a largura quase total da tela, com margem segura.
+- Largura máxima no desktop: aproximadamente 460px a 520px.
+- Z-index alto para aparecer acima da interface.
+- Animação suave de entrada, como fade-in + leve deslocamento vertical.
+
+Botões:
+1. Botão principal: "Aceitar todos"
+   - Fundo claro ou destaque elegante compatível com o app.
+   - Pode usar #E8F0FE como cor de fundo.
+   - Texto escuro #161722.
+   - Bordas arredondadas, altura confortável.
+
+2. Botão secundário: "Recusar não essenciais"
+   - Fundo transparente.
+   - Borda sutil rgba(255,255,255,0.16).
+   - Texto claro.
+
+3. Botão discreto/link: "Personalizar"
+   - Sem grande destaque.
+   - Texto sublinhado ou com opacidade menor.
+
+Tela de personalização:
+- Ao clicar em "Personalizar", mostrar as categorias no próprio modal.
+- Cada categoria deve ter descrição curta.
+- Necessários devem aparecer ativados e bloqueados.
+- Analíticos e Marketing devem ter toggles ativáveis/desativáveis.
+- Botões na personalização:
+   - "Salvar preferências"
+   - "Aceitar todos"
+   - "Voltar"
+
+Categorias:
+
+Necessários
+Descrição:
+"Essenciais para login, segurança, sessão e funcionamento da plataforma."
+Status: sempre ativo, não pode desligar.
+
+Analíticos
+Descrição:
+"Ajudam a entender o uso da plataforma e melhorar recursos."
+Status: desligado por padrão.
+
+Marketing
+Descrição:
+"Usados para campanhas, anúncios e remarketing, caso sejam ativados no futuro."
+Status: desligado por padrão.
+
+Comportamento:
+- Se o usuário clicar em "Aceitar todos", salvar:
+  {
+    necessary: true,
+    analytics: true,
+    marketing: true
+  }
+
+- Se clicar em "Recusar não essenciais", salvar:
+  {
+    necessary: true,
+    analytics: false,
+    marketing: false
+  }
+
+- Se salvar personalizado, salvar exatamente as escolhas feitas.
+
+- Registrar também a data/hora do consentimento no localStorage.
+
+Exemplo de estrutura:
+{
+  necessary: true,
+  analytics: false,
+  marketing: false,
+  consentDate: "ISO_DATE_HERE"
+}
+
+Rodapé:
+- Adicionar links discretos:
+   - Política de Privacidade
+   - Política de Cookies
+   - LGPD
+   - Gerenciar cookies
+
+Páginas legais:
+- Criar páginas simples, elegantes e legíveis.
+- Usar o conteúdo do arquivo em anexo como fonte principal.
+- Usar o mesmo fundo escuro do app.
+- Conteúdo em card central com bordas arredondadas.
+- Títulos em estilo elegante.
+- Texto bem espaçado.
+- Adicionar data de última atualização conforme o anexo.
+- Usar o e-mail de contato conforme o anexo.
+- Não inventar dados sensíveis.
+- Não criar textos jurídicos novos além do anexo.
+
+Importante:
+- Não modificar a lógica atual de login.
+- Não mexer nas integrações Supabase, Railway, Asaas ou banco de dados.
+- Não quebrar rotas existentes.
+- Não adicionar dependência paga.
+- Manter o código limpo, reaproveitável e fácil de alterar no futuro.
+- Antes de finalizar, testar se as rotas das páginas legais abrem corretamente e se o modal salva/reabre as preferências.
+
+O arquivo em anexo contém o conteúdo oficial que deve ser usado nas páginas legais. Não substitua esse conteúdo por textos genéricos.
