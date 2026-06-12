@@ -1,0 +1,151 @@
+Faça APENAS esta atualização no app, com a menor alteração possível e sem mexer em nada mais.
+
+OBJETIVO
+Criar um **Excel modelo de Ficha Técnica** para **download** e posterior **upload** na aba **Ficha Técnica**, de forma que:
+- seja facilmente entendido pelo usuário leigo
+- seja facilmente preenchido
+- seja lido corretamente pelo app
+- seja compatível com os **produtos já cadastrados/lidos pelo app**
+
+ESCOPO EXATO
+1. Trabalhar somente na funcionalidade da aba **Ficha Técnica**.
+2. Adicionar uma forma de **baixar um modelo Excel de ficha técnica**.
+3. Garantir que esse arquivo possa depois ser **reenviado/uploadado** na própria aba Ficha Técnica e ser interpretado corretamente pelo app.
+4. O modelo deve ser inteligente e amigável para o usuário final, sem comprometer a estrutura necessária para importação.
+
+OBJETIVO FUNCIONAL DO EXCEL
+Esse Excel deve servir como ponte entre:
+- os **produtos existentes do app**
+- os **insumos**
+- a composição da **ficha técnica**
+
+Ou seja:
+- cada linha do Excel deve representar um item da ficha técnica
+- o app deve conseguir entender a qual **produto** aquela linha pertence
+- o app deve conseguir entender qual **insumo** está sendo usado
+- o app deve conseguir entender a **quantidade** e a **unidade** usada na receita/composição
+
+ESTRUTURA RECOMENDADA DO ARQUIVO
+Criar um arquivo `.xlsx` com estrutura simples, robusta e amigável.
+
+Sugestão de abas:
+1. **Instrucoes**
+2. **FichaTecnica**
+3. **Exemplo** (opcional, mas recomendado se ajudar o usuário)
+
+DETALHAMENTO DAS ABAS
+
+ABA 1 — Instrucoes
+- explicar em linguagem simples como preencher
+- explicar que não deve alterar os nomes das colunas da aba principal
+- explicar que cada linha representa 1 insumo usado em 1 produto
+- explicar que, se um produto usa 5 insumos, ele terá 5 linhas
+- explicar o formato esperado dos campos
+- explicar quais colunas são obrigatórias
+- explicar como salvar e subir o arquivo no app
+
+ABA 2 — FichaTecnica
+Essa deve ser a aba principal de importação.
+Criar colunas claras e estáveis, com nomes simples e legíveis, mas compatíveis com a leitura do app.
+
+Estrutura sugerida:
+- `produto_nome`
+- `produto_categoria` (se fizer sentido para ajudar consistência)
+- `insumo_nome`
+- `quantidade`
+- `unidade`
+- `fator_correcao` (opcional, se a lógica do app usar isso)
+- `observacao` (opcional, apenas se o importador tolerar isso sem quebrar)
+- `ordem_preparo` (opcional, apenas se útil e seguro)
+
+IMPORTANTE:
+- se o app já tiver um formato interno esperado para ficha técnica, seguir o formato já existente do sistema
+- se já houver parser/importador pronto, adaptar o Excel ao parser existente em vez de refatorar a lógica toda
+- priorizar compatibilidade real com a leitura atual do app
+
+ABA 3 — Exemplo
+- incluir algumas linhas de exemplo realistas
+- usar produtos já existentes no app
+- usar insumos já existentes/lidos pelo app
+- mostrar claramente como repetir o produto em múltiplas linhas para compor a ficha técnica
+- o exemplo deve ajudar o cliente leigo a entender “de primeira”
+
+EXEMPLO DE LÓGICA DE PREENCHIMENTO
+Exemplo conceitual:
+- Produto: Hambúrguer Clássico
+  - pão brioche
+  - hambúrguer bovino
+  - queijo cheddar
+  - tomate
+  - alface
+- Produto: Pizza Margherita
+  - massa de pizza
+  - molho de tomate
+  - muçarela
+  - manjericão
+
+USABILIDADE DO TEMPLATE
+Quero um template melhor do que uma planilha crua.
+Aplicar melhorias de usabilidade como:
+- cabeçalho destacado e travado
+- instruções claras
+- nomes de colunas amigáveis
+- linha(s) de exemplo
+- largura de colunas adequada
+- proteção contra confusão visual, sem exagerar
+- se possível, usar listas/validação em colunas que já tenham dados controlados no app, mas somente se isso for simples e seguro
+- não criar uma planilha complexa demais
+
+INTEGRAÇÃO COM O APP
+- adicionar a opção de baixar esse template na aba Ficha Técnica
+- garantir que o upload leia esse mesmo padrão
+- se necessário, ajustar apenas o mínimo da leitura/importação para suportar esse template com segurança
+- o foco é evitar erro de preenchimento pelo usuário e facilitar o processamento pelo sistema
+
+REGRAS DE IMPLEMENTAÇÃO
+- fazer a menor alteração possível
+- reutilizar componentes já existentes
+- reutilizar padrão visual atual do app
+- não redesenhar a aba
+- não refatorar partes não relacionadas
+- não alterar outras abas
+- não mudar navegação
+- não mexer em autenticação
+- não mexer em billing
+- não mexer em dashboard
+- não mexer em relatórios
+- não mexer em produtos/insumos fora do estritamente necessário para leitura do template
+- se precisar criar arquivo/template estático ou gerado dinamicamente, escolher a abordagem mais simples, robusta e compatível com a arquitetura atual
+
+ARQUIVO GERADO
+- o template deve estar pronto para download no app
+- deve ser um `.xlsx` real
+- deve abrir corretamente no Excel/Google Sheets
+- deve ser fácil para o cliente preencher e reenviar
+
+SCOPE LOCK
+- Change only the files strictly necessary for the technical sheet Excel template download/upload flow
+- Do not refactor unrelated code
+- Do not redesign unrelated screens
+- Do not modify features outside the Ficha Técnica flow
+- If you find issues outside this scope, do not fix them now
+
+VALIDAÇÃO OBRIGATÓRIA
+Antes de encerrar, validar:
+1. existe um botão/ação para baixar o modelo Excel na aba Ficha Técnica
+2. o arquivo baixado abre corretamente
+3. o template tem instruções claras
+4. a aba principal tem estrutura estável para importação
+5. o template usa produtos/insumos coerentes com os dados do app
+6. o upload do arquivo funciona com esse padrão
+7. o app entende corretamente o vínculo produto + insumo + quantidade + unidade
+8. nenhuma outra área foi alterada fora do necessário
+9. o app continua compilando e funcionando normalmente
+
+FORMATO DA RESPOSTA
+Ao terminar:
+- informar objetivamente o que foi criado
+- listar apenas os arquivos alterados/criados
+- explicar como o template foi estruturado
+- explicar como o app lê o template no upload
+- confirmar que não mexeu em mais nada

@@ -202,6 +202,91 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
     } catch { toast.error("Erro ao remover ingrediente."); }
   }
 
+  function downloadTemplate() {
+    const wb = XLSX.utils.book_new();
+
+    // Aba 1 — Instrucoes
+    const instrucoes = [
+      ["MODELO DE FICHA TÉCNICA — INSTRUÇÕES DE PREENCHIMENTO"],
+      [""],
+      ["Como usar este arquivo:"],
+      ["1. Acesse a aba 'Ingredientes' (aba ao lado)."],
+      ["2. Preencha UMA LINHA por ingrediente utilizado na receita."],
+      ["3. Se um produto usa 5 ingredientes, terá 5 linhas preenchidas."],
+      ["4. NÃO altere os nomes das colunas (linha 1 da aba Ingredientes)."],
+      ["5. Salve no formato .xlsx e faça o upload na aba Ficha Técnica do app."],
+      [""],
+      ["COLUNAS DA ABA 'Ingredientes':"],
+      [""],
+      ["  ingrediente  (OBRIGATÓRIO)"],
+      ["    → Nome exato do insumo cadastrado no app."],
+      ["    → Consulte a aba 'Insumos_Cadastrados' para ver os nomes disponíveis."],
+      ["    → O nome deve ser idêntico ao cadastrado (sem espaços extras)."],
+      [""],
+      ["  quantidade   (OBRIGATÓRIO)"],
+      ["    → Quantidade usada na receita (número)."],
+      ["    → Exemplos: 0.25 (para 250g), 2 (para 2 unidades), 0.5 (para 500ml)."],
+      [""],
+      ["  unidade      (informativo — não importado)"],
+      ["    → Apenas referência visual. Não é importada pelo app."],
+      [""],
+      ["  observacao   (opcional — não importado)"],
+      ["    → Anotações livres sobre o ingrediente ou modo de preparo."],
+      [""],
+      ["ATENÇÃO:"],
+      ["  • O app importa os ingredientes para a ficha técnica que estiver aberta."],
+      ["  • Em caso de erro, verifique se o nome do ingrediente está idêntico ao"],
+      ["    insumo cadastrado (sem acento diferente ou espaço extra)."],
+      ["  • Linhas com nome vazio ou quantidade inválida serão ignoradas."],
+    ];
+    const wsInst = XLSX.utils.aoa_to_sheet(instrucoes);
+    wsInst["!cols"] = [{ wch: 75 }];
+    XLSX.utils.book_append_sheet(wb, wsInst, "Instrucoes");
+
+    // Aba 2 — Ingredientes (aba lida no upload)
+    const headers = ["ingrediente", "quantidade", "unidade", "observacao"];
+    const exemplos = [
+      ["Farinha de trigo", 0.5, "kg", "Peneirar antes de usar"],
+      ["Ovos", 3, "un", ""],
+      ["Açúcar refinado", 0.2, "kg", ""],
+      ["Manteiga sem sal", 0.1, "kg", "Temperatura ambiente"],
+      ["Leite integral", 0.25, "L", ""],
+      ["← apague estas linhas de exemplo e preencha com seus ingredientes", "", "", ""],
+    ];
+    const wsIng = XLSX.utils.aoa_to_sheet([headers, ...exemplos]);
+    wsIng["!cols"] = [{ wch: 35 }, { wch: 14 }, { wch: 12 }, { wch: 40 }];
+    wsIng["!freeze"] = { xSplit: 0, ySplit: 1 };
+    const hStyle = {
+      fill: { patternType: "solid", fgColor: { rgb: "4D2F70" } },
+      font: { bold: true, color: { rgb: "FFFFFF" } },
+      alignment: { horizontal: "center", vertical: "center" },
+    };
+    headers.forEach((h, i) => {
+      const ref = XLSX.utils.encode_cell({ r: 0, c: i });
+      if (!wsIng[ref]) wsIng[ref] = { v: h, t: "s" };
+      wsIng[ref].s = hStyle;
+    });
+    XLSX.utils.book_append_sheet(wb, wsIng, "Ingredientes");
+
+    // Aba 3 — Insumos cadastrados (referência de nomes exatos)
+    if (insumos && insumos.length > 0) {
+      const insHeaders = ["nome_insumo", "unidade"];
+      const insData = insumos.map(ins => [ins.nome, ins.unidade]);
+      const wsIns = XLSX.utils.aoa_to_sheet([insHeaders, ...insData]);
+      wsIns["!cols"] = [{ wch: 38 }, { wch: 14 }];
+      const insHStyle = { font: { bold: true }, fill: { patternType: "solid", fgColor: { rgb: "EAE0F4" } } };
+      insHeaders.forEach((h, i) => {
+        const ref = XLSX.utils.encode_cell({ r: 0, c: i });
+        if (!wsIns[ref]) wsIns[ref] = { v: h, t: "s" };
+        wsIns[ref].s = insHStyle;
+      });
+      XLSX.utils.book_append_sheet(wb, wsIns, "Insumos_Cadastrados");
+    }
+
+    XLSX.writeFile(wb, "modelo_ficha_tecnica.xlsx");
+    toast.success("Modelo baixado! Preencha a aba 'Ingredientes' e faça o upload.");
+  }
+
   function exportExcel() {
     if (!ficha) { toast.error("Ficha não carregada."); return; }
     const headerStyle = {
@@ -316,11 +401,14 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
           <p className="text-sm text-muted-foreground">CMV total: <span className="font-semibold text-foreground">{fmt(ficha.cmv_total ?? 0)}</span></p>
         </div>
         <div className="flex gap-2 flex-wrap">
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={exportExcel}>
-            <Download size={14} />Exportar Excel
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={downloadTemplate}>
+            <FileText size={14} />Baixar Modelo
           </Button>
           <Button variant="outline" size="sm" className="gap-1.5" onClick={() => fileRef.current?.click()}>
             <Upload size={14} />Importar Excel
+          </Button>
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={exportExcel}>
+            <Download size={14} />Exportar Excel
           </Button>
           <input ref={fileRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleImportFile} />
         </div>
