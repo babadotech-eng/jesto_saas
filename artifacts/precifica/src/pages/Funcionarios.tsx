@@ -1,10 +1,10 @@
 import { useState } from "react";
 import {
   useListFuncionarios, useCreateFuncionario, useUpdateFuncionario, useDeleteFuncionario,
-  getListFuncionariosQueryKey, useCreateLancamento, useUpdateLancamento, useDeleteLancamento,
-  useListLancamentos, getListLancamentosQueryKey,
+  getListFuncionariosQueryKey, useCreateLancamento, getListLancamentosQueryKey,
+  useListDespesas, useCreateDespesa, useUpdateDespesa, useDeleteDespesa, getListDespesasQueryKey,
   type Funcionario as FuncionarioRow,
-  type Lancamento as LancamentoRow,
+  type Despesa as DespesaRow,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAssinatura } from "@/hooks/useAssinatura";
@@ -134,11 +134,12 @@ export default function Funcionarios() {
   const deleteMutation = useDeleteFuncionario();
 
   const createLancamento = useCreateLancamento();
-  const updateLancamentoMut = useUpdateLancamento();
-  const deleteLancamentoMut = useDeleteLancamento();
+  const createDespesaMut = useCreateDespesa();
+  const updateDespesaMut = useUpdateDespesa();
+  const deleteDespesaMut = useDeleteDespesa();
 
-  const { data: todosLancamentos } = useListLancamentos();
-  const proLaboreList: LancamentoRow[] = (todosLancamentos ?? []).filter(l => l.descricao === PL_DESCRICAO);
+  const { data: todasDespesas } = useListDespesas();
+  const proLaboreList: DespesaRow[] = (todasDespesas ?? []).filter(d => d.descricao === PL_DESCRICAO);
 
   const [plOpen, setPlOpen] = useState(false);
   const [plEditingId, setPlEditingId] = useState<string | null>(null);
@@ -150,22 +151,21 @@ export default function Funcionarios() {
     plForm.reset({ valor: 0, data: new Date().toISOString().slice(0, 10) });
     setPlOpen(true);
   }
-  function openEditProLabore(l: LancamentoRow) {
-    setPlEditingId(l.id);
-    plForm.reset({ valor: Number(l.valor), data: l.data });
-    setPlOpen(false);
+  function openEditProLabore(d: DespesaRow) {
+    setPlEditingId(d.id);
+    plForm.reset({ valor: Number(d.valor), data: d.data ?? new Date().toISOString().slice(0, 10) });
     setPlOpen(true);
   }
   async function onSubmitProLabore(values: PlFormValues) {
     try {
       if (plEditingId) {
-        await updateLancamentoMut.mutateAsync({ id: plEditingId, data: { descricao: PL_DESCRICAO, tipo: "despesa", valor: values.valor, data: values.data, categoria: PL_CATEGORIA } });
+        await updateDespesaMut.mutateAsync({ id: plEditingId, data: { descricao: PL_DESCRICAO, valor: values.valor, data: values.data, categoria: PL_CATEGORIA } });
         toast.success("Pró-labore atualizado!");
       } else {
-        await createLancamento.mutateAsync({ data: { descricao: PL_DESCRICAO, tipo: "despesa", valor: values.valor, data: values.data, categoria: PL_CATEGORIA } });
+        await createDespesaMut.mutateAsync({ data: { descricao: PL_DESCRICAO, valor: values.valor, data: values.data, categoria: PL_CATEGORIA } });
         toast.success("Pró-labore registrado!");
       }
-      qc.invalidateQueries({ queryKey: getListLancamentosQueryKey() });
+      qc.invalidateQueries({ queryKey: getListDespesasQueryKey() });
       setPlEditingId(null);
       plForm.reset({ valor: 0, data: new Date().toISOString().slice(0, 10) });
     } catch { toast.error("Erro ao salvar pró-labore."); }
@@ -173,9 +173,9 @@ export default function Funcionarios() {
   async function handleDeleteProLabore() {
     if (!plDeleteId) return;
     try {
-      await deleteLancamentoMut.mutateAsync({ id: plDeleteId });
+      await deleteDespesaMut.mutateAsync({ id: plDeleteId });
       toast.success("Pró-labore excluído.");
-      qc.invalidateQueries({ queryKey: getListLancamentosQueryKey() });
+      qc.invalidateQueries({ queryKey: getListDespesasQueryKey() });
     } catch { toast.error("Erro ao excluir."); }
     setPlDeleteId(null);
   }
@@ -554,27 +554,32 @@ export default function Funcionarios() {
                 <Button type="button" variant="outline" onClick={() => { setPlEditingId(null); plForm.reset({ valor: 0, data: new Date().toISOString().slice(0, 10) }); }}>
                   {plEditingId ? "Cancelar edição" : "Limpar"}
                 </Button>
-                <Button type="submit" disabled={createLancamento.isPending || updateLancamentoMut.isPending} data-testid="button-submit-pl">
-                  {createLancamento.isPending || updateLancamentoMut.isPending ? "Salvando..." : plEditingId ? "Atualizar" : "Registrar"}
+                <Button type="submit" disabled={createDespesaMut.isPending || updateDespesaMut.isPending} data-testid="button-submit-pl">
+                  {createDespesaMut.isPending || updateDespesaMut.isPending ? "Salvando..." : plEditingId ? "Atualizar" : "Registrar"}
                 </Button>
               </DialogFooter>
             </form>
           </Form>
           {proLaboreList.length > 0 && (
             <div className="border-t border-border pt-4 space-y-2">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Retiradas registradas</p>
-              {[...proLaboreList].sort((a, b) => b.data.localeCompare(a.data)).map(l => (
-                <div key={l.id} className="flex items-center justify-between rounded-lg border border-border px-3 py-2 text-sm">
-                  <span className="text-muted-foreground">{new Date(l.data + "T12:00:00").toLocaleDateString("pt-BR")}</span>
-                  <span className="font-semibold text-foreground">{fmt(Number(l.valor))}</span>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Pró-labore configurado</p>
+              {[...proLaboreList].sort((a, b) => (b.data ?? "").localeCompare(a.data ?? "")).map(d => (
+                <div key={d.id} className="flex items-center justify-between rounded-lg border border-border px-3 py-2 text-sm">
+                  <span className="text-muted-foreground">
+                    {d.data ? new Date(d.data + "T12:00:00").toLocaleDateString("pt-BR") : "—"}
+                  </span>
+                  <span className="font-semibold text-foreground">{fmt(Number(d.valor))}/mês</span>
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" onClick={() => openEditProLabore(l)}><Pencil size={13} /></Button>
-                    <Button variant="ghost" size="icon" onClick={() => setPlDeleteId(l.id)}><Trash2 size={13} className="text-destructive" /></Button>
+                    <Button variant="ghost" size="icon" onClick={() => openEditProLabore(d)}><Pencil size={13} /></Button>
+                    <Button variant="ghost" size="icon" onClick={() => setPlDeleteId(d.id)}><Trash2 size={13} className="text-destructive" /></Button>
                   </div>
                 </div>
               ))}
             </div>
           )}
+          <p className="text-xs text-muted-foreground pt-2 border-t border-border">
+            A data informada será usada automaticamente nos cálculos mensais do pró-labore. Se ela for alterada no futuro, a nova data será aplicada daquela alteração em diante.
+          </p>
         </DialogContent>
       </Dialog>
 

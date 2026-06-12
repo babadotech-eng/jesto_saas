@@ -1,0 +1,76 @@
+Faça APENAS esta modificação na funcionalidade de pró-labore já criada, sem mexer em nada mais.
+
+OBJETIVO
+Ajustar a lógica da **data de retirada do pró-labore** para que ela seja recorrente automaticamente em todos os meses, sempre no dia selecionado, e para que alterações futuras nessa data passem a valer **da nova data em diante**, sem reprocessar períodos anteriores.
+
+ESCOPO EXATO
+Modificar somente a funcionalidade de pró-labore dos sócios já existente para atender estas regras:
+
+1. A **data de retirada** preenchida no modal do pró-labore deve funcionar como a referência recorrente mensal da retirada.
+2. O pró-labore deve ser computado automaticamente **todos os meses** no dia/data configurada pelo usuário.
+3. Se o usuário alterar essa data depois, a nova data deve valer **da alteração em diante**, ao longo dos meses seguintes.
+4. Os períodos anteriores devem permanecer com o comportamento/histórico anterior, sem serem reescritos indevidamente.
+5. Adicionar uma mensagem explicativa no **rodapé do modal** informando essa regra de recorrência e atualização futura.
+
+REGRA DE NEGÓCIO
+- o pró-labore é recorrente mensal
+- a data escolhida define o dia de retirada usado nos cálculos mensais do app
+- ao alterar a data, a atualização deve refletir apenas dali em diante
+- não recontabilizar retroativamente meses já consolidados com a regra anterior, a menos que o sistema atual já tenha um padrão explícito para isso
+- aplicar a solução mais simples, segura e consistente com a arquitetura atual do app
+
+MENSAGEM NO RODAPÉ DO MODAL
+Adicionar uma mensagem curta, clara e discreta no rodapé do modal com este sentido:
+
+**“A data informada será usada automaticamente nos cálculos mensais do pró-labore. Se ela for alterada no futuro, a nova data será aplicada daquela alteração em diante.”**
+
+Pode ajustar levemente a redação apenas se necessário para encaixar no padrão visual/textual do app, sem mudar o sentido.
+
+REGRAS DE IMPLEMENTAÇÃO
+- fazer a menor alteração possível
+- modificar somente os arquivos necessários
+- reutilizar componentes, padrões visuais, modal, formulário, textos auxiliares e lógica já existentes
+- manter layout, espaçamento, tipografia, cores e responsividade
+- não refatorar partes não relacionadas
+- não redesenhar o modal
+- não alterar outras funcionalidades do app
+
+IMPORTANTE SOBRE CÁLCULO
+Garantir que:
+- o pró-labore continue entrando nos cálculos gerais relevantes do app
+- a recorrência mensal use a data configurada
+- a alteração da data respeite a regra de vigência futura
+- o comportamento fique consistente nos resumos, indicadores e resultados por período
+
+NÃO MEXER
+- não alterar outras abas sem necessidade direta
+- não mexer em dashboard além do reflexo natural dos cálculos
+- não alterar textos fora desta funcionalidade, exceto a mensagem do rodapé do modal
+- não mudar banco, estrutura ou arquitetura além do estritamente necessário
+- não renomear arquivos sem necessidade
+- não alterar autenticação, permissões, navegação ou design system
+- não mexer em nenhuma outra parte que não seja indispensável para esta regra
+
+SCOPE LOCK
+- Only modify the files strictly necessary for this recurring pró-labore date behavior
+- Do not rename, reformat, or refactor unrelated code
+- Do not “improve” anything outside this scope
+- If you find another issue outside this scope, do not fix it now
+
+VALIDAÇÃO OBRIGATÓRIA
+Antes de encerrar, validar:
+1. a data do pró-labore é aplicada automaticamente em todos os meses
+2. o cálculo mensal usa essa data como referência recorrente
+3. ao editar a data, a nova regra vale apenas daquela alteração em diante
+4. períodos anteriores não são alterados indevidamente
+5. a mensagem explicativa foi adicionada no rodapé do modal
+6. nenhum layout foi alterado fora do necessário
+7. nenhuma funcionalidade não relacionada foi modificada
+8. o app continua compilando e funcionando normalmente
+
+FORMATO DA RESPOSTA
+Ao terminar:
+- informar objetivamente o que foi alterado
+- listar apenas os arquivos alterados
+- explicar em 3 a 5 linhas como a regra de recorrência e vigência futura foi implementada
+- confirmar que não mexeu em mais nada
