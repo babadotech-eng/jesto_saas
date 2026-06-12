@@ -301,16 +301,17 @@ router.get("/assinaturas/pending-payment-url", requireAuth, async (req, res): Pr
 const ASAAS_WEBHOOK_TOKEN = process.env.ASAAS_WEBHOOK_TOKEN;
 
 router.post("/assinaturas/webhook", async (req, res): Promise<void> => {
-  // Reject if token env var is configured but header is missing or wrong
-  if (ASAAS_WEBHOOK_TOKEN) {
-    const incomingToken = req.headers["asaas-access-token"];
-    if (!incomingToken || incomingToken !== ASAAS_WEBHOOK_TOKEN) {
-      req.log.warn({ hasHeader: !!incomingToken }, "Webhook: invalid or missing asaas-access-token — rejected");
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-  } else {
-    req.log.warn("Webhook: ASAAS_WEBHOOK_TOKEN not set — accepting without auth (configure it in Asaas dashboard)");
+  // Fail-closed: if ASAAS_WEBHOOK_TOKEN is not configured, refuse all events
+  if (!ASAAS_WEBHOOK_TOKEN) {
+    req.log.error("Webhook: ASAAS_WEBHOOK_TOKEN not configured — rejecting request. Set it in Asaas dashboard (Configurações → Notificações → Token).");
+    res.status(503).json({ error: "Webhook not configured" });
+    return;
+  }
+  const incomingToken = req.headers["asaas-access-token"];
+  if (!incomingToken || incomingToken !== ASAAS_WEBHOOK_TOKEN) {
+    req.log.warn({ hasHeader: !!incomingToken }, "Webhook: invalid or missing asaas-access-token — rejected");
+    res.status(401).json({ error: "Unauthorized" });
+    return;
   }
 
   const body = req.body as {
