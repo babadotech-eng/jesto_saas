@@ -1,0 +1,93 @@
+Faça APENAS esta alteração no app, com a menor mudança possível e sem mexer em nada mais.
+
+OBJETIVO
+Adicionar o pró-labore dos sócios como um novo dado financeiro do sistema, permitindo cadastro pela aba Funcionários e incluindo esse valor nos cálculos gerais do app.
+
+ESCOPO EXATO
+1. Na aba **Funcionários**, adicionar um novo botão ao lado do botão **Novo Funcionário**.
+2. O texto do novo botão deve ser:
+   **Pró-labore dos sócios**
+3. Ao clicar nesse botão, abrir um modal ou o fluxo mínimo necessário para cadastrar/editar o pró-labore dos sócios.
+4. Dentro desse modal, incluir:
+   - um campo de **valor do pró-labore**
+   - um campo de **data da retirada**
+5. Esse valor deve passar a entrar nos cálculos gerais do app considerando a **data informada**, para ser computado no período correto da retirada.
+
+REGRAS DE IMPLEMENTAÇÃO
+- fazer a menor alteração possível
+- reutilizar componentes, modal, drawer, formulário, botões, inputs, padrões visuais e lógica já existentes no app
+- manter o layout atual
+- manter espaçamentos atuais
+- manter tipografia atual
+- manter cores atuais
+- manter responsividade atual
+- manter a organização atual da aba Funcionários
+- posicionar o novo botão visualmente coerente ao lado do botão **Novo Funcionário**
+- usar o mesmo estilo visual dos botões já existentes nessa área
+- não criar redesign da tela
+- não refatorar partes não relacionadas
+
+COMPORTAMENTO FUNCIONAL
+- permitir cadastrar o valor do pró-labore dos sócios
+- permitir informar a **data da retirada** no mesmo modal
+- se já existir registro salvo, permitir editar
+- o pró-labore deve ser tratado como despesa recorrente/operacional do negócio
+- o cálculo deve respeitar a **data informada**, para que o valor entre no mês/período correto dos cálculos
+- o valor não deve ficar apenas salvo visualmente; ele deve realmente compor os cálculos financeiros do sistema
+
+REGRAS SOBRE A DATA
+- adicionar um campo de data claro no modal
+- usar o componente de data já padrão do app, se existir
+- ao editar um registro, a data deve carregar corretamente no campo
+- garantir formato compatível com o app e com os cálculos
+- considerar essa data para inclusão no período correto dos resumos, indicadores e resultados financeiros
+
+IMPORTANTE SOBRE CÁLCULOS
+Incluir o pró-labore em todos os cálculos gerais relevantes do app, respeitando a data informada, especialmente os que hoje alimentam:
+- resultado
+- lucro
+- margem
+- indicadores financeiros consolidados
+- resumos por período
+- qualquer visão geral onde despesas/custos fixos/operacionais entram na conta
+
+SE HOUVER DÚVIDA DE MODELAGEM
+Preferir a abordagem mais simples, segura e consistente com o app atual:
+- um registro de pró-labore com valor e data
+- editável depois
+- considerado como despesa fixa/operacional
+- entrando no período correto conforme a data da retirada
+
+NÃO MEXER
+- não alterar outras abas sem necessidade direta dessa funcionalidade
+- não mexer em dashboard além do necessário para refletir os cálculos já impactados
+- não alterar textos, títulos ou copies fora desta funcionalidade
+- não mudar banco, estrutura ou arquitetura além do estritamente necessário
+- não renomear arquivos sem necessidade
+- não alterar navegação
+- não alterar permissões
+- não alterar autenticação
+- não alterar design system
+- não alterar componentes compartilhados sem necessidade real
+- não mexer em nada que não seja indispensável para inserir essa funcionalidade
+
+VALIDAÇÃO OBRIGATÓRIA
+Antes de encerrar, validar:
+1. o botão **Pró-labore dos sócios** foi adicionado ao lado de **Novo Funcionário**
+2. o modal abre corretamente
+3. o modal possui campo de **valor** e campo de **data**
+4. o fluxo de cadastro/edição funciona
+5. a data salva é considerada no período correto do cálculo
+6. o valor do pró-labore entra de verdade nos cálculos gerais do app
+7. nenhum layout foi alterado fora do necessário
+8. nenhuma funcionalidade não relacionada foi modificada
+9. o app continua compilando e funcionando normalmente
+
+FORMATO DA RESPOSTA
+Ao terminar:
+- informar objetivamente o que foi alterado
+- listar apenas os arquivos alterados
+- descrever de forma curta em quais cálculos o pró-labore passou a entrar
+- confirmar que a data passou a definir o período da contabilização
+- não sugerir melhorias extras
+- não mexer em mais nada além disso

@@ -1,8 +1,10 @@
 import { useState } from "react";
 import {
   useListFuncionarios, useCreateFuncionario, useUpdateFuncionario, useDeleteFuncionario,
-  getListFuncionariosQueryKey, useCreateLancamento, getListLancamentosQueryKey,
+  getListFuncionariosQueryKey, useCreateLancamento, useUpdateLancamento, useDeleteLancamento,
+  useListLancamentos, getListLancamentosQueryKey,
   type Funcionario as FuncionarioRow,
+  type Lancamento as LancamentoRow,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAssinatura } from "@/hooks/useAssinatura";
@@ -62,6 +64,14 @@ const defaultValues: FormValues = {
   inss_patronal_pct: 20, sat_rat_pct: 1, salario_educacao_pct: 2.5,
   sistema_s_pct: 3.3, fgts_pct: 8, fgts_rescisao_pct: 4,
 };
+
+const plSchema = z.object({
+  valor: z.coerce.number().min(0.01, "Valor obrigatório"),
+  data: z.string().min(1, "Data obrigatória"),
+});
+type PlFormValues = z.infer<typeof plSchema>;
+const PL_DESCRICAO = "Pró-labore dos sócios";
+const PL_CATEGORIA = "Salários e pró-labore";
 
 function PremiumGate() {
   const [, setLocation] = useLocation();
@@ -124,6 +134,51 @@ export default function Funcionarios() {
   const deleteMutation = useDeleteFuncionario();
 
   const createLancamento = useCreateLancamento();
+  const updateLancamentoMut = useUpdateLancamento();
+  const deleteLancamentoMut = useDeleteLancamento();
+
+  const { data: todosLancamentos } = useListLancamentos();
+  const proLaboreList: LancamentoRow[] = (todosLancamentos ?? []).filter(l => l.descricao === PL_DESCRICAO);
+
+  const [plOpen, setPlOpen] = useState(false);
+  const [plEditingId, setPlEditingId] = useState<string | null>(null);
+  const [plDeleteId, setPlDeleteId] = useState<string | null>(null);
+  const plForm = useForm<PlFormValues>({ resolver: zodResolver(plSchema), defaultValues: { valor: 0, data: new Date().toISOString().slice(0, 10) } });
+
+  function openProLabore() {
+    setPlEditingId(null);
+    plForm.reset({ valor: 0, data: new Date().toISOString().slice(0, 10) });
+    setPlOpen(true);
+  }
+  function openEditProLabore(l: LancamentoRow) {
+    setPlEditingId(l.id);
+    plForm.reset({ valor: Number(l.valor), data: l.data });
+    setPlOpen(false);
+    setPlOpen(true);
+  }
+  async function onSubmitProLabore(values: PlFormValues) {
+    try {
+      if (plEditingId) {
+        await updateLancamentoMut.mutateAsync({ id: plEditingId, data: { descricao: PL_DESCRICAO, tipo: "despesa", valor: values.valor, data: values.data, categoria: PL_CATEGORIA } });
+        toast.success("Pró-labore atualizado!");
+      } else {
+        await createLancamento.mutateAsync({ data: { descricao: PL_DESCRICAO, tipo: "despesa", valor: values.valor, data: values.data, categoria: PL_CATEGORIA } });
+        toast.success("Pró-labore registrado!");
+      }
+      qc.invalidateQueries({ queryKey: getListLancamentosQueryKey() });
+      setPlEditingId(null);
+      plForm.reset({ valor: 0, data: new Date().toISOString().slice(0, 10) });
+    } catch { toast.error("Erro ao salvar pró-labore."); }
+  }
+  async function handleDeleteProLabore() {
+    if (!plDeleteId) return;
+    try {
+      await deleteLancamentoMut.mutateAsync({ id: plDeleteId });
+      toast.success("Pró-labore excluído.");
+      qc.invalidateQueries({ queryKey: getListLancamentosQueryKey() });
+    } catch { toast.error("Erro ao excluir."); }
+    setPlDeleteId(null);
+  }
 
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -233,9 +288,14 @@ export default function Funcionarios() {
           <h1 className="text-2xl font-bold text-foreground">Funcionários</h1>
           <p className="text-sm text-muted-foreground mt-1">Folha de pagamento e encargos</p>
         </div>
-        <Button onClick={openCreate} data-testid="button-create-funcionario">
-          <Plus size={16} className="mr-2" />Novo Funcionário
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={openProLabore} data-testid="button-pro-labore">
+            <DollarSign size={16} className="mr-2" />Pró-labore dos sócios
+          </Button>
+          <Button onClick={openCreate} data-testid="button-create-funcionario">
+            <Plus size={16} className="mr-2" />Novo Funcionário
+          </Button>
+        </div>
       </div>
 
       {/* Summary cards */}
@@ -467,6 +527,69 @@ export default function Funcionarios() {
           </Form>
         </DialogContent>
       </Dialog>
+
+      {/* Modal Pró-labore */}
+      <Dialog open={plOpen} onOpenChange={setPlOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader><DialogTitle>Pró-labore dos sócios</DialogTitle></DialogHeader>
+          <Form {...plForm}>
+            <form onSubmit={plForm.handleSubmit(onSubmitProLabore)} className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <FormField control={plForm.control} name="valor" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Valor (R$)</FormLabel>
+                    <FormControl><Input type="number" step="0.01" min="0" placeholder="0,00" {...field} data-testid="input-pl-valor" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={plForm.control} name="data" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Data da retirada</FormLabel>
+                    <FormControl><Input type="date" {...field} data-testid="input-pl-data" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => { setPlEditingId(null); plForm.reset({ valor: 0, data: new Date().toISOString().slice(0, 10) }); }}>
+                  {plEditingId ? "Cancelar edição" : "Limpar"}
+                </Button>
+                <Button type="submit" disabled={createLancamento.isPending || updateLancamentoMut.isPending} data-testid="button-submit-pl">
+                  {createLancamento.isPending || updateLancamentoMut.isPending ? "Salvando..." : plEditingId ? "Atualizar" : "Registrar"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+          {proLaboreList.length > 0 && (
+            <div className="border-t border-border pt-4 space-y-2">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Retiradas registradas</p>
+              {[...proLaboreList].sort((a, b) => b.data.localeCompare(a.data)).map(l => (
+                <div key={l.id} className="flex items-center justify-between rounded-lg border border-border px-3 py-2 text-sm">
+                  <span className="text-muted-foreground">{new Date(l.data + "T12:00:00").toLocaleDateString("pt-BR")}</span>
+                  <span className="font-semibold text-foreground">{fmt(Number(l.valor))}</span>
+                  <div className="flex gap-1">
+                    <Button variant="ghost" size="icon" onClick={() => openEditProLabore(l)}><Pencil size={13} /></Button>
+                    <Button variant="ghost" size="icon" onClick={() => setPlDeleteId(l.id)}><Trash2 size={13} className="text-destructive" /></Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={!!plDeleteId} onOpenChange={() => setPlDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir pró-labore?</AlertDialogTitle>
+            <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteProLabore} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Excluir</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
