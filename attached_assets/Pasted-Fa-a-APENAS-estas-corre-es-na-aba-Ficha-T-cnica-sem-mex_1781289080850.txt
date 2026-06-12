@@ -1,0 +1,128 @@
+Faça APENAS estas correções na aba **Ficha Técnica**, sem mexer em nada mais.
+
+PROBLEMA 1 — FRACIONAMENTO DE UNIDADE NA FICHA TÉCNICA
+Hoje, em ingredientes/insumos, posso ter um item cadastrado como:
+- **Ovos**
+- unidade de compra: **1 dz**
+
+Mas na **Ficha Técnica** eu preciso conseguir usar esse mesmo insumo em unidade fracionada, por exemplo:
+- 1 un
+- 2 un
+- 3 un
+
+EXEMPLO REAL
+Se no cadastro de insumos existe:
+- Ovos
+- unidade_de_medida = dz
+- preço referente a 1 dúzia
+
+Na ficha técnica eu preciso poder lançar:
+- ingrediente: Ovos
+- quantidade usada: 2
+- unidade usada na ficha: un
+
+E o sistema precisa entender a conversão:
+- 1 dz = 12 un
+- 2 un = 2/12 dz
+
+OBJETIVO DA CORREÇÃO
+Permitir que a **Ficha Técnica** aceite unidade de uso diferente da unidade de compra/cadastro do insumo, pelo menos nos casos de fracionamento simples como:
+- dz -> un
+- kg -> g
+- L -> ml
+
+Sem mexer em outras áreas além do necessário para a ficha técnica funcionar corretamente.
+
+COMPORTAMENTO ESPERADO
+Na aba/modal de Ficha Técnica:
+- ao selecionar um ingrediente, o usuário deve conseguir informar a unidade de uso da receita
+- se a unidade cadastrada for maior que a unidade de uso, o sistema deve converter corretamente
+- o custo e/ou consumo precisam respeitar essa conversão
+- o foco principal é corrigir o caso de **dúzia para unidade**
+
+MÍNIMO NECESSÁRIO
+Implementar suporte de conversão na ficha técnica com o menor impacto possível.
+
+Sugestão segura:
+- manter o insumo original como está
+- permitir informar na ficha técnica:
+  - quantidade
+  - unidade de uso
+- aplicar conversão interna por fator
+
+Conversões mínimas obrigatórias:
+- `1 dz = 12 un`
+- `1 kg = 1000 g`
+- `1 L = 1000 ml`
+
+Se já existir alguma lógica de unidade, reaproveitar e só complementar o necessário.
+
+INTERFACE
+Na edição/criação do ingrediente dentro da ficha técnica:
+- exibir claramente a unidade do insumo cadastrado
+- permitir escolher ou informar a unidade usada na ficha
+- deixar claro para o usuário que a conversão será aplicada
+- não redesenhar a tela
+- manter o padrão visual atual
+
+PROBLEMA 2 — REMOVER BOTÃO
+Excluir o botão:
+- **Ajustar ficha técnica**
+
+Esse botão deve ser removido da **capa do modal** dentro da aba **Ficha Técnica**.
+
+IMPORTANTE:
+- remover apenas esse botão da capa/topo/ação principal do modal
+- manter a edição por ingrediente com ícone de caneta, se ela já existir
+- não remover outras ações que não foram pedidas
+- não mexer em mais nada
+
+ESCOPO EXATO
+- trabalhar somente no fluxo da aba **Ficha Técnica**
+- ajustar somente o necessário para suportar conversão/fracionamento de unidade na ficha técnica
+- remover somente o botão **Ajustar ficha técnica** da capa do modal
+- não alterar produtos
+- não alterar insumos fora do estritamente necessário para leitura/conversão nessa tela
+- não alterar dashboard
+- não alterar relatórios
+- não alterar autenticação
+- não alterar billing
+- não alterar outras abas
+- não refatorar arquitetura
+- não redesenhar modals
+
+REGRAS DE IMPLEMENTAÇÃO
+- fazer a menor alteração possível
+- reaproveitar componentes existentes
+- reaproveitar estados, modals e handlers já existentes
+- preservar layout atual
+- preservar estilo atual
+- preservar fluxo atual
+- alterar apenas o necessário para a correção
+
+SCOPE LOCK
+- Only modify the files strictly necessary for the Ficha Técnica flow
+- Add only the minimum logic needed for ingredient unit conversion/fractioning in technical sheets
+- Remove only the “Ajustar ficha técnica” button from the modal cover/header
+- Do not refactor unrelated code
+- Do not redesign the feature
+- Do not touch any other area of the app
+
+VALIDAÇÃO OBRIGATÓRIA
+Antes de encerrar, validar:
+1. um insumo cadastrado como `dz` pode ser usado na ficha técnica como `un`
+2. o sistema entende `1 dz = 12 un`
+3. o custo/consumo calculado respeita essa conversão
+4. o usuário consegue informar unidade de uso na ficha técnica
+5. o botão **Ajustar ficha técnica** não aparece mais na capa do modal
+6. o ícone de caneta por ingrediente continua funcionando, se já existia
+7. nenhuma outra área do sistema foi alterada
+8. o app continua compilando e funcionando normalmente
+
+FORMATO DA RESPOSTA
+Ao terminar:
+- informar objetivamente o que foi corrigido
+- listar apenas os arquivos alterados
+- explicar como a conversão de unidade foi aplicada
+- confirmar que o botão **Ajustar ficha técnica** foi removido da capa do modal
+- confirmar que não mexeu em mais nada

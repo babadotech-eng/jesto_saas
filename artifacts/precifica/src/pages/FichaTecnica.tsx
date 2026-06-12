@@ -129,12 +129,17 @@ function InsumoCombobox({
 
 function convertToNativeUnit(qty: number, fromUnit: string, toUnit: string): number {
   if (fromUnit === toUnit) return qty;
-  if (fromUnit === "g" && toUnit === "kg") return qty / 1000;
-  if (fromUnit === "kg" && toUnit === "g") return qty * 1000;
-  if (fromUnit === "ml" && toUnit === "L") return qty / 1000;
-  if (fromUnit === "L" && toUnit === "ml") return qty * 1000;
-  if (fromUnit === "dz" && toUnit === "un") return qty * 12;
-  if (fromUnit === "un" && toUnit === "dz") return qty / 12;
+  // "unid" and "un" are the same physical unit (1:1)
+  const norm = (u: string) => (u === "unid" ? "un" : u);
+  const from = norm(fromUnit);
+  const to = norm(toUnit);
+  if (from === to) return qty;
+  if (from === "g" && to === "kg") return qty / 1000;
+  if (from === "kg" && to === "g") return qty * 1000;
+  if (from === "ml" && to === "L") return qty / 1000;
+  if (from === "L" && to === "ml") return qty * 1000;
+  if (from === "dz" && to === "un") return qty * 12;
+  if (from === "un" && to === "dz") return qty / 12;
   return qty;
 }
 
@@ -870,16 +875,6 @@ export default function FichaTecnica() {
                 <p className="text-xs text-muted-foreground">
                   CMV: <span className="font-semibold text-primary">{fmt(ficha.cmv_total ?? 0)}</span>
                 </p>
-              </div>
-              <div className="mt-3 pt-2 border-t border-border/50">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full gap-1.5 text-xs h-7"
-                  onClick={e => { e.stopPropagation(); setDetailId(ficha.id); }}
-                >
-                  <Pencil size={11} />Ajustar ficha técnica
-                </Button>
               </div>
             </button>
           ))}
