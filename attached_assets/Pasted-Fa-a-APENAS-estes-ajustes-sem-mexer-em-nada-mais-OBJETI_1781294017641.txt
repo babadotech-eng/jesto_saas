@@ -1,0 +1,98 @@
+Faça APENAS estes ajustes, sem mexer em nada mais.
+
+OBJETIVO
+Padronizar o botão de recorrência entre os modals **Novo lançamento** e **Novo Funcionário**, reaproveitando o mesmo comportamento já existente no modal de Funcionários “Lançar salários automaticamente em Lançamentos”, mas com novo título.
+
+AJUSTE 1 — MODAL NOVO LANÇAMENTO
+No modal **Novo lançamento**:
+- adicionar um botão de recorrência
+- esse botão deve seguir a mesma lógica, comportamento, posição e padrão visual do botão existente no modal de **Funcionários** que hoje lança salários automaticamente em **Lançamentos**
+
+IMPORTANTE:
+- reaproveitar a mesma implementação existente, sempre que possível
+- não criar um fluxo novo paralelo se já houver handler, estado, componente ou ação reaproveitável
+- manter o mesmo padrão visual do botão original
+- manter o mesmo padrão de interação do botão original
+
+TÍTULO DO BOTÃO NO MODAL NOVO LANÇAMENTO
+O texto/título exibido para esse botão deve ser exatamente:
+- **Lançamento recorrente nesta mesma data**
+
+AJUSTE 2 — MODAL NOVO FUNCIONÁRIO
+No modal **Novo Funcionário**:
+- manter o mesmo botão de recorrência já existente
+- alterar apenas o título/texto exibido desse botão
+
+NOVO TÍTULO NO MODAL NOVO FUNCIONÁRIO
+O texto/título exibido deve passar a ser exatamente:
+- **Lançamento recorrente nesta mesma data**
+
+REQUISITOS TÉCNICOS
+- identificar o botão atual de recorrência no modal de Funcionários
+- reutilizar a mesma lógica/componente/handler no modal **Novo lançamento**
+- alterar apenas o label/título visível conforme solicitado
+- preservar comportamento funcional atual
+- preservar integração atual com **Lançamentos**
+- não alterar regra de negócio além do necessário para expor esse mesmo recurso no modal **Novo lançamento**
+
+INTERFACE
+- manter layout atual dos dois modals
+- manter ordem e padrão visual dos botões já existentes
+- não redesenhar o modal
+- não criar estilo novo desnecessário
+- usar os mesmos componentes do sistema, se houver
+
+ESCOPO EXATO
+Trabalhar somente em:
+- modal **Novo lançamento**
+- modal **Novo Funcionário**
+- botão de recorrência relacionado ao lançamento automático/recorrente em **Lançamentos**
+
+NÃO FAZER
+- não mexer em ficha técnica
+- não mexer em markup
+- não mexer em produtos
+- não mexer em insumos
+- não mexer em dashboard
+- não mexer em relatórios
+- não mexer em autenticação
+- não mexer em billing
+- não alterar outras abas
+- não alterar outros textos do sistema
+- não refatorar arquitetura
+- não alterar regras não relacionadas ao botão de recorrência
+
+IMPLEMENTAÇÃO ESPERADA
+Prioridade:
+1. localizar o botão atual no modal de Funcionários
+2. reaproveitar a mesma lógica no modal **Novo lançamento**
+3. trocar o texto do botão no modal **Novo Funcionário**
+4. manter a menor alteração possível
+5. alterar apenas arquivos, handlers, props e renderização estritamente necessários
+
+SCOPE LOCK
+- Only modify the files strictly necessary for the modals **Novo lançamento** and **Novo Funcionário**
+- Reuse the existing recurring-launch button logic from the Funcionários modal
+- Add the same recurring button to the **Novo lançamento** modal
+- Rename the button label in both modals to **“Lançamento recorrente nesta mesma data”**
+- Do not redesign the UI
+- Do not refactor unrelated code
+- Do not touch any other area of the app
+
+VALIDAÇÃO OBRIGATÓRIA
+Antes de encerrar, validar:
+1. o modal **Novo lançamento** agora possui botão de recorrência
+2. esse botão usa a mesma lógica/comportamento do botão existente no modal de Funcionários
+3. o texto do botão no modal **Novo lançamento** é **“Lançamento recorrente nesta mesma data”**
+4. o texto do botão no modal **Novo Funcionário** também é **“Lançamento recorrente nesta mesma data”**
+5. o layout visual dos modals continua o mesmo
+6. nenhuma outra área do sistema foi alterada
+7. o app continua compilando e funcionando normalmente
+
+FORMATO DA RESPOSTA
+Ao terminar:
+- informar objetivamente o que foi ajustado
+- listar apenas os arquivos alterados
+- informar onde a lógica foi reaproveitada
+- confirmar a alteração do texto nos dois modals
+- confirmar que não mexeu em nada mais

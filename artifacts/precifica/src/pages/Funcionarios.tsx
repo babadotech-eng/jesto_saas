@@ -497,7 +497,7 @@ export default function Funcionarios() {
                   >
                     <span className={`pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow-lg ring-0 transition-transform ${autoLancamento ? "translate-x-4" : "translate-x-0"}`} />
                   </button>
-                  <span className="text-sm font-medium text-foreground">Lançar salário automaticamente em Lançamentos</span>
+                  <span className="text-sm font-medium text-foreground">Lançamento recorrente nesta mesma data</span>
                 </label>
                 {autoLancamento && (
                   <div className="flex items-center gap-3 pl-12">

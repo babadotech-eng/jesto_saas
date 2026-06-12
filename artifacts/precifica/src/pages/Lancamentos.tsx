@@ -184,6 +184,10 @@ export default function Lancamentos() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [filterTipo, setFilterTipo] = useState<"todos" | "receita" | "despesa">("todos");
 
+  // Recurring-entry toggle state (Novo Lançamento modal)
+  const [autoLancRecorr, setAutoLancRecorr] = useState(false);
+  const [dataRecorr, setDataRecorr] = useState(today);
+
   // Sale-by-product modal state
   const [saleOpen, setSaleOpen] = useState(false);
   const [saleProdutoId, setSaleProdutoId] = useState("");
@@ -257,10 +261,12 @@ export default function Lancamentos() {
     );
   }
 
-  function openCreate() { setEditingId(null); form.reset(defaultValues); setOpen(true); }
+  function openCreate() { setEditingId(null); form.reset(defaultValues); setAutoLancRecorr(false); setDataRecorr(today); setOpen(true); }
   function openEdit(l: NonNullable<typeof data>[0]) {
     setEditingId(l.id);
     form.reset({ descricao: l.descricao, tipo: l.tipo as "receita" | "despesa", valor: l.valor, data: l.data, categoria: l.categoria ?? "" });
+    setAutoLancRecorr(false);
+    setDataRecorr(today);
     setOpen(true);
   }
 
@@ -272,7 +278,12 @@ export default function Lancamentos() {
         toast.success("Lançamento atualizado!");
       } else {
         await createMutation.mutateAsync({ data: payload });
-        toast.success("Lançamento registrado!");
+        if (autoLancRecorr && dataRecorr) {
+          await createMutation.mutateAsync({ data: { ...payload, data: dataRecorr } });
+          toast.success("Lançamento registrado e recorrência criada!");
+        } else {
+          toast.success("Lançamento registrado!");
+        }
       }
       qc.invalidateQueries({ queryKey: getListLancamentosQueryKey() });
       setOpen(false);
@@ -472,6 +483,38 @@ export default function Lancamentos() {
                   <FormMessage />
                 </FormItem>
               )} />
+              {!editingId && (
+                <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-3">
+                  <label className="flex items-center gap-3 cursor-pointer select-none">
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={autoLancRecorr}
+                      onClick={() => setAutoLancRecorr(v => !v)}
+                      className={`relative inline-flex h-5 w-9 shrink-0 rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${autoLancRecorr ? "bg-primary" : "bg-input"}`}
+                    >
+                      <span className={`pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow-lg ring-0 transition-transform ${autoLancRecorr ? "translate-x-4" : "translate-x-0"}`} />
+                    </button>
+                    <span className="text-sm font-medium text-foreground">Lançamento recorrente nesta mesma data</span>
+                  </label>
+                  {autoLancRecorr && (
+                    <div className="flex items-center gap-3 pl-12">
+                      <label className="text-sm text-muted-foreground whitespace-nowrap">Data de pagamento:</label>
+                      <input
+                        type="date"
+                        value={dataRecorr}
+                        onChange={e => setDataRecorr(e.target.value)}
+                        className="flex h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      />
+                    </div>
+                  )}
+                  {autoLancRecorr && (
+                    <p className="text-xs text-muted-foreground pl-12">
+                      Um lançamento com os mesmos dados será criado na data escolhida.
+                    </p>
+                  )}
+                </div>
+              )}
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
                 <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending} data-testid="button-submit-lancamento">Salvar</Button>
