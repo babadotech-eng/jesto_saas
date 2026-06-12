@@ -157,6 +157,7 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
   const [addUnit, setAddUnit] = useState("");
   const [editItemId, setEditItemId] = useState<string | null>(null);
   const [editQty, setEditQty] = useState("");
+  const [editUnit, setEditUnit] = useState("");
   const updateItemMutation = useUpdateFichaItem();
 
   const selectedInsumo = insumos?.find(i => i.id === addInsumoId);
@@ -204,21 +205,25 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
     } catch { toast.error("Erro ao remover ingrediente."); }
   }
 
-  function startEdit(item: { id: string; quantidade: number }) {
+  function startEdit(item: { id: string; quantidade: number; unidade?: string | null }) {
     setEditItemId(item.id);
     setEditQty(String(item.quantidade));
+    setEditUnit(item.unidade ?? "");
   }
 
   function cancelEdit() {
     setEditItemId(null);
     setEditQty("");
+    setEditUnit("");
   }
 
-  async function saveEdit(item: { id: string; insumo_id: string }) {
+  async function saveEdit(item: { id: string; insumo_id: string; unidade?: string | null }) {
     const qty = parseFloat(editQty);
     if (isNaN(qty) || qty <= 0) { toast.error("Quantidade inválida."); return; }
+    const itemNativeUnit = item.unidade ?? editUnit;
+    const converted = convertToNativeUnit(qty, editUnit || itemNativeUnit, itemNativeUnit);
     try {
-      await updateItemMutation.mutateAsync({ id: fichaId, itemId: item.id, data: { insumo_id: item.insumo_id, quantidade: qty } });
+      await updateItemMutation.mutateAsync({ id: fichaId, itemId: item.id, data: { insumo_id: item.insumo_id, quantidade: converted } });
       toast.success("Quantidade atualizada.");
       qc.invalidateQueries({ queryKey: getGetFichaQueryKey(fichaId) });
       cancelEdit();
@@ -430,7 +435,17 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
                       />
                     ) : item.quantidade}
                   </td>
-                  <td className="py-2.5 pl-2 text-muted-foreground hidden sm:table-cell">{item.unidade ?? "-"}</td>
+                  <td className="py-2.5 pl-2 text-muted-foreground hidden sm:table-cell">
+                    {editItemId === item.id ? (() => {
+                      const opts = getUnidadesParaInsumo(item.unidade ?? "");
+                      return opts.length > 1 ? (
+                        <Select value={editUnit || (item.unidade ?? "")} onValueChange={setEditUnit}>
+                          <SelectTrigger className="w-16 h-7 text-xs px-1"><SelectValue /></SelectTrigger>
+                          <SelectContent>{opts.map(u => <SelectItem key={u} value={u}>{u}</SelectItem>)}</SelectContent>
+                        </Select>
+                      ) : <span>{item.unidade ?? "-"}</span>;
+                    })() : (item.unidade ?? "-")}
+                  </td>
                   <td className="py-2.5 text-right text-muted-foreground">{editItemId === item.id ? "—" : fmt(item.custo_item ?? 0)}</td>
                   <td className="py-2.5">
                     <div className="flex gap-0.5 justify-end">

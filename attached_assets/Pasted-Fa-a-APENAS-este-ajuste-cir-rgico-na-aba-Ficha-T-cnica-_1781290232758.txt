@@ -1,0 +1,116 @@
+Faça APENAS este ajuste cirúrgico na aba **Ficha Técnica**, sem mexer em nada mais.
+
+CONTEXTO
+No ajuste anterior foi criada a lógica para permitir conversão de unidade de medida na ficha técnica, com exemplo:
+- `dz -> un`
+
+Agora quero que esta **mesma lógica** seja aplicada para **todas as outras unidades de medida** usadas na ficha técnica, e também dentro da ação de **ajustar o ingrediente** no modal da ficha técnica.
+
+OBJETIVO
+Generalizar a lógica de conversão de unidades na **Ficha Técnica** para que ela não funcione apenas em `dz -> un`, mas siga o mesmo comportamento para todas as unidades compatíveis já usadas no sistema.
+
+APLICAR EM DOIS PONTOS
+1. Na criação/edição normal de ingredientes dentro da **Ficha Técnica**
+2. Na ação de **ajustar ingrediente** dentro do modal da **Ficha Técnica**
+
+REGRAS DE NEGÓCIO
+A lógica deve seguir o mesmo conceito já aplicado antes:
+- o insumo pode ter uma **unidade de cadastro/compra**
+- a ficha técnica pode usar uma **unidade de uso**
+- o sistema deve converter corretamente entre elas por fator
+- custo, consumo e quantidade devem respeitar essa conversão
+
+IMPORTANTE
+- não quero tratamento especial só para `dz -> un`
+- quero que a mesma estrutura seja reaproveitada e generalizada
+- não duplicar lógica se já existir uma função/utilitário de conversão
+- se houver código hoje específico para dúzia/unidade, refatorar apenas o mínimo necessário para transformá-lo em conversão genérica reutilizável dentro da Ficha Técnica
+
+EXEMPLOS DE COMPORTAMENTO ESPERADO
+Exemplos mínimos que devem funcionar:
+- `1 dz = 12 un`
+- `1 kg = 1000 g`
+- `1 g = 0,001 kg` quando necessário no cálculo inverso
+- `1 L = 1000 ml`
+- `1 ml = 0,001 L` quando necessário no cálculo inverso
+
+Se o sistema já trabalha com outras unidades compatíveis, aplicar a mesma lógica nelas também, desde que pertençam ao mesmo grupo de medida.
+
+GRUPOS DE CONVERSÃO
+Aplicar conversão apenas entre unidades compatíveis do mesmo grupo, por exemplo:
+- contagem: `cx`, `pct`, `dz`, `un` — conforme regras/fatores existentes no sistema, ou no mínimo suportando corretamente o que já estiver mapeado
+- peso: `kg`, `g`
+- volume: `L`, `ml`
+
+Se alguma conversão não existir no sistema, não inventar comportamento fora do escopo; apenas estruturar para funcionar com mapa/fator explícito.
+
+COMPORTAMENTO NA INTERFACE
+Na Ficha Técnica e em **ajustar ingrediente**:
+- exibir a unidade cadastrada do insumo
+- permitir selecionar/informar a unidade usada na ficha, quando aplicável
+- aplicar a conversão automaticamente no cálculo
+- manter o layout atual
+- manter os modals atuais
+- manter o padrão visual atual
+- não redesenhar nada
+
+AJUSTAR INGREDIENTE NO MODAL
+Dentro de **ajustar ingrediente** no modal da ficha técnica, aplicar exatamente a mesma regra da tela principal da ficha:
+- se o ingrediente estiver cadastrado em uma unidade e for usado em outra unidade compatível, converter corretamente
+- recalcular quantidade/custo/consumo conforme a conversão
+- manter a mesma experiência visual já existente
+- alterar apenas o necessário para esta lógica funcionar ali também
+
+O QUE NÃO FAZER
+- não mexer em outras abas
+- não mexer em produtos
+- não mexer em dashboard
+- não mexer em relatórios
+- não mexer em autenticação
+- não mexer em billing
+- não alterar fluxos fora da Ficha Técnica
+- não redesenhar componentes
+- não criar novo fluxo
+- não alterar nomenclaturas sem necessidade
+- não refatorar arquitetura inteira
+
+ESCOPO EXATO
+- generalizar a lógica de conversão de unidade somente dentro do fluxo da **Ficha Técnica**
+- aplicar essa mesma lógica dentro de **ajustar ingrediente** no modal da ficha técnica
+- preservar todo o resto como está
+
+IMPLEMENTAÇÃO ESPERADA
+Prioridade:
+1. reaproveitar a lógica já criada para `dz -> un`
+2. transformar essa lógica em conversão genérica por fator/mapa de unidades
+3. reutilizar a mesma função/utilitário tanto na ficha técnica quanto em **ajustar ingrediente**
+4. alterar apenas os pontos estritamente necessários
+
+SCOPE LOCK
+- Only modify the files strictly necessary for the Ficha Técnica flow
+- Reuse the same unit-conversion logic already created previously
+- Generalize the conversion logic from `dz -> un` to all compatible units used in technical sheets
+- Apply the same conversion logic inside the “ajustar ingrediente” flow in the technical sheet modal
+- Do not redesign the UI
+- Do not refactor unrelated code
+- Do not touch any other area of the app
+
+VALIDAÇÃO OBRIGATÓRIA
+Antes de encerrar, validar:
+1. a conversão não está mais limitada a `dz -> un`
+2. a Ficha Técnica aceita conversão entre unidades compatíveis do mesmo grupo
+3. `kg <-> g` funciona corretamente
+4. `L <-> ml` funciona corretamente
+5. `dz <-> un` continua funcionando corretamente
+6. a mesma lógica funciona dentro de **ajustar ingrediente** no modal
+7. custo, consumo e quantidade respeitam a conversão
+8. nenhuma outra área do sistema foi alterada
+9. o app continua compilando e funcionando normalmente
+
+FORMATO DA RESPOSTA
+Ao terminar:
+- informar objetivamente o que foi generalizado
+- listar apenas os arquivos alterados
+- explicar onde a lógica de conversão foi reaproveitada
+- confirmar que a mesma regra foi aplicada em **ajustar ingrediente**
+- confirmar que não mexeu em nada mais
