@@ -1,0 +1,75 @@
+Faça APENAS este ajuste visual no app, sem mexer em nada mais.
+
+OBJETIVO
+Ajustar as cores do relatório **Fluxo de Caixa** na aba **Relatórios** para usar as **cores relacionadas e consistentes com o design system / paleta já usada no restante do app**.
+
+CONTEXTO
+Esse relatório já havia tido ajuste de cor anteriormente, mas no estado atual as cores do gráfico ainda estão destoando visualmente do restante do produto.
+Quero que o gráfico de **Fluxo de Caixa** siga a identidade visual do app.
+
+ESCOPO EXATO
+1. Trabalhar somente no relatório **Fluxo de Caixa** da aba **Relatórios**.
+2. Ajustar somente as **cores** desse relatório/gráfico e elementos visuais diretamente relacionados a ele.
+3. Reaproveitar as cores já existentes e corretas do app.
+4. Se já existir uma paleta/tokens/variáveis de tema no projeto, usar essa fonte como referência principal.
+5. Se esse mesmo padrão de cores já estiver aplicado corretamente em outros gráficos ou cards financeiros do sistema, usar esse padrão como base.
+
+DIRETRIZ VISUAL
+- usar cores coerentes com o restante do app
+- manter consistência com a identidade visual atual
+- evitar cores soltas ou saturações que destoem do sistema
+- respeitar a semântica visual financeira, se já existir no app:
+  - entradas / positivo
+  - saídas / negativo
+  - neutro / base / grid / eixos
+- manter boa legibilidade
+- manter contraste adequado
+- não redesenhar o gráfico
+- não alterar estrutura, tipo de gráfico, labels, dados ou lógica
+
+REGRAS DE IMPLEMENTAÇÃO
+- fazer a menor alteração possível
+- alterar somente o que for necessário para corrigir as cores
+- reutilizar tokens, variáveis CSS, theme, constants ou config de cores já existentes no projeto
+- não criar nova identidade visual
+- não alterar espaçamentos
+- não alterar tipografia
+- não alterar layout
+- não alterar responsividade
+- não alterar cálculos
+- não alterar dados
+- não alterar outros relatórios, a menos que exista compartilhamento técnico inevitável do mesmo componente de cor; se isso acontecer, limitar a mudança ao mínimo necessário
+
+NÃO MEXER
+- não alterar outras abas
+- não alterar dashboard
+- não alterar regras de negócio
+- não alterar comportamento do gráfico
+- não mexer em filtros
+- não alterar textos
+- não alterar navegação
+- não refatorar componentes não relacionados
+- não mexer em nada fora do necessário para alinhar as cores do Fluxo de Caixa ao app
+
+SCOPE LOCK
+- Change only the files strictly necessary for the cash flow report color adjustment
+- Do not refactor unrelated code
+- Do not redesign the chart
+- Do not change data, logic, labels, layout, spacing, or typography
+- If shared chart config is used, make the smallest possible safe adjustment
+
+VALIDAÇÃO OBRIGATÓRIA
+Antes de encerrar, validar:
+1. o relatório **Fluxo de Caixa** está usando cores coerentes com o restante do app
+2. as cores de positivo/negativo/neutro estão visualmente consistentes
+3. o gráfico continua funcionando igual, sem mudança de lógica
+4. nenhum outro relatório foi alterado sem necessidade
+5. layout, tipografia, espaçamento e responsividade permanecem inalterados
+6. o app continua compilando e funcionando normalmente
+
+FORMATO DA RESPOSTA
+Ao terminar:
+- informar objetivamente quais cores/refs do app foram reaproveitadas
+- listar apenas os arquivos alterados
+- confirmar que alterou somente o relatório Fluxo de Caixa ou o mínimo técnico indispensável
+- confirmar que não mexeu em mais nada

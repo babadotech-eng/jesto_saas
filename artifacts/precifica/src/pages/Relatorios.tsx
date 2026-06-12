@@ -489,9 +489,9 @@ export default function Relatorios() {
                 <XAxis dataKey="data" tick={{ fontSize: 11 }} tickFormatter={(v) => v.slice(5)} stroke="hsl(var(--muted-foreground))" />
                 <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `R$${v}`} />
                 <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
-                <Bar dataKey="receita" name="Receita" fill="#7A4FB2" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="despesa" name="Despesa" fill="#ef4444" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="resultado" name="Resultado" fill="#F2B544" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="receita" name="Receita" fill="#3F8F63" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="despesa" name="Despesa" fill="#C95C5C" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="resultado" name="Resultado" fill="#7A4FB2" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           )}
