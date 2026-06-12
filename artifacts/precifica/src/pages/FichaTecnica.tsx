@@ -1,11 +1,11 @@
 import { useState, useRef, useMemo, useEffect } from "react";
-import { useListFichas, useCreateFicha, useDeleteFicha, useGetFicha, useAddFichaItem, useDeleteFichaItem, useListProdutos, useListInsumos, getListFichasQueryKey, getGetFichaQueryKey } from "@workspace/api-client-react";
+import { useListFichas, useCreateFicha, useDeleteFicha, useGetFicha, useAddFichaItem, useDeleteFichaItem, useUpdateFichaItem, useListProdutos, useListInsumos, getListFichasQueryKey, getGetFichaQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAssinatura } from "@/hooks/useAssinatura";
 import { getLimites, getFeatures } from "@/lib/planConfig";
 import { UpgradeModal } from "@/components/UpgradeModal";
 import { Lock } from "lucide-react";
-import { Plus, Trash2, FileText, ArrowLeft, Download, Upload, X, ChevronsUpDown, Check } from "lucide-react";
+import { Plus, Trash2, FileText, ArrowLeft, X, ChevronsUpDown, Check, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -150,12 +150,9 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
   const [addInsumoId, setAddInsumoId] = useState("");
   const [addQtd, setAddQtd] = useState("");
   const [addUnit, setAddUnit] = useState("");
-  const [importOpen, setImportOpen] = useState(false);
-  const [importRows, setImportRows] = useState<ImportItemRow[]>([]);
-  const [importing, setImporting] = useState(false);
-  const [importErrorOpen, setImportErrorOpen] = useState(false);
-  const [importErrorRows, setImportErrorRows] = useState<ImportItemRow[]>([]);
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [editItemId, setEditItemId] = useState<string | null>(null);
+  const [editQty, setEditQty] = useState("");
+  const updateItemMutation = useUpdateFichaItem();
 
   const selectedInsumo = insumos?.find(i => i.id === addInsumoId);
   const nativeUnit = selectedInsumo?.unidade ?? "";
@@ -200,6 +197,27 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
       toast.success("Ingrediente removido.");
       qc.invalidateQueries({ queryKey: getGetFichaQueryKey(fichaId) });
     } catch { toast.error("Erro ao remover ingrediente."); }
+  }
+
+  function startEdit(item: { id: string; quantidade: number }) {
+    setEditItemId(item.id);
+    setEditQty(String(item.quantidade));
+  }
+
+  function cancelEdit() {
+    setEditItemId(null);
+    setEditQty("");
+  }
+
+  async function saveEdit(item: { id: string; insumo_id: string }) {
+    const qty = parseFloat(editQty);
+    if (isNaN(qty) || qty <= 0) { toast.error("Quantidade inválida."); return; }
+    try {
+      await updateItemMutation.mutateAsync({ id: fichaId, itemId: item.id, data: { insumo_id: item.insumo_id, quantidade: qty } });
+      toast.success("Quantidade atualizada.");
+      qc.invalidateQueries({ queryKey: getGetFichaQueryKey(fichaId) });
+      cancelEdit();
+    } catch { toast.error("Erro ao atualizar ingrediente."); }
   }
 
   function downloadTemplate() {
@@ -329,66 +347,6 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
     toast.success("Planilha exportada!");
   }
 
-  function handleImportFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const raw = new Uint8Array(ev.target!.result as ArrayBuffer);
-      const wb = XLSX.read(raw, { type: "array" });
-      const sheetName = wb.SheetNames.find(n => n.toLowerCase() === "ingredientes") ?? wb.SheetNames[0];
-      const ws = wb.Sheets[sheetName];
-      const rows: Record<string, unknown>[] = XLSX.utils.sheet_to_json(ws);
-      const parsed: ImportItemRow[] = rows.map(r => {
-        const nome = String(r["ingrediente"] ?? r["nome"] ?? "").trim();
-        const qtd = Number(r["quantidade"]);
-        const normalize = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-        const resolved = insumos?.find(i => normalize(i.nome) === normalize(nome));
-        if (!nome) return { nome, quantidade: qtd, valid: false, error: "Nome vazio" };
-        if (isNaN(qtd) || qtd <= 0) return { nome, quantidade: qtd, valid: false, error: "Quantidade inválida" };
-        if (!resolved) return { nome, quantidade: qtd, valid: false, error: "Insumo não encontrado", resolvedId: undefined };
-        return { nome, quantidade: qtd, valid: true, resolvedId: resolved.id };
-      });
-      if (parsed.length === 0) {
-        toast.error("Arquivo inválido ou vazio. Use a planilha modelo e tente novamente.");
-        return;
-      }
-      if (parsed.every(r => !r.valid)) {
-        setImportErrorRows(parsed);
-        setImportErrorOpen(true);
-        return;
-      }
-      setImportRows(parsed);
-      setImportOpen(true);
-    };
-    reader.readAsArrayBuffer(file);
-    e.target.value = "";
-  }
-
-  async function confirmImport() {
-    const valid = importRows.filter(r => r.valid && r.resolvedId);
-    if (!valid.length) { toast.error("Nenhuma linha válida."); return; }
-    const duplicados = valid.filter(r => ficha?.itens?.some(it => it.insumo_id === r.resolvedId));
-    if (duplicados.length > 0) {
-      toast.warning(`Ignorados por já existirem na ficha: ${duplicados.map(d => d.nome).join(", ")}`);
-    }
-    const novos = valid.filter(r => !ficha?.itens?.some(it => it.insumo_id === r.resolvedId));
-    if (!novos.length) { toast.error("Todos os ingredientes já estão na ficha."); return; }
-    setImporting(true);
-    let count = 0;
-    for (const row of novos) {
-      try {
-        await addItemMutation.mutateAsync({ id: fichaId, data: { insumo_id: row.resolvedId!, quantidade: row.quantidade } });
-        count++;
-      } catch { /* skip */ }
-    }
-    setImporting(false);
-    qc.invalidateQueries({ queryKey: getGetFichaQueryKey(fichaId) });
-    setImportOpen(false);
-    setImportRows([]);
-    toast.success(`${count} ingredientes importados.`);
-  }
-
   if (isLoading) return <div className="space-y-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-12 rounded-xl" />)}</div>;
   if (!ficha) return <div className="text-center py-8 text-muted-foreground">Ficha não encontrada.</div>;
 
@@ -399,18 +357,6 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
         <div className="flex-1">
           <h2 className="text-xl font-bold">{ficha.produto_nome ?? "Ficha Técnica"}</h2>
           <p className="text-sm text-muted-foreground">CMV total: <span className="font-semibold text-foreground">{fmt(ficha.cmv_total ?? 0)}</span></p>
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={downloadTemplate}>
-            <FileText size={14} />Baixar Modelo
-          </Button>
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => fileRef.current?.click()}>
-            <Upload size={14} />Importar Excel
-          </Button>
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={exportExcel}>
-            <Download size={14} />Exportar Excel
-          </Button>
-          <input ref={fileRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleImportFile} />
         </div>
       </div>
 
@@ -468,11 +414,33 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
               {ficha.itens.map(item => (
                 <tr key={item.id} className="hover:bg-muted/20" data-testid={`row-item-${item.id}`}>
                   <td className="py-2.5 font-medium">{item.insumo_nome ?? "-"}</td>
-                  <td className="py-2.5 text-right">{item.quantidade}</td>
+                  <td className="py-2.5 text-right">
+                    {editItemId === item.id ? (
+                      <input
+                        type="number" step="0.001" autoFocus
+                        className="w-20 h-7 rounded border border-input bg-background px-2 text-sm text-right outline-none focus:ring-2 focus:ring-ring"
+                        value={editQty}
+                        onChange={e => setEditQty(e.target.value)}
+                        onKeyDown={e => { if (e.key === "Enter") saveEdit(item); if (e.key === "Escape") cancelEdit(); }}
+                      />
+                    ) : item.quantidade}
+                  </td>
                   <td className="py-2.5 pl-2 text-muted-foreground hidden sm:table-cell">{item.unidade ?? "-"}</td>
-                  <td className="py-2.5 text-right text-muted-foreground">{fmt(item.custo_item ?? 0)}</td>
+                  <td className="py-2.5 text-right text-muted-foreground">{editItemId === item.id ? "—" : fmt(item.custo_item ?? 0)}</td>
                   <td className="py-2.5">
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDeleteItem(item.id)} data-testid={`button-delete-item-${item.id}`}><Trash2 size={12} className="text-destructive" /></Button>
+                    <div className="flex gap-0.5 justify-end">
+                      {editItemId === item.id ? (
+                        <>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => saveEdit(item)} title="Salvar" disabled={updateItemMutation.isPending}><Check size={12} className="text-green-600" /></Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={cancelEdit} title="Cancelar"><X size={12} /></Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => startEdit(item)} aria-label="Editar quantidade" title="Editar quantidade"><Pencil size={12} className="text-muted-foreground" /></Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDeleteItem(item.id)} data-testid={`button-delete-item-${item.id}`}><Trash2 size={12} className="text-destructive" /></Button>
+                        </>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -488,59 +456,6 @@ function FichaDetail({ fichaId, onBack }: { fichaId: string; onBack: () => void 
         )}
       </div>
 
-      <Dialog open={importOpen} onOpenChange={v => { if (!v) { setImportOpen(false); setImportRows([]); } }}>
-        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Importar Ingredientes</DialogTitle></DialogHeader>
-          <p className="text-sm text-muted-foreground">O nome do ingrediente deve corresponder exatamente a um insumo cadastrado.</p>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm border border-border rounded-xl overflow-hidden">
-              <thead className="bg-muted/50">
-                <tr>
-                  <th className="text-left px-3 py-2 font-medium text-muted-foreground">Ingrediente</th>
-                  <th className="text-right px-3 py-2 font-medium text-muted-foreground">Qtd</th>
-                  <th className="px-3 py-2"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {importRows.map((r, i) => (
-                  <tr key={i} className={r.valid ? "" : "bg-red-50 dark:bg-red-950/20"}>
-                    <td className="px-3 py-2">{r.nome || <span className="text-red-500 italic">vazio</span>}</td>
-                    <td className="px-3 py-2 text-right">{r.quantidade}</td>
-                    <td className="px-3 py-2 text-right">
-                      {r.valid ? <span className="text-green-600 text-xs">✓</span> : <span className="text-red-500 text-xs" title={r.error}><X size={12} /></span>}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => { setImportOpen(false); setImportRows([]); }}>Cancelar</Button>
-            <Button onClick={confirmImport} disabled={importing || !importRows.some(r => r.valid)}>
-              {importing ? "Importando..." : `Importar ${importRows.filter(r => r.valid).length} ingredientes`}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Import Error Dialog */}
-      <Dialog open={importErrorOpen} onOpenChange={setImportErrorOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle>Arquivo com erros</DialogTitle></DialogHeader>
-          <div className="space-y-3">
-            <p className="text-sm">Seu arquivo possui erros e não pôde ser importado. Revise os campos preenchidos, corrija as informações indicadas e envie novamente.</p>
-            <div className="bg-muted rounded-lg p-3 space-y-1 max-h-48 overflow-y-auto">
-              {importErrorRows.map((r, i) => (
-                <p key={i} className="text-sm text-destructive">• Linha {i + 2}: {r.nome ? `"${r.nome}"` : "(sem nome)"} — {r.error}</p>
-              ))}
-            </div>
-            <p className="text-xs text-muted-foreground">Dica: o nome do ingrediente deve ser idêntico ao insumo cadastrado na plataforma. Baixe o modelo para ver o formato correto.</p>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setImportErrorOpen(false)}>Fechar</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
@@ -911,13 +826,6 @@ export default function FichaTecnica() {
           <p className="text-sm text-muted-foreground mt-1">Composição e custo de cada receita</p>
         </div>
         <div className="flex gap-2 flex-wrap">
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => planFeatures.excelImportExport ? downloadFichaTemplate() : setFeatureOpen(true)}>
-            <Download size={16} />Baixar modelo de ficha técnica
-          </Button>
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => planFeatures.excelImportExport ? listImportFileRef.current?.click() : setFeatureOpen(true)}>
-            <Upload size={16} />Importar Ficha técnica
-          </Button>
-          <input ref={listImportFileRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleListImportFile} />
           <Button onClick={handleNovaFicha} data-testid="button-create-ficha"><Plus size={16} className="mr-2" />Nova Ficha</Button>
         </div>
       </div>
@@ -962,6 +870,16 @@ export default function FichaTecnica() {
                 <p className="text-xs text-muted-foreground">
                   CMV: <span className="font-semibold text-primary">{fmt(ficha.cmv_total ?? 0)}</span>
                 </p>
+              </div>
+              <div className="mt-3 pt-2 border-t border-border/50">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full gap-1.5 text-xs h-7"
+                  onClick={e => { e.stopPropagation(); setDetailId(ficha.id); }}
+                >
+                  <Pencil size={11} />Ajustar ficha técnica
+                </Button>
               </div>
             </button>
           ))}

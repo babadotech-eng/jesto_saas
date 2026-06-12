@@ -1,0 +1,109 @@
+Faça APENAS estes ajustes na aba **Ficha Técnica**, sem mexer em nada mais.
+
+OBJETIVO
+Ajustar a experiência da aba **Ficha Técnica** para remover a lógica de download/upload via Excel da interface atual e centralizar as ações de edição diretamente nos modals já criados.
+
+ALTERAÇÕES EXATAS
+
+1. EXCLUIR BOTÕES DE EXCEL
+Remover os botões relacionados a Excel:
+- da aba **Ficha Técnica**
+- e também de dentro do modal em Excel, se eles ainda existirem lá
+
+Botões a remover:
+- qualquer botão de **baixar modelo**
+- qualquer botão de **subir/importar ficha técnica**
+- qualquer CTA equivalente de Excel/download/upload nessa área
+
+IMPORTANTE:
+- remover da interface
+- remover da renderização
+- remover do modal correspondente
+- se houver handlers não usados depois disso, só limpar o mínimo necessário
+- não refatorar além do necessário
+
+2. ADICIONAR BOTÃO NO MODAL
+Nos modals já criados da aba **Ficha Técnica**, incluir um botão:
+- **Ajustar ficha técnica**
+
+Esse botão deve:
+- aparecer em posição coerente com as ações principais do modal
+- seguir exatamente o mesmo padrão visual dos demais botões do sistema
+- usar o mesmo layout, altura, padding, tipografia e comportamento das outras ações do app
+- abrir o fluxo de ajuste/edição da ficha técnica já existente, ou conectar ao estado/ação mínima necessária para permitir esse ajuste
+
+3. ADICIONAR ÍCONE DE CANETA PARA INGREDIENTE
+Dentro do modal da ficha técnica, para cada ingrediente listado, incluir um ícone de **caneta** para ajuste individual do ingrediente.
+
+Esse ícone deve:
+- ficar junto da linha/item do ingrediente
+- seguir o padrão visual de ações pequenas já usado no app
+- ser clicável
+- abrir/ativar a edição daquele ingrediente específico dentro do contexto atual
+- usar componente de ícone já existente no projeto, se houver
+- manter acessibilidade básica com label/title/aria-label quando aplicável
+
+COMPORTAMENTO ESPERADO
+- o usuário não deve mais ver ações de baixar/subir Excel nessa área
+- o usuário deve conseguir ajustar a ficha técnica pelo botão principal do modal
+- o usuário deve conseguir ajustar um ingrediente específico pela caneta na linha correspondente
+
+PADRÃO VISUAL OBRIGATÓRIO
+Todos os novos elementos devem seguir **o mesmo layout das demais abas e modals do sistema**:
+- mesmos componentes, se existirem
+- mesma barra/área de ações
+- mesma hierarquia visual
+- mesmo padrão de espaçamento
+- mesmo padrão de ícones
+- mesmo padrão de hover/focus/disabled
+- sem criar estilo novo desnecessário
+
+ESCOPO EXATO
+- trabalhar somente na aba **Ficha Técnica**
+- trabalhar somente nos modals já criados para essa área
+- remover somente os botões de Excel dessa funcionalidade
+- adicionar somente:
+  - botão **Ajustar ficha técnica**
+  - ícone de caneta para ajuste de ingrediente
+- não alterar nenhuma outra aba
+- não alterar fluxo de produtos
+- não alterar fluxo de insumos
+- não alterar dashboard
+- não alterar relatórios
+- não alterar autenticação
+- não alterar billing
+- não redesenhar a tela
+
+SE HOUVER DÚVIDA DE IMPLEMENTAÇÃO
+Priorizar:
+1. reaproveitar componentes existentes
+2. fazer a menor alteração possível
+3. preservar a lógica atual
+4. alterar apenas renderização, handlers e estados estritamente necessários
+
+SCOPE LOCK
+- Only modify the files strictly necessary for the Ficha Técnica tab and its existing modals
+- Remove only the Excel-related buttons in this feature
+- Add only the “Ajustar ficha técnica” button and the ingredient pencil edit icon
+- Do not refactor unrelated code
+- Do not redesign unrelated UI
+- Do not touch any other feature
+
+VALIDAÇÃO OBRIGATÓRIA
+Antes de encerrar, validar:
+1. os botões de baixar/subir ficha técnica não aparecem mais na aba Ficha Técnica
+2. esses botões também não aparecem mais dentro do modal em Excel
+3. o botão **Ajustar ficha técnica** aparece no modal correto
+4. o botão segue o mesmo layout dos demais botões do sistema
+5. cada ingrediente listado no modal tem um ícone de caneta
+6. o clique na caneta permite iniciar o ajuste daquele ingrediente
+7. nenhuma outra aba ou funcionalidade foi modificada
+8. o app continua compilando e funcionando normalmente
+
+FORMATO DA RESPOSTA
+Ao terminar:
+- informar objetivamente o que foi removido
+- informar o que foi adicionado
+- listar apenas os arquivos alterados
+- dizer em qual modal entrou o botão **Ajustar ficha técnica**
+- confirmar que não mexeu em mais nada
