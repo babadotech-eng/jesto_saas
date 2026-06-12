@@ -1,0 +1,112 @@
+Faça APENAS esta correção no app, sem mexer em nada mais.
+
+PROBLEMA
+Rodei a implementação anterior, mas os botões esperados **não estão visíveis na aba Ficha Técnica**.
+
+CORREÇÃO EXATA NECESSÁRIA
+Na aba **Ficha Técnica**, adicionar e deixar visíveis estes dois botões:
+1. **Baixar modelo de ficha técnica**
+2. **Importar Ficha técnica**
+
+OBJETIVO
+Garantir que esses dois botões apareçam claramente na interface da aba **Ficha Técnica**, estejam conectados à funcionalidade correspondente e sigam **o mesmo layout visual e estrutural das demais abas do app**.
+
+PADRÃO VISUAL OBRIGATÓRIO
+Esses botões devem seguir o **mesmo layout das demais abas** do sistema:
+- mesmo padrão de alinhamento
+- mesmo padrão de espaçamento
+- mesmo padrão de tamanho
+- mesmo padrão de altura
+- mesmo padrão de tipografia
+- mesmo padrão de cores
+- mesmo padrão de borda/ícone, se houver
+- mesmo padrão de agrupamento de ações no topo da página, se esse padrão já existir em outras abas
+
+IMPORTANTE
+Antes de implementar, observe como os botões de ação aparecem nas outras abas do app e **replique esse mesmo padrão na aba Ficha Técnica**, sem inventar um layout novo. Interfaces consistentes funcionam melhor quando controles parecidos usam o mesmo posicionamento, estilo e comportamento em diferentes telas. [web:831][web:837]
+
+ESCOPO EXATO
+- trabalhar somente na aba **Ficha Técnica**
+- adicionar/exibir somente esses dois botões nessa aba
+- manter a funcionalidade ligada a cada botão:
+  - **Baixar modelo de ficha técnica** → baixa o arquivo modelo Excel
+  - **Importar Ficha técnica** → abre o fluxo de upload/importação da ficha técnica
+- se a lógica já existir e só estiver faltando renderização/posição/ligação, corrigir apenas isso
+- se um dos fluxos ainda não estiver conectado, completar apenas o mínimo necessário para o botão funcionar
+
+POSICIONAMENTO
+- os dois botões devem ficar visíveis no topo da aba Ficha Técnica
+- devem ficar na mesma área/linha de ações usada nas demais abas, se esse padrão existir
+- preferencialmente lado a lado, se esse for o comportamento já adotado no sistema
+- no mobile, manter o mesmo comportamento responsivo usado pelos botões das outras abas
+
+TEXTO EXATO DOS BOTÕES
+- **Baixar modelo de ficha técnica**
+- **Importar Ficha técnica**
+
+REGRAS DE IMPLEMENTAÇÃO
+- fazer a menor alteração possível
+- reutilizar componentes de botão já existentes no app
+- reutilizar containers, wrappers, headers e action bars já existentes
+- reutilizar o padrão visual atual
+- manter layout atual
+- manter tipografia atual
+- manter cores atuais
+- manter espaçamentos atuais
+- manter responsividade atual
+- não redesenhar a tela
+- não refatorar componentes não relacionados
+- não alterar outras abas
+- não alterar navegação
+- não alterar lógica fora do fluxo de ficha técnica
+
+SE O PROBLEMA FOR DE CONDIÇÃO DE RENDERIZAÇÃO
+Verificar se os botões:
+- estão presos a condição errada
+- estão atrás de feature flag indevida
+- estão dentro de componente não renderizado
+- estão ocultos por CSS/classe/estado
+- estão fora da área visível por problema de layout
+
+SE O PROBLEMA FOR DE AÇÃO
+Garantir que:
+- o botão **Baixar modelo de ficha técnica** dispare o download do template Excel
+- o botão **Importar Ficha técnica** abra o seletor de arquivo ou fluxo de importação já usado pelo app
+
+NÃO MEXER
+- não alterar outras áreas do sistema
+- não alterar Produtos
+- não alterar Insumos
+- não alterar Relatórios
+- não alterar Dashboard
+- não alterar autenticação
+- não alterar billing/plano
+- não alterar estilos globais, exceto se a aba Ficha Técnica já depender do mesmo componente compartilhado das outras abas
+- não refatorar nada fora da aba Ficha Técnica
+- não mudar nomes de arquivos sem necessidade
+
+SCOPE LOCK
+- Only modify the files strictly necessary to make these two buttons visible and working in the Ficha Técnica tab
+- Match the same action-area layout used in other tabs
+- Do not rename, reformat, or refactor unrelated code
+- Do not redesign the page
+- If you find unrelated issues, do not fix them now
+
+VALIDAÇÃO OBRIGATÓRIA
+Antes de encerrar, validar:
+1. na aba **Ficha Técnica** os dois botões estão visíveis
+2. o botão **Baixar modelo de ficha técnica** funciona
+3. o botão **Importar Ficha técnica** funciona
+4. os textos dos botões estão exatamente como solicitado
+5. os botões seguem o mesmo layout visual das demais abas
+6. o layout da aba não foi alterado além do necessário
+7. nenhuma outra área do app foi modificada
+8. o app continua compilando e funcionando normalmente
+
+FORMATO DA RESPOSTA
+Ao terminar:
+- informar objetivamente o que foi corrigido
+- listar apenas os arquivos alterados
+- dizer onde os botões foram renderizados na aba
+- dizer qual aba/padrão visual foi usado como referência
+- confirmar que não mexeu em mais nada
