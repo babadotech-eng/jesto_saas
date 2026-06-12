@@ -1,0 +1,111 @@
+Faça APENAS esta implementação na aba **Lançamentos**, sem mexer em nada mais.
+
+CONTEXTO
+Hoje preciso incluir, na aba **Lançamentos**, um fluxo de lançamento de vendas por produto via modal, com integração real ao registro de lançamentos e aos cálculos já existentes dessa aba.
+
+OBJETIVO FUNCIONAL
+Adicionar um botão na aba **Lançamentos** para abrir um modal de **lançamento de vendas por produto**.
+
+Esse modal deve permitir registrar, no mínimo:
+- `productId`
+- `date`
+- `quantity`
+
+Também deve existir um **ícone de ajuste por produto** dentro desse fluxo/modal.
+
+Ao salvar:
+- o lançamento deve ser persistido/registrado na estrutura já usada pelo **registro de lançamentos**
+- os cálculos impactados por essa inserção devem ser atualizados
+- tudo isso deve acontecer sem criar um fluxo paralelo fora do padrão atual da aba
+
+ESCOPO
+Trabalhar somente:
+- na aba **Lançamentos**
+- no modal de lançamento por produto
+- na integração com o **registro de lançamentos** dessa aba
+- nos cálculos diretamente dependentes dessa nova entrada
+
+Não mexer em nada fora disso.
+
+================================
+1. ALTERAÇÃO DE UI
+================================
+
+Adicionar um botão na aba **Lançamentos** para abrir o modal.
+
+Requisitos:
+- usar componente/botão já existente no projeto, se houver
+- manter o padrão visual atual
+- inserir em área coerente de ações da aba
+- não criar redesign
+
+Label sugerida:
+- `Lançar vendas por produto`
+
+Ao clicar:
+- abrir um modal já no padrão visual e estrutural do app
+- manter foco, fechamento e acessibilidade no padrão dos modals existentes
+
+================================
+2. ESTRUTURA DO MODAL
+================================
+
+Criar/reaproveitar um modal com formulário para inclusão de lançamentos de venda por produto.
+
+Campos mínimos obrigatórios:
+- `productId: string | number` — obrigatório
+- `date: string` — obrigatório, formato compatível com o padrão já usado no app
+- `quantity: number` — obrigatório, maior que zero
+
+Se o sistema trabalhar com objetos completos no front, pode usar:
+- `product: { id, name, ... }`
+mas a persistência/inserção deve manter vínculo claro com `productId`.
+
+Campos opcionais:
+- só incluir se já existirem no fluxo atual da aba **Lançamentos**
+- não inventar novos campos fora do necessário
+
+Validações mínimas:
+- produto obrigatório
+- data obrigatória
+- quantidade obrigatória
+- quantidade > 0
+- impedir salvar valores inválidos, vazios ou NaN
+- manter o padrão atual de tratamento de erro/feedback visual do projeto
+
+================================
+3. LISTA DE PRODUTOS NO MODAL
+================================
+
+Dentro do fluxo/modal, incluir o produto de forma que o usuário consiga:
+- selecionar um produto para lançamento
+- visualizar os produtos envolvidos nesse contexto, se o fluxo atual suportar lista
+- acionar ajuste por produto
+
+Para cada produto exibido nesse fluxo, incluir um **ícone de ajuste**.
+
+Requisitos do ícone:
+- usar componente de ícone já existente no projeto, se houver
+- ficar vinculado ao produto correspondente
+- ter `aria-label`, `title` ou equivalente
+- disparar a ação de ajuste do produto dentro do contexto atual, com o menor impacto possível
+- não criar um novo módulo de edição separado, se já existir padrão reaproveitável
+
+================================
+4. MODELO DE DADO DO LANÇAMENTO
+================================
+
+Ao salvar, estruturar o lançamento seguindo a lógica atual da aba **Lançamentos**.
+
+Se for necessário criar/adaptar payload interno, usar algo nessa linha:
+
+```ts
+type ProductSaleEntry = {
+  id?: string;
+  type: 'product_sale';
+  productId: string | number;
+  date: string;
+  quantity: number;
+  createdAt?: string;
+  updatedAt?: string;
+};

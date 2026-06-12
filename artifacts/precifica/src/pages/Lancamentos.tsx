@@ -1,10 +1,10 @@
-import { useState, useRef, useEffect } from "react";
-import { useListLancamentos, useCreateLancamento, useUpdateLancamento, useDeleteLancamento, getListLancamentosQueryKey } from "@workspace/api-client-react";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { useListLancamentos, useCreateLancamento, useUpdateLancamento, useDeleteLancamento, getListLancamentosQueryKey, useListProdutos } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAssinatura } from "@/hooks/useAssinatura";
 import { getFeatures } from "@/lib/planConfig";
 import { useLocation } from "wouter";
-import { Plus, Pencil, Trash2, ArrowRightLeft, TrendingUp, TrendingDown, ChevronDown, X, Search, ChevronLeft, ChevronRight, CalendarDays, Crown } from "lucide-react";
+import { Plus, Pencil, Trash2, ArrowRightLeft, TrendingUp, TrendingDown, ChevronDown, X, Search, ChevronLeft, ChevronRight, CalendarDays, Crown, ShoppingCart, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -178,10 +178,39 @@ export default function Lancamentos() {
   const { data: assinatura, isLoading: assinaturaLoading } = useAssinatura();
   const [, setLocation] = useLocation();
 
+  const { data: produtos } = useListProdutos();
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [filterTipo, setFilterTipo] = useState<"todos" | "receita" | "despesa">("todos");
+
+  // Sale-by-product modal state
+  const [saleOpen, setSaleOpen] = useState(false);
+  const [saleProdutoId, setSaleProdutoId] = useState("");
+  const [saleData, setSaleData] = useState(today);
+  const [saleQty, setSaleQty] = useState("");
+  const [salePreco, setSalePreco] = useState("");
+  const [saleSaving, setSaleSaving] = useState(false);
+  const [saleProdutoSearch, setSaleProdutoSearch] = useState("");
+  const [saleProdutoDropdown, setSaleProdutoDropdown] = useState(false);
+  const saleProdutoRef = useRef<HTMLDivElement>(null);
+
+  const selectedProduto = produtos?.find(p => p.id === saleProdutoId);
+  const filteredProdutos = useMemo(() => {
+    if (!produtos) return [];
+    const q = saleProdutoSearch.toLowerCase();
+    return q ? produtos.filter(p => p.nome.toLowerCase().includes(q)) : produtos;
+  }, [produtos, saleProdutoSearch]);
+
+  useEffect(() => {
+    if (!saleProdutoDropdown) return;
+    function onDown(e: MouseEvent) {
+      if (saleProdutoRef.current && !saleProdutoRef.current.contains(e.target as Node))
+        setSaleProdutoDropdown(false);
+    }
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [saleProdutoDropdown]);
 
   const now = new Date();
   const [filterYear, setFilterYear] = useState(now.getFullYear());
@@ -250,6 +279,38 @@ export default function Lancamentos() {
     } catch { toast.error("Erro ao salvar lançamento."); }
   }
 
+  function openSaleModal() {
+    setSaleProdutoId(""); setSaleData(today); setSaleQty(""); setSalePreco("");
+    setSaleProdutoSearch(""); setSaleProdutoDropdown(false);
+    setSaleOpen(true);
+  }
+
+  function handleSelectSaleProduto(id: string) {
+    setSaleProdutoId(id);
+    const p = produtos?.find(pp => pp.id === id);
+    if (p) setSalePreco(String(p.preco_venda));
+    setSaleProdutoDropdown(false);
+    setSaleProdutoSearch("");
+  }
+
+  async function handleSaleLaunch() {
+    if (!saleProdutoId || !saleData || !saleQty) { toast.error("Preencha todos os campos."); return; }
+    const qty = parseFloat(saleQty);
+    const preco = parseFloat(salePreco);
+    if (isNaN(qty) || qty <= 0) { toast.error("Quantidade inválida."); return; }
+    if (isNaN(preco) || preco <= 0) { toast.error("Preço inválido."); return; }
+    const valor = qty * preco;
+    const descricao = `${selectedProduto?.nome ?? "Produto"} × ${qty} un.`;
+    setSaleSaving(true);
+    try {
+      await createMutation.mutateAsync({ data: { descricao, tipo: "receita", valor, data: saleData, categoria: "Venda de produtos" } });
+      toast.success("Venda lançada!");
+      qc.invalidateQueries({ queryKey: getListLancamentosQueryKey() });
+      setSaleOpen(false);
+    } catch { toast.error("Erro ao lançar venda."); }
+    finally { setSaleSaving(false); }
+  }
+
   async function handleDelete() {
     if (!deleteId) return;
     try {
@@ -267,7 +328,12 @@ export default function Lancamentos() {
           <h1 className="text-2xl font-bold text-foreground">Lançamentos</h1>
           <p className="text-sm text-muted-foreground mt-1">Fluxo de caixa do seu negócio</p>
         </div>
-        <Button onClick={openCreate} data-testid="button-create-lancamento"><Plus size={16} className="mr-2" />Novo Lançamento</Button>
+        <div className="flex gap-2 flex-wrap justify-end">
+          <Button variant="outline" onClick={openSaleModal} data-testid="button-launch-sale">
+            <ShoppingCart size={16} className="mr-2" />Lançar vendas por produto
+          </Button>
+          <Button onClick={openCreate} data-testid="button-create-lancamento"><Plus size={16} className="mr-2" />Novo Lançamento</Button>
+        </div>
       </div>
 
       {/* Summary cards */}
@@ -412,6 +478,101 @@ export default function Lancamentos() {
               </DialogFooter>
             </form>
           </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Sale by product modal */}
+      <Dialog open={saleOpen} onOpenChange={v => { if (!v) setSaleOpen(false); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>Lançar Vendas por Produto</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            {/* Product combobox */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Produto *</label>
+              <div ref={saleProdutoRef} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setSaleProdutoDropdown(o => !o)}
+                  className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                >
+                  <span className={selectedProduto ? "text-foreground" : "text-muted-foreground"}>
+                    {selectedProduto ? selectedProduto.nome : "Selecione o produto..."}
+                  </span>
+                  <ChevronDown size={14} className="ml-2 shrink-0 opacity-50" />
+                </button>
+                {saleProdutoDropdown && (
+                  <div className="absolute z-50 w-full mt-1 rounded-md border border-border bg-popover shadow-md">
+                    <div className="p-2 border-b border-border">
+                      <input
+                        autoFocus
+                        className="w-full h-8 rounded-md border border-input bg-background px-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                        placeholder="Buscar produto..."
+                        value={saleProdutoSearch}
+                        onChange={e => setSaleProdutoSearch(e.target.value)}
+                      />
+                    </div>
+                    <ul className="max-h-48 overflow-y-auto py-1">
+                      {!filteredProdutos.length ? (
+                        <li className="px-3 py-4 text-center text-sm text-muted-foreground">Nenhum produto encontrado.</li>
+                      ) : filteredProdutos.map(p => (
+                        <li key={p.id} className="flex items-center gap-1 px-2 hover:bg-accent">
+                          <button
+                            type="button"
+                            className="flex-1 flex items-center justify-between py-1.5 text-left text-sm"
+                            onClick={() => handleSelectSaleProduto(p.id)}
+                          >
+                            <span>{p.nome}</span>
+                            <span className="text-xs text-muted-foreground ml-2">{fmt(p.preco_venda)}/un</span>
+                          </button>
+                          <button
+                            type="button"
+                            title="Selecionar e ajustar preço"
+                            aria-label={`Ajustar preço de ${p.nome}`}
+                            onClick={() => handleSelectSaleProduto(p.id)}
+                            className="p-1 text-muted-foreground hover:text-foreground shrink-0"
+                          >
+                            <SlidersHorizontal size={13} />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Date + Quantity */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Data *</label>
+                <Input type="date" value={saleData} onChange={e => setSaleData(e.target.value)} />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Quantidade *</label>
+                <Input type="number" step="1" min="1" placeholder="0" value={saleQty} onChange={e => setSaleQty(e.target.value)} />
+              </div>
+            </div>
+
+            {/* Price (auto-filled from product, editable) */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium flex items-center gap-1.5">
+                Preço por unidade (R$) *
+                <SlidersHorizontal size={12} className="text-muted-foreground" />
+              </label>
+              <Input type="number" step="0.01" min="0" placeholder="0,00" value={salePreco} onChange={e => setSalePreco(e.target.value)} />
+              {salePreco && saleQty && !isNaN(parseFloat(salePreco)) && !isNaN(parseFloat(saleQty)) && parseFloat(saleQty) > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  Total: <span className="font-semibold text-foreground">{fmt(parseFloat(salePreco) * parseFloat(saleQty))}</span>
+                </p>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setSaleOpen(false)}>Cancelar</Button>
+            <Button onClick={handleSaleLaunch} disabled={saleSaving}>
+              {saleSaving ? "Salvando..." : "Lançar Venda"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
