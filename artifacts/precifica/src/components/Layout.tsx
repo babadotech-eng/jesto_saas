@@ -10,7 +10,7 @@ import {
   Users, LogOut, Lightbulb, ArrowRight, Menu, X,
 } from "lucide-react";
 import { ReactNode, useState } from "react";
-import logoPainel from "@assets/logo-painel2_1780572910832.png";
+import logoPainel from "@assets/logo-painel2_1780572910832.webp";
 
 const navigation = [
   { name: "Painel",        href: "/painel",       icon: LayoutDashboard },

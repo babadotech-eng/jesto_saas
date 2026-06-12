@@ -8,16 +8,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import imgCaminhar from "@assets/caminhar_1780433938131.png";
-import iconjestoBlack from "@assets/iconjesto_black_1780519861187.png";
-import imgEstrada2 from "@assets/estrada_(2)_1780433938132.png";
-import imgEstrada from "@assets/estrada_1780433938132.png";
-import imgMasp from "@assets/masp_1780433938133.png";
-import imgAviao from "@assets/avião_1780433938133.png";
-import imgCity from "@assets/city_1780433938134.png";
-import imgEscada from "@assets/escada_1780433938134.png";
-import imgFarol from "@assets/farol_1780433938135.png";
-import imgPonte from "@assets/ponte_1780433938135.png";
+import imgCaminhar from "@assets/caminhar_1780433938131.webp";
+import iconjestoBlack from "@assets/iconjesto_black_1780519861187.webp";
+import imgEstrada2 from "@assets/estrada_(2)_1780433938132.webp";
+import imgEstrada from "@assets/estrada_1780433938132.webp";
+import imgMasp from "@assets/masp_1780433938133.webp";
+import imgAviao from "@assets/avião_1780433938133.webp";
+import imgCity from "@assets/city_1780433938134.webp";
+import imgEscada from "@assets/escada_1780433938134.webp";
+import imgFarol from "@assets/farol_1780433938135.webp";
+import imgPonte from "@assets/ponte_1780433938135.webp";
 
 const IMAGES = [
   imgCaminhar, imgEstrada2, imgEstrada, imgMasp,

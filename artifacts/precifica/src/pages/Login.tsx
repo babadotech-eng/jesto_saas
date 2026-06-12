@@ -6,7 +6,7 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Check, X } from "lucide-react";
-import iconjestoBlack from "@assets/iconjesto_black_1780519861187.png";
+import iconjestoBlack from "@assets/iconjesto_black_1780519861187.webp";
 import { Link, useLocation } from "wouter";
 
 // NOTE: To enable Google Login, go to your Supabase dashboard:

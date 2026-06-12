@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { ChevronRight, Check, HelpCircle } from "lucide-react";
-import logoOnboarding from "@assets/logo-onboarding_1780572611823.png";
+import logoOnboarding from "@assets/logo-onboarding_1780572611823.webp";
 
 // ─── CPF / CNPJ helpers ────────────────────────────────────────────────────
 

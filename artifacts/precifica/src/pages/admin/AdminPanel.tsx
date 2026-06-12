@@ -1,6 +1,6 @@
 import { useLocation } from "wouter";
 import { LayoutDashboard, Users, CreditCard, TrendingUp, Tag, LogOut } from "lucide-react";
-import iconjestoWhite from "@assets/iconjesto_white_1780519861186.png";
+import iconjestoWhite from "@assets/iconjesto_white_1780519861186.webp";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import AdminOverview from "./AdminOverview";

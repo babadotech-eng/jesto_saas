@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import LegalFooter from "@/components/LegalFooter";
-import iconjestoWhite from "@assets/iconjesto_white_1780519861186.png";
+import iconjestoWhite from "@assets/iconjesto_white_1780519861186.webp";
 
 const playfair: React.CSSProperties = {
   fontFamily: "'Playfair Display', Georgia, serif",

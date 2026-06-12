@@ -3,11 +3,11 @@ import { Link } from "wouter";
 import LegalFooter from "@/components/LegalFooter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Check, TrendingUp, BookOpen, Wallet, LayoutDashboard, UtensilsCrossed, Coffee, ShoppingBag, Sandwich, ArrowRight, FileSpreadsheet } from "lucide-react";
-import dashboardImg from "@assets/mocks3.png";
-import chefImg from "@assets/file_00000000bfc471f58b48209158bd14c0_1779979641753.png";
-import logoBlack from "@assets/logo-black_1780519870384.png";
-import logoWhite from "@assets/logo-white_1780519870384.png";
-import iconjestoWhite from "@assets/iconjesto_white_1780519861186.png";
+import dashboardImg from "@assets/mocks3.webp";
+import chefImg from "@assets/file_00000000bfc471f58b48209158bd14c0_1779979641753.webp";
+import logoBlack from "@assets/logo-black_1780519870384.webp";
+import logoWhite from "@assets/logo-white_1780519870384.webp";
+import iconjestoWhite from "@assets/iconjesto_white_1780519861186.webp";
 
 /* ── palette ── */
 const C = {
