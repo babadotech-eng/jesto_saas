@@ -98,7 +98,7 @@ function DreModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 
 // Modal Markup
 function MarkupModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { data: topProdutos, isLoading } = useGetTopProdutos();
+  const { data: todosProdutos, isLoading } = useListProdutos();
   const { data: pe } = useGetPontoEquilibrio();
 
   const margemMedia = pe?.margem_media ?? 0;
@@ -130,12 +130,12 @@ function MarkupModal({ open, onClose }: { open: boolean; onClose: () => void }) 
               </div>
             </div>
           )}
-          {isLoading ? <Skeleton className="h-40 w-full" /> : topProdutos?.length ? (
+          {isLoading ? <Skeleton className="h-40 w-full" /> : todosProdutos?.length ? (
             <div>
               <p className="text-sm font-semibold mb-2">Markup por produto</p>
               <div className="space-y-0">
-                {topProdutos.map(p => {
-                  const mk = calcMarkup(p.margem_pct);
+                {todosProdutos.map(p => {
+                  const mk = calcMarkup(p.margem_pct ?? 0);
                   return (
                     <div key={p.id} className="flex items-center justify-between py-2.5 border-b border-border/50 last:border-0 text-sm">
                       <span className="text-foreground font-medium truncate max-w-[55%]">{p.nome}</span>

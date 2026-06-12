@@ -1,0 +1,90 @@
+Faça APENAS este ajuste no modal **Markup**, sem mexer em nada mais.
+
+OBJETIVO
+Corrigir o modal **Markup** para que ele exiba **todos os produtos** e seus respectivos **markups**, e não apenas parte da lista, um item isolado ou o último produto renderizado.
+
+ESCOPO
+Trabalhar somente:
+- no modal **Markup**
+- na lógica de carregamento/renderização da lista de produtos dentro desse modal
+- na exibição do markup correspondente de cada produto
+
+Não mexer em nenhuma outra área do sistema.
+
+COMPORTAMENTO ESPERADO
+Ao abrir o modal **Markup**:
+- devem ser exibidos **todos os produtos** disponíveis nesse contexto
+- cada produto deve aparecer com seu respectivo **markup**
+- a listagem deve refletir a fonte de dados correta e completa usada pelo sistema
+- a renderização deve ser consistente e não perder itens
+- não exibir apenas o último produto
+- não exibir apenas o produto selecionado, a menos que isso já seja a regra explicitamente aplicada ao contexto do modal
+
+REQUISITOS TÉCNICOS
+- identificar a fonte de dados correta de produtos usada nesse fluxo
+- garantir que o modal faça renderização por iteração da coleção completa
+- garantir que cada item da lista associe corretamente:
+  - produto
+  - markup correspondente
+- se houver transformação, filtro, map, reduce, selector ou computed value incorreto, corrigir apenas o necessário
+- se houver estado local sobrescrevendo a coleção, ajustar apenas o mínimo necessário
+- se houver problema de chave/key, índice, binding ou data mapping, corrigir de forma pontual
+
+ESTRUTURA DE EXIBIÇÃO
+Dentro do modal, para cada item da coleção, exibir no mínimo:
+- nome do produto
+- valor do markup correspondente
+
+Se já existir layout com mais campos, manter como está e apenas corrigir a listagem.
+
+FORMATAÇÃO
+- manter exatamente o padrão visual atual do modal
+- manter os componentes existentes
+- manter a estrutura já usada para linhas/cards/listas, se houver
+- não redesenhar o modal
+- não alterar estilos fora do necessário
+
+REGRAS IMPORTANTES
+- não alterar cálculo de markup, a menos que o problema seja exclusivamente o vínculo entre produto e markup no modal
+- não alterar regra de negócio fora da renderização/associação necessária
+- não alterar cadastro de produtos
+- não alterar aba de produtos
+- não alterar ficha técnica
+- não alterar lançamentos
+- não alterar dashboard
+- não alterar relatórios
+- não alterar autenticação
+- não alterar billing
+
+SE HOUVER PROBLEMA DE DADOS
+Se o modal hoje estiver consumindo a estrutura errada:
+- corrigir para usar a coleção completa de produtos do fluxo correto
+- preservar interfaces, tipos e contratos existentes sempre que possível
+- não criar nova arquitetura de dados
+- não duplicar estado sem necessidade
+
+SCOPE LOCK
+- Only modify the files strictly necessary for the Markup modal
+- Fix only the rendering/data mapping so the modal shows all products and their respective markups
+- Preserve the existing visual layout
+- Do not redesign the modal
+- Do not refactor unrelated code
+- Do not touch any other area of the app
+
+VALIDAÇÃO OBRIGATÓRIA
+Antes de encerrar, validar:
+1. ao abrir o modal **Markup**, todos os produtos são exibidos
+2. cada produto aparece com seu respectivo markup
+3. nenhum item da lista é perdido
+4. não fica mostrando apenas um produto ou apenas o último produto
+5. o layout visual do modal continua o mesmo
+6. nenhuma outra área do sistema foi alterada
+7. o app continua compilando e funcionando normalmente
+
+FORMATO DA RESPOSTA
+Ao terminar:
+- informar objetivamente o que foi corrigido
+- listar apenas os arquivos alterados
+- explicar qual era o problema de renderização/mapeamento
+- confirmar que o modal agora mostra todos os produtos e seus markups
+- confirmar que não mexeu em nada mais
