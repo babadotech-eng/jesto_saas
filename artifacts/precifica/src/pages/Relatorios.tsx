@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useGetTopProdutos, useGetAlertasMargem, useGetFluxoSemanal, useGetPontoEquilibrio, useListProdutos } from "@workspace/api-client-react";
+import { useGetTopProdutos, useGetAlertasMargem, useGetFluxoSemanal, useGetPontoEquilibrio, useListProdutos, useGetDashboardSummary } from "@workspace/api-client-react";
 import { useAssinatura } from "@/hooks/useAssinatura";
 import { planAtLeast } from "@/lib/planConfig";
-import { TrendingUp, AlertTriangle, Target, Sliders, BarChart2 } from "lucide-react";
+import { TrendingUp, AlertTriangle, Target, Sliders, BarChart2, FileText, Percent } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +38,127 @@ function PremiumLock({ title, description, icon: Icon, onClick }: { title: strin
       <p className="font-semibold text-foreground">{title}</p>
       <p className="text-sm text-muted-foreground mt-1">{description}</p>
     </div>
+  );
+}
+
+// Modal DRE
+function DreModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { data: dashboard, isLoading: loadingDash } = useGetDashboardSummary();
+  const { data: pe, isLoading: loadingPe } = useGetPontoEquilibrio();
+
+  const isLoading = loadingDash || loadingPe;
+  const receita = dashboard?.receita_total ?? 0;
+  const custosTotais = dashboard?.custos_totais ?? 0;
+  const despesasFixas = pe?.despesas_fixas_total ?? 0;
+  const custosVariaveis = Math.max(0, custosTotais - despesasFixas);
+  const resultado = dashboard?.resultado_mes ?? 0;
+  const margemLiquida = receita > 0 ? (resultado / receita) * 100 : 0;
+
+  const mesAtual = new Date().toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+
+  const rows: { label: string; value: string; indent?: boolean; highlight?: boolean; negative?: boolean; separator?: boolean }[] = [
+    { label: `(+) Receita Total — ${mesAtual}`, value: fmt(receita) },
+    { label: "(-) Custos Variáveis (lançamentos de despesa)", value: fmt(custosVariaveis), indent: true, negative: true },
+    { label: "(-) Despesas Fixas / Folha / Pró-labore", value: fmt(despesasFixas), indent: true, negative: true },
+    { separator: true, label: "", value: "" },
+    { label: "(=) Resultado Operacional do Mês", value: fmt(resultado), highlight: true },
+    { label: "Margem Líquida", value: `${margemLiquida.toFixed(1)}%`, highlight: true },
+  ];
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2"><FileText size={18} className="text-primary" />DRE — Demonstração do Resultado</DialogTitle>
+        </DialogHeader>
+        {isLoading ? <Skeleton className="h-48 w-full" /> : (
+          <div className="space-y-1">
+            {rows.map((row, i) =>
+              row.separator ? (
+                <div key={i} className="border-t border-border my-1" />
+              ) : (
+                <div key={i} className={`flex justify-between items-center py-2.5 ${row.highlight ? "border-t border-border font-semibold" : "border-b border-border/40 last:border-0"}`}>
+                  <span className={`text-sm ${row.indent ? "pl-4 text-muted-foreground" : row.highlight ? "text-foreground" : "text-foreground"}`}>{row.label}</span>
+                  <span className={`text-sm font-medium ${row.negative ? "text-red-500" : row.highlight ? (resultado >= 0 ? "text-green-600" : "text-red-600") : "text-foreground"}`}>{row.value}</span>
+                </div>
+              )
+            )}
+            {receita === 0 && (
+              <p className="text-xs text-muted-foreground pt-2">Registre receitas em Lançamentos para ver o DRE completo.</p>
+            )}
+          </div>
+        )}
+        <p className="text-xs text-muted-foreground border-t border-border pt-3">
+          Dados do mês corrente. Receita e despesas variáveis vêm dos Lançamentos; despesas fixas incluem Despesas Fixas, Folha de Pagamento e Pró-labore dos sócios.
+        </p>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// Modal Markup
+function MarkupModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { data: topProdutos, isLoading } = useGetTopProdutos();
+  const { data: pe } = useGetPontoEquilibrio();
+
+  const margemMedia = pe?.margem_media ?? 0;
+  const markupMedioMult = margemMedia > 0 && margemMedia < 100 ? (100 / (100 - margemMedia)) : 0;
+  const markupMedioPct = markupMedioMult > 0 ? (markupMedioMult - 1) * 100 : 0;
+
+  function calcMarkup(margemPct: number) {
+    if (margemPct <= 0 || margemPct >= 100) return null;
+    const mult = 100 / (100 - margemPct);
+    return { mult, pct: (mult - 1) * 100 };
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2"><Percent size={18} className="text-primary" />Markup dos Produtos</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          {margemMedia > 0 && (
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 text-center">
+                <p className="text-xs text-muted-foreground mb-1">Markup Médio (multiplicador)</p>
+                <p className="text-2xl font-bold text-primary">{markupMedioMult.toFixed(2)}x</p>
+              </div>
+              <div className="bg-muted/40 border border-border rounded-xl p-4 text-center">
+                <p className="text-xs text-muted-foreground mb-1">Markup Médio (%)</p>
+                <p className="text-2xl font-bold text-foreground">{markupMedioPct.toFixed(1)}%</p>
+              </div>
+            </div>
+          )}
+          {isLoading ? <Skeleton className="h-40 w-full" /> : topProdutos?.length ? (
+            <div>
+              <p className="text-sm font-semibold mb-2">Markup por produto</p>
+              <div className="space-y-0">
+                {topProdutos.map(p => {
+                  const mk = calcMarkup(p.margem_pct);
+                  return (
+                    <div key={p.id} className="flex items-center justify-between py-2.5 border-b border-border/50 last:border-0 text-sm">
+                      <span className="text-foreground font-medium truncate max-w-[55%]">{p.nome}</span>
+                      <div className="flex items-center gap-4 text-right">
+                        <span className="text-muted-foreground text-xs">{fmt(p.preco_venda)}</span>
+                        <span className="font-semibold text-primary w-16">{mk ? `${mk.mult.toFixed(2)}x` : "—"}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground text-center py-4">Cadastre produtos para ver o markup.</p>
+          )}
+          <div className="bg-muted/20 border border-border rounded-lg p-4 text-xs text-muted-foreground space-y-1">
+            <p className="font-semibold text-foreground text-sm">Como interpretar o markup</p>
+            <p>Markup multiplicador = Preço de Venda ÷ Custo Total. Ex: 1,50x significa que o preço é 50% maior que o custo total.</p>
+            <p>Fórmula usada: <span className="font-mono">100 ÷ (100 − Margem%)</span>. Baseado na margem de contribuição de cada produto.</p>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -326,6 +447,8 @@ export default function Relatorios() {
   const [modalSimulacao, setModalSimulacao] = useState(false);
   const [modalBreakeven, setModalBreakeven] = useState(false);
   const [modalAnalise, setModalAnalise] = useState(false);
+  const [modalDre, setModalDre] = useState(false);
+  const [modalMarkup, setModalMarkup] = useState(false);
   const [, setLocation] = useLocation();
 
   if (!assinaturaLoading && !isPro) {
@@ -511,12 +634,30 @@ export default function Relatorios() {
                 <p className="text-sm text-muted-foreground mt-1">Detalhe completo de cada produto</p>
                 <p className="text-xs text-muted-foreground/70 mt-2 border-t border-border/50 pt-2">CMV, MO, Imposto, VR = Vale Refeição · % = participação no preço de venda</p>
               </button>
+              <button onClick={() => setModalDre(true)} className="bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-all text-left group">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-3 group-hover:bg-primary/20 transition-colors">
+                  <FileText size={18} />
+                </div>
+                <p className="font-semibold text-foreground">DRE</p>
+                <p className="text-sm text-muted-foreground mt-1">Demonstração do Resultado do mês corrente</p>
+                <p className="text-xs text-muted-foreground/70 mt-2 border-t border-border/50 pt-2">Receita − Custos Variáveis − Despesas Fixas = Resultado Operacional</p>
+              </button>
+              <button onClick={() => setModalMarkup(true)} className="bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-all text-left group">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-3 group-hover:bg-primary/20 transition-colors">
+                  <Percent size={18} />
+                </div>
+                <p className="font-semibold text-foreground">Markup</p>
+                <p className="text-sm text-muted-foreground mt-1">Markup médio e por produto com base na margem</p>
+                <p className="text-xs text-muted-foreground/70 mt-2 border-t border-border/50 pt-2">Markup = 100 ÷ (100 − Margem%) · Multiplicador sobre o custo total</p>
+              </button>
             </>
           ) : (
             <>
               <PremiumLock title="Simulação de Cenário" description="Teste novos preços e veja o impacto na margem" icon={Sliders} onClick={() => {}} />
               <PremiumLock title="Ponto de Equilíbrio Detalhado" description="Análise completa do ponto de equilíbrio" icon={Target} onClick={() => {}} />
               <PremiumLock title="Análise Individual" description="Detalhe completo de custos por produto" icon={BarChart2} onClick={() => {}} />
+              <PremiumLock title="DRE" description="Demonstração do resultado do mês com receitas e custos" icon={FileText} onClick={() => {}} />
+              <PremiumLock title="Markup" description="Markup médio e por produto com base na margem" icon={Percent} onClick={() => {}} />
             </>
           )}
         </div>
@@ -525,6 +666,8 @@ export default function Relatorios() {
       <SimulacaoModal open={modalSimulacao} onClose={() => setModalSimulacao(false)} />
       <BreakevenModal open={modalBreakeven} onClose={() => setModalBreakeven(false)} />
       <AnaliseProdutoModal open={modalAnalise} onClose={() => setModalAnalise(false)} />
+      <DreModal open={modalDre} onClose={() => setModalDre(false)} />
+      <MarkupModal open={modalMarkup} onClose={() => setModalMarkup(false)} />
     </div>
   );
 }

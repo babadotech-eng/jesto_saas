@@ -1,0 +1,106 @@
+Faça APENAS esta atualização no app, com a menor alteração possível e sem mexer em nada mais.
+
+OBJETIVO
+Adicionar na aba **Relatórios** uma funcionalidade de **DRE** e **Markup**, disponível **somente para usuários do plano Premium**.
+
+ESCOPO EXATO
+1. Trabalhar somente na aba **Relatórios**.
+2. Adicionar nessa aba uma área/seção para:
+   - **DRE**
+   - **Markup**
+3. Essa funcionalidade deve existir **somente no plano Premium**.
+4. Incluir os **campos necessários** e os **cálculos necessários** para DRE e Markup dentro dessa área.
+5. Não alterar nenhuma outra aba, fluxo ou tela fora do necessário para esta funcionalidade.
+
+REGRA DE ACESSO
+- usuários **Premium**: podem visualizar e usar os campos e cálculos de DRE e Markup na aba Relatórios
+- usuários **não Premium**: não devem ter acesso funcional a essa área
+- para usuários não Premium, seguir o padrão já existente do app para feature premium, preferencialmente:
+  - exibir estado bloqueado/locked state com indicação de que é recurso Premium, se já existir esse padrão no app
+  - se não existir padrão pronto, fazer a abordagem mais simples e mínima possível sem redesenhar nada
+
+SOBRE O DRE
+Adicionar uma visão/cálculo de DRE coerente com os dados já existentes no app, aproveitando a base atual do sistema.
+
+Usar, sempre que fizer sentido, os dados já existentes do app para compor o DRE, como por exemplo:
+- faturamento/receitas
+- custos variáveis
+- custos fixos
+- despesas
+- impostos
+- taxas
+- folha / funcionários
+- pró-labore, se essa funcionalidade já estiver implementada no sistema
+- demais valores já usados nos cálculos financeiros atuais
+
+O DRE deve ser consistente com a lógica já existente do app.
+Não inventar uma arquitetura nova se os dados atuais já suportarem essa composição.
+
+SOBRE O MARKUP
+Adicionar campos e cálculo de **Markup** na mesma área de Relatórios Premium, usando a lógica mais consistente com o app atual.
+
+Objetivo do cálculo:
+- permitir ao usuário visualizar ou calcular markup com base nos custos/despesas/margens já trabalhados pelo sistema
+- reaproveitar a base de dados já existente
+- manter coerência com os demais cálculos financeiros do produto
+
+Se houver necessidade de campos auxiliares para o cálculo de markup, adicionar somente os mínimos necessários.
+
+REGRAS DE IMPLEMENTAÇÃO
+- fazer a menor alteração possível
+- reutilizar componentes, cards, tabelas, inputs, modais, seções e padrões visuais já existentes
+- manter layout atual
+- manter espaçamentos atuais
+- manter tipografia atual
+- manter cores atuais
+- manter responsividade atual
+- manter arquitetura atual do app
+- usar o padrão já existente de feature gating / plano Premium, se houver
+- não criar redesign da aba Relatórios
+- não refatorar partes não relacionadas
+- não alterar dados ou cálculos fora do necessário para alimentar DRE e Markup
+
+NÃO MEXER
+- não alterar outras abas
+- não alterar navegação
+- não alterar autenticação
+- não alterar permissões além do gate desta feature Premium
+- não alterar dashboard
+- não alterar páginas de vendas, landing page ou onboarding
+- não alterar textos fora desta funcionalidade
+- não alterar design system
+- não renomear arquivos sem necessidade
+- não refatorar componentes globais sem necessidade real
+- não mexer em nada que não seja indispensável para adicionar DRE e Markup na aba Relatórios Premium
+
+SCOPE LOCK
+- Change only the files strictly necessary for this Premium Reports feature
+- Do not rename, reformat, or refactor unrelated code
+- Do not improve unrelated parts of the app
+- If you find issues outside this scope, do not fix them now
+
+COMPORTAMENTO ESPERADO
+- na aba Relatórios, usuários Premium conseguem acessar a área de DRE e Markup
+- usuários não Premium não conseguem usar essa funcionalidade
+- os cálculos devem usar os dados já existentes no app, sempre que possível
+- o resultado deve ficar coerente com a lógica financeira já adotada pelo sistema
+- a implementação deve ser mínima e segura
+
+VALIDAÇÃO OBRIGATÓRIA
+Antes de encerrar, validar:
+1. a aba **Relatórios** recebeu a nova funcionalidade de **DRE** e **Markup**
+2. o acesso está disponível somente para usuários **Premium**
+3. usuários não Premium estão corretamente bloqueados dessa funcionalidade
+4. os cálculos de DRE funcionam com base nos dados existentes do app
+5. os cálculos de Markup funcionam com base nos dados existentes do app
+6. nenhum layout foi alterado fora do necessário
+7. nenhuma funcionalidade não relacionada foi modificada
+8. o app continua compilando e funcionando normalmente
+
+FORMATO DA RESPOSTA
+Ao terminar:
+- informar objetivamente o que foi alterado
+- listar apenas os arquivos alterados
+- explicar de forma curta como o gate Premium foi aplicado
+- explicar de forma curta quais dados existentes do app foram usados nos cálculos de DRE e Markup
+- confirmar que não mexeu em mais nada
