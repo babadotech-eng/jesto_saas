@@ -1,0 +1,77 @@
+Faça APENAS estes ajustes na aba/modal de **Lançamentos**, sem mexer em nada mais.
+
+CONTEXTO
+Já existe fluxo de **Novo lançamento** e também existe o modal **Lançar vendas por produto**.
+Agora preciso ajustar o comportamento de recorrência e complementar o fluxo de lançamento por produto no mesmo modal.
+
+OBJETIVO
+Implementar 3 ajustes exatos:
+1. no modal de **Lançamentos**, o botão de recorrência deve lançar automaticamente **todos os meses**, a partir da data preenchida
+2. no modal **Lançar vendas por produto**, criar **no mesmo modal** um botão para **adicionar novo produto**
+3. na descrição da aba **Lançamentos**, exibir o **total de produtos lançados na aba**
+
+TRABALHAR SOMENTE NISSO.
+
+==================================================
+1. AJUSTE DE RECORRÊNCIA NO MODAL DE LANÇAMENTOS
+==================================================
+
+No modal **Novo lançamento** / modal de **Lançamentos**, o botão de recorrência não deve apenas marcar uma recorrência genérica.
+
+O comportamento correto agora deve ser:
+- ao ativar a recorrência, o lançamento passa a ser criado automaticamente **em todos os meses**
+- a recorrência deve começar **a partir da data preenchida no modal**
+- a referência da recorrência deve usar essa mesma data como início da série
+- manter o mesmo dia-base da data preenchida, quando aplicável
+
+Exemplo:
+- se a data preenchida for `15/06/2026`
+- a recorrência deve gerar lançamentos mensais a partir de `15/06/2026`
+- próximos lançamentos esperados: `15/07/2026`, `15/08/2026`, `15/09/2026` etc.
+
+Se já existir estrutura de recorrência:
+- reaproveitar a estrutura existente
+- ajustar apenas a regra para garantir recorrência **mensal a partir da data preenchida**
+- não criar outro fluxo paralelo
+
+Se houver persistência de metadados de recorrência, usar algo compatível com o padrão atual, por exemplo:
+- `recurring: true`
+- `recurrenceType: 'monthly'`
+- `startDate: <data preenchida>`
+
+Só adaptar isso se o projeto já tiver outra nomenclatura.
+
+IMPORTANTE:
+- a recorrência deve estar vinculada à data informada no preenchimento
+- não usar data fixa fora do input atual
+- não alterar outros tipos de lançamento além do necessário para essa regra funcionar
+
+==================================================
+2. AJUSTE NO MODAL “LANÇAR VENDAS POR PRODUTO”
+==================================================
+
+No modal **Lançar vendas por produto**, criar **NO MESMO MODAL** um botão para **adicionar novo produto**.
+
+REQUISITO FUNCIONAL
+O usuário deve conseguir, dentro do mesmo modal:
+- selecionar/preencher um produto
+- informar seus dados de lançamento
+- adicionar outro produto sem sair do modal
+- repetir isso no mesmo fluxo
+
+COMPORTAMENTO ESPERADO
+O botão **Adicionar novo produto** deve:
+- ficar dentro do mesmo modal
+- adicionar uma nova linha/bloco/item/formulário de produto no próprio modal
+- manter o padrão visual já usado no app
+- reaproveitar componentes existentes, se houver
+- permitir múltiplos produtos no mesmo lançamento por produto, dentro do mesmo modal
+
+ESTRUTURA SUGERIDA
+Se hoje o modal trabalha com um item único, adaptar para uma coleção/lista interna, por exemplo:
+```ts
+type ProductLaunchItem = {
+  productId: string | number;
+  date: string;
+  quantity: number;
+};

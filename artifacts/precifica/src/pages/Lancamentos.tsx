@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useListLancamentos, useCreateLancamento, useUpdateLancamento, useDeleteLancamento, getListLancamentosQueryKey, useListProdutos } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAssinatura } from "@/hooks/useAssinatura";
@@ -186,35 +186,12 @@ export default function Lancamentos() {
 
   // Recurring-entry toggle state (Novo Lançamento modal)
   const [autoLancRecorr, setAutoLancRecorr] = useState(false);
-  const [dataRecorr, setDataRecorr] = useState(today);
+  const [recorrMeses, setRecorrMeses] = useState(12);
 
-  // Sale-by-product modal state
+  // Sale-by-product modal state (multi-item)
   const [saleOpen, setSaleOpen] = useState(false);
-  const [saleProdutoId, setSaleProdutoId] = useState("");
-  const [saleData, setSaleData] = useState(today);
-  const [saleQty, setSaleQty] = useState("");
-  const [salePreco, setSalePreco] = useState("");
+  const [saleItems, setSaleItems] = useState<Array<{ produtoId: string; date: string; qty: string; preco: string }>>([{ produtoId: "", date: today, qty: "", preco: "" }]);
   const [saleSaving, setSaleSaving] = useState(false);
-  const [saleProdutoSearch, setSaleProdutoSearch] = useState("");
-  const [saleProdutoDropdown, setSaleProdutoDropdown] = useState(false);
-  const saleProdutoRef = useRef<HTMLDivElement>(null);
-
-  const selectedProduto = produtos?.find(p => p.id === saleProdutoId);
-  const filteredProdutos = useMemo(() => {
-    if (!produtos) return [];
-    const q = saleProdutoSearch.toLowerCase();
-    return q ? produtos.filter(p => p.nome.toLowerCase().includes(q)) : produtos;
-  }, [produtos, saleProdutoSearch]);
-
-  useEffect(() => {
-    if (!saleProdutoDropdown) return;
-    function onDown(e: MouseEvent) {
-      if (saleProdutoRef.current && !saleProdutoRef.current.contains(e.target as Node))
-        setSaleProdutoDropdown(false);
-    }
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
-  }, [saleProdutoDropdown]);
 
   const now = new Date();
   const [filterYear, setFilterYear] = useState(now.getFullYear());
@@ -239,6 +216,7 @@ export default function Lancamentos() {
   const totalReceita = byMonth.filter(l => l.tipo === "receita").reduce((s, l) => s + l.valor, 0);
   const totalDespesa = byMonth.filter(l => l.tipo === "despesa").reduce((s, l) => s + l.valor, 0);
   const saldo = totalReceita - totalDespesa;
+  const totalProdutosLancados = (data ?? []).filter(l => l.categoria === "Venda de produtos").length;
 
   const features = getFeatures(assinatura?.planoEfetivo ?? "gratis");
   if (!assinaturaLoading && !features.fluxoCaixa) {
@@ -261,12 +239,12 @@ export default function Lancamentos() {
     );
   }
 
-  function openCreate() { setEditingId(null); form.reset(defaultValues); setAutoLancRecorr(false); setDataRecorr(today); setOpen(true); }
+  function openCreate() { setEditingId(null); form.reset(defaultValues); setAutoLancRecorr(false); setRecorrMeses(12); setOpen(true); }
   function openEdit(l: NonNullable<typeof data>[0]) {
     setEditingId(l.id);
     form.reset({ descricao: l.descricao, tipo: l.tipo as "receita" | "despesa", valor: l.valor, data: l.data, categoria: l.categoria ?? "" });
     setAutoLancRecorr(false);
-    setDataRecorr(today);
+    setRecorrMeses(12);
     setOpen(true);
   }
 
@@ -278,9 +256,14 @@ export default function Lancamentos() {
         toast.success("Lançamento atualizado!");
       } else {
         await createMutation.mutateAsync({ data: payload });
-        if (autoLancRecorr && dataRecorr) {
-          await createMutation.mutateAsync({ data: { ...payload, data: dataRecorr } });
-          toast.success("Lançamento registrado e recorrência criada!");
+        if (autoLancRecorr) {
+          const months = recorrMeses > 0 ? recorrMeses : 12;
+          const startDate = new Date(values.data + "T12:00:00");
+          for (let i = 1; i <= months; i++) {
+            const d = new Date(startDate.getFullYear(), startDate.getMonth() + i, startDate.getDate());
+            await createMutation.mutateAsync({ data: { ...payload, data: d.toISOString().slice(0, 10) } });
+          }
+          toast.success(`Lançamento criado com recorrência por ${months} meses!`);
         } else {
           toast.success("Lançamento registrado!");
         }
@@ -291,31 +274,54 @@ export default function Lancamentos() {
   }
 
   function openSaleModal() {
-    setSaleProdutoId(""); setSaleData(today); setSaleQty(""); setSalePreco("");
-    setSaleProdutoSearch(""); setSaleProdutoDropdown(false);
+    setSaleItems([{ produtoId: "", date: today, qty: "", preco: "" }]);
     setSaleOpen(true);
   }
 
-  function handleSelectSaleProduto(id: string) {
-    setSaleProdutoId(id);
-    const p = produtos?.find(pp => pp.id === id);
-    if (p) setSalePreco(String(p.preco_venda));
-    setSaleProdutoDropdown(false);
-    setSaleProdutoSearch("");
+  function addSaleItem() {
+    setSaleItems(prev => [...prev, { produtoId: "", date: today, qty: "", preco: "" }]);
+  }
+
+  function removeSaleItem(idx: number) {
+    setSaleItems(prev => prev.filter((_, i) => i !== idx));
+  }
+
+  function updateSaleItem(idx: number, field: string, value: string) {
+    setSaleItems(prev => {
+      const next = prev.map((item, i) => i === idx ? { ...item, [field]: value } : item);
+      if (field === "produtoId") {
+        const p = produtos?.find(pp => pp.id === value);
+        if (p) next[idx] = { ...next[idx], preco: String(p.preco_venda) };
+      }
+      return next;
+    });
   }
 
   async function handleSaleLaunch() {
-    if (!saleProdutoId || !saleData || !saleQty) { toast.error("Preencha todos os campos."); return; }
-    const qty = parseFloat(saleQty);
-    const preco = parseFloat(salePreco);
-    if (isNaN(qty) || qty <= 0) { toast.error("Quantidade inválida."); return; }
-    if (isNaN(preco) || preco <= 0) { toast.error("Preço inválido."); return; }
-    const valor = qty * preco;
-    const descricao = `${selectedProduto?.nome ?? "Produto"} × ${qty} un.`;
+    for (const item of saleItems) {
+      if (!item.produtoId || !item.date || !item.qty) { toast.error("Preencha todos os campos de cada produto."); return; }
+      const qty = parseFloat(item.qty);
+      const preco = parseFloat(item.preco);
+      if (isNaN(qty) || qty <= 0) { toast.error("Quantidade inválida."); return; }
+      if (isNaN(preco) || preco <= 0) { toast.error("Preço inválido."); return; }
+    }
     setSaleSaving(true);
     try {
-      await createMutation.mutateAsync({ data: { descricao, tipo: "receita", valor, data: saleData, categoria: "Venda de produtos" } });
-      toast.success("Venda lançada!");
+      for (const item of saleItems) {
+        const qty = parseFloat(item.qty);
+        const preco = parseFloat(item.preco);
+        const produto = produtos?.find(p => p.id === item.produtoId);
+        await createMutation.mutateAsync({
+          data: {
+            descricao: `${produto?.nome ?? "Produto"} × ${qty} un.`,
+            tipo: "receita",
+            valor: qty * preco,
+            data: item.date,
+            categoria: "Venda de produtos",
+          }
+        });
+      }
+      toast.success(saleItems.length > 1 ? `${saleItems.length} vendas lançadas!` : "Venda lançada!");
       qc.invalidateQueries({ queryKey: getListLancamentosQueryKey() });
       setSaleOpen(false);
     } catch { toast.error("Erro ao lançar venda."); }
@@ -337,7 +343,9 @@ export default function Lancamentos() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Lançamentos</h1>
-          <p className="text-sm text-muted-foreground mt-1">Fluxo de caixa do seu negócio</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Fluxo de caixa do seu negócio{totalProdutosLancados > 0 ? ` · ${totalProdutosLancados} produto${totalProdutosLancados !== 1 ? "s" : ""} lançado${totalProdutosLancados !== 1 ? "s" : ""}` : ""}
+          </p>
         </div>
         <div className="flex gap-2 flex-wrap justify-end">
           <Button variant="outline" onClick={openSaleModal} data-testid="button-launch-sale">
@@ -499,18 +507,21 @@ export default function Lancamentos() {
                   </label>
                   {autoLancRecorr && (
                     <div className="flex items-center gap-3 pl-12">
-                      <label className="text-sm text-muted-foreground whitespace-nowrap">Data de pagamento:</label>
+                      <label className="text-sm text-muted-foreground whitespace-nowrap">Repetir por</label>
                       <input
-                        type="date"
-                        value={dataRecorr}
-                        onChange={e => setDataRecorr(e.target.value)}
-                        className="flex h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        type="number"
+                        min="1"
+                        max="60"
+                        value={recorrMeses}
+                        onChange={e => setRecorrMeses(Number(e.target.value))}
+                        className="w-20 flex h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
                       />
+                      <label className="text-sm text-muted-foreground">meses</label>
                     </div>
                   )}
                   {autoLancRecorr && (
                     <p className="text-xs text-muted-foreground pl-12">
-                      Um lançamento com os mesmos dados será criado na data escolhida.
+                      Lançamentos mensais a partir da data preenchida, pelo mesmo dia de cada mês.
                     </p>
                   )}
                 </div>
@@ -528,92 +539,61 @@ export default function Lancamentos() {
       <Dialog open={saleOpen} onOpenChange={v => { if (!v) setSaleOpen(false); }}>
         <DialogContent className="max-w-md">
           <DialogHeader><DialogTitle>Lançar Vendas por Produto</DialogTitle></DialogHeader>
-          <div className="space-y-4">
-            {/* Product combobox */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium">Produto *</label>
-              <div ref={saleProdutoRef} className="relative">
-                <button
-                  type="button"
-                  onClick={() => setSaleProdutoDropdown(o => !o)}
-                  className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                >
-                  <span className={selectedProduto ? "text-foreground" : "text-muted-foreground"}>
-                    {selectedProduto ? selectedProduto.nome : "Selecione o produto..."}
-                  </span>
-                  <ChevronDown size={14} className="ml-2 shrink-0 opacity-50" />
-                </button>
-                {saleProdutoDropdown && (
-                  <div className="absolute z-50 w-full mt-1 rounded-md border border-border bg-popover shadow-md">
-                    <div className="p-2 border-b border-border">
-                      <input
-                        autoFocus
-                        className="w-full h-8 rounded-md border border-input bg-background px-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-                        placeholder="Buscar produto..."
-                        value={saleProdutoSearch}
-                        onChange={e => setSaleProdutoSearch(e.target.value)}
-                      />
-                    </div>
-                    <ul className="max-h-48 overflow-y-auto py-1">
-                      {!filteredProdutos.length ? (
-                        <li className="px-3 py-4 text-center text-sm text-muted-foreground">Nenhum produto encontrado.</li>
-                      ) : filteredProdutos.map(p => (
-                        <li key={p.id} className="flex items-center gap-1 px-2 hover:bg-accent">
-                          <button
-                            type="button"
-                            className="flex-1 flex items-center justify-between py-1.5 text-left text-sm"
-                            onClick={() => handleSelectSaleProduto(p.id)}
-                          >
-                            <span>{p.nome}</span>
-                            <span className="text-xs text-muted-foreground ml-2">{fmt(p.preco_venda)}/un</span>
-                          </button>
-                          <button
-                            type="button"
-                            title="Selecionar e ajustar preço"
-                            aria-label={`Ajustar preço de ${p.nome}`}
-                            onClick={() => handleSelectSaleProduto(p.id)}
-                            className="p-1 text-muted-foreground hover:text-foreground shrink-0"
-                          >
-                            <SlidersHorizontal size={13} />
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+          <div className="space-y-3 max-h-[55vh] overflow-y-auto pr-1">
+            {saleItems.map((item, idx) => (
+              <div key={idx} className="rounded-lg border border-border bg-muted/20 p-3 space-y-3 relative">
+                {saleItems.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeSaleItem(idx)}
+                    className="absolute top-2 right-2 text-muted-foreground hover:text-destructive"
+                    aria-label="Remover produto"
+                  >
+                    <X size={14} />
+                  </button>
                 )}
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium">Produto *</label>
+                  <Select value={item.produtoId} onValueChange={v => updateSaleItem(idx, "produtoId", v)}>
+                    <SelectTrigger className="w-full"><SelectValue placeholder="Selecione o produto..." /></SelectTrigger>
+                    <SelectContent>
+                      {produtos?.map(p => (
+                        <SelectItem key={p.id} value={p.id}>{p.nome} — {fmt(p.preco_venda)}/un</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium">Data *</label>
+                    <Input type="date" value={item.date} onChange={e => updateSaleItem(idx, "date", e.target.value)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium">Quantidade *</label>
+                    <Input type="number" step="1" min="1" placeholder="0" value={item.qty} onChange={e => updateSaleItem(idx, "qty", e.target.value)} />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium flex items-center gap-1.5">
+                    Preço/un (R$) * <SlidersHorizontal size={12} className="text-muted-foreground" />
+                  </label>
+                  <Input type="number" step="0.01" min="0" placeholder="0,00" value={item.preco} onChange={e => updateSaleItem(idx, "preco", e.target.value)} />
+                  {item.preco && item.qty && !isNaN(parseFloat(item.preco)) && !isNaN(parseFloat(item.qty)) && parseFloat(item.qty) > 0 && (
+                    <p className="text-xs text-muted-foreground">
+                      Total: <span className="font-semibold text-foreground">{fmt(parseFloat(item.preco) * parseFloat(item.qty))}</span>
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
-
-            {/* Date + Quantity */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium">Data *</label>
-                <Input type="date" value={saleData} onChange={e => setSaleData(e.target.value)} />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium">Quantidade *</label>
-                <Input type="number" step="1" min="1" placeholder="0" value={saleQty} onChange={e => setSaleQty(e.target.value)} />
-              </div>
-            </div>
-
-            {/* Price (auto-filled from product, editable) */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium flex items-center gap-1.5">
-                Preço por unidade (R$) *
-                <SlidersHorizontal size={12} className="text-muted-foreground" />
-              </label>
-              <Input type="number" step="0.01" min="0" placeholder="0,00" value={salePreco} onChange={e => setSalePreco(e.target.value)} />
-              {salePreco && saleQty && !isNaN(parseFloat(salePreco)) && !isNaN(parseFloat(saleQty)) && parseFloat(saleQty) > 0 && (
-                <p className="text-xs text-muted-foreground">
-                  Total: <span className="font-semibold text-foreground">{fmt(parseFloat(salePreco) * parseFloat(saleQty))}</span>
-                </p>
-              )}
-            </div>
+            ))}
+            <Button type="button" variant="outline" onClick={addSaleItem} className="w-full">
+              <Plus size={14} className="mr-2" />Adicionar novo produto
+            </Button>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setSaleOpen(false)}>Cancelar</Button>
             <Button onClick={handleSaleLaunch} disabled={saleSaving}>
-              {saleSaving ? "Salvando..." : "Lançar Venda"}
+              {saleSaving ? "Salvando..." : saleItems.length > 1 ? `Lançar ${saleItems.length} Vendas` : "Lançar Venda"}
             </Button>
           </DialogFooter>
         </DialogContent>
